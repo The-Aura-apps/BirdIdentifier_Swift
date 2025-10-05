@@ -11,7 +11,9 @@ import SwiftUI
 struct BirdIdApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationView{
+                OnboardingScreen()
+            }
         }
     }
 }
