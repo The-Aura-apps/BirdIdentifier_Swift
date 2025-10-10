@@ -29,33 +29,33 @@ enum OnboardingData: Int,CaseIterable,Identifiable {
         }
     }
     
-   var backgroundImage: Image {
-       switch self {
-       default: Image(.onboardingBgImg)
-               .resizable()
-       }
-    }
-    
-   var image: Image? {
-       switch self {
-       case .firstPage,.forthPage: return Image(.onboardingLogo)
-               .resizable()
-       default: return nil
-       }
-    }
-    
-    
-    var questions: String {
+    var backgroundImage: Image {
         switch self {
-        case .secondPage:
-            return "How would you like to identify \nbirds?"
-        case .thirdPage:
-            return  "What brings you here?"
-        default: return ""
+        default: Image(.onboardingBgImg)
+                .resizable()
         }
     }
-    
-    var answer : [(Image?,String)] {
+        
+        var image: Image? {
+            switch self {
+            case .firstPage,.forthPage: return Image(.onboardingLogo)
+                    .resizable()
+            default: return nil
+            }
+        }
+        
+        
+        var questions: String {
+            switch self {
+            case .secondPage:
+                return "How would you like to identify \nbirds?"
+            case .thirdPage:
+                return  "What brings you here?"
+            default: return ""
+            }
+        }
+        
+        var answer : [(Image?,String)] {
             switch self {
                 
             case .firstPage:
@@ -69,49 +69,50 @@ enum OnboardingData: Int,CaseIterable,Identifiable {
             }
             
         }
-    
-    var mainText: String {
-        switch self {
-        case .firstPage:
-            return "Welcome!"
-        case .forthPage:
-            return "We’re personalizing your experience"
-        default: return ""
+        
+        var mainText: String {
+            switch self {
+            case .firstPage:
+                return "Welcome!"
+            case .forthPage:
+                return "We’re personalizing your experience"
+            default: return ""
+            }
         }
-    }    
-    
-    var secondaryText: String {
-        switch self {
-        case .firstPage:
-            return "Discover Birds Around You"
-        default: return ""
+        
+        var secondaryText: String {
+            switch self {
+            case .firstPage:
+                return "Discover Birds Around You"
+            default: return ""
+            }
         }
-    }    
-    
-    var bodyText: String {
-        switch self {
-        case .firstPage:
-            return "Identify birds by photo or sound.\n Explore nature in a whole new way."
-        case .forthPage:
-            return "Based on your answers, we’re shaping the app just for you."
-        default: return ""
+        
+        var bodyText: String {
+            switch self {
+            case .firstPage:
+                return "Identify birds by photo or sound.\n Explore nature in a whole new way."
+            case .forthPage:
+                return "Based on your answers, we’re shaping the app just for you."
+            default: return ""
+            }
         }
+        
+        
+        func next() -> Self {
+            let all = Self.allCases
+            guard let currentIndex = all.firstIndex(of: self) else { return self }
+            let nextIndex = all.index(after: currentIndex)
+            return all[nextIndex == all.endIndex ? currentIndex : nextIndex]
+        }
+        
+        func back() -> Self {
+            let all = Self.allCases
+            guard let currentIndex = all.firstIndex(of: self) else { return self }
+            let prevIndex = all.index(before: currentIndex)
+            return currentIndex == all.startIndex ? self : all[prevIndex]
+        }
+        
+        
     }
-    
-    
-    func next() -> Self {
-        let all = Self.allCases
-        guard let currentIndex = all.firstIndex(of: self) else { return self }
-        let nextIndex = all.index(after: currentIndex)
-        return all[nextIndex == all.endIndex ? currentIndex : nextIndex]
-    }
-    
-    func back() -> Self {
-        let all = Self.allCases
-        guard let currentIndex = all.firstIndex(of: self) else { return self }
-        let prevIndex = all.index(before: currentIndex)
-        return currentIndex == all.startIndex ? self : all[prevIndex]
-    }
-    
-    
-}
+

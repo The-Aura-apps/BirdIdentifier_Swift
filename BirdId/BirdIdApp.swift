@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct BirdIdApp: App {
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding: Bool = false
+    
     var body: some Scene {
         WindowGroup {
-            NavigationView{
+            if hasSeenOnboarding {
+                MainScreen()
+            } else {
                 OnboardingScreen()
             }
         }

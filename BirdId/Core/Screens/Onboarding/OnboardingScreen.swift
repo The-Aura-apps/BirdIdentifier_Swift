@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import Lottie
 
 struct OnboardingScreen: View {
     @State private var step: OnboardingData = .firstPage
-    @State private var rotation: Double = 0
+    @State private var selectedAnswers: [OnboardingData: Int] = [:]
     var body: some View {
         ZStack {
             step.backgroundImage.ignoresSafeArea()
@@ -76,18 +77,15 @@ extension OnboardingScreen {
             Button {
                 step = step.next()
             } label: {
-                Capsule()
-                    .fill(.ultraThinMaterial)
-                    .frame(height: 52)
-                    .overlay {
-                        Text("Get Started")
-                            .font(.app(.Sub1))
-                            .foregroundStyle(.text)
-                        
-                    }
-                    .padding(.bottom,24)
+                HStack {
+                    Text("Get Started")
+                        .font(.app(.Sub1))
+                        .foregroundStyle(.text)
+                }
+                .frame(width: UIScreen.screenWidth - 48, height: 52)
+                .glassEffect(Glass.clear)
             }
-            
+            Spacer()
         }
         .padding(.horizontal,24)
     }
@@ -107,27 +105,24 @@ extension OnboardingScreen {
             VStack(spacing: 24) {
                 ForEach(0..<step.answer.count,id: \.self) { index in
                     Button {
+                        selectedAnswers[step] = index
                         step = step.next()
                     } label: {
-                        Capsule()
-                            .fill(.ultraThinMaterial)
-                            .frame(height: 52)
-                            .overlay {
-                                HStack {
-                                    if let image = step.answer[index].0 {
-                                        image
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 24, height: 24)
-                                    }
-                                    Text(step.answer[index].1)
-                                        .font(.app(.Sub1))
-                                        .foregroundStyle(.text)
-                                    Spacer()
-                                }
-                                .padding(.horizontal,24)
-                                
+                        HStack {
+                            if let image = step.answer[index].0 {
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
                             }
+                            Text(step.answer[index].1)
+                                .font(.app(.Sub1))
+                                .foregroundStyle(.text)
+                            Spacer()
+                        }
+                        .frame(height: 52)
+                        .padding(.horizontal,24)
+                        .glassEffect(selectedAnswers[step] == index ? Glass.regular : Glass.clear)
                     }
                 }
             }
@@ -152,27 +147,25 @@ extension OnboardingScreen {
             VStack(spacing: 24) {
                 ForEach(0..<step.answer.count,id: \.self) { index in
                     Button {
+                        selectedAnswers[step] = index
                         step = step.next()
                     } label: {
-                        Capsule()
-                            .fill(.ultraThinMaterial)
-                            .frame(height: 52)
-                            .overlay {
-                                HStack {
-                                    if let image = step.answer[index].0 {
-                                        image
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(width: 24, height: 24)
-                                    }
-                                    Text(step.answer[index].1)
-                                        .font(.app(.Sub1))
-                                        .foregroundStyle(.text)
-                                    Spacer()
-                                }
-                                .padding(.horizontal,24)
-                                
+                        HStack {
+                            if let image = step.answer[index].0 {
+                                image
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 24, height: 24)
                             }
+                            Text(step.answer[index].1)
+                                .font(.app(.Sub1))
+                                .foregroundStyle(.text)
+                            Spacer()
+                        }
+                        .frame(height: 52)
+                        .padding(.horizontal,24)
+                        .glassEffect(selectedAnswers[step] == index ? Glass.regular : Glass.clear)
+
                     }
                 }
             }
@@ -202,17 +195,17 @@ extension OnboardingScreen {
                 .foregroundStyle(.text)
             Spacer()
             
-            Image(.loading)
+            LottieView(animationName: "OnboadingLoading")
                 .frame(width: 60, height: 60)
-                .rotationEffect(.degrees(rotation))
-                .onAppear {
-                    withAnimation(.linear(duration: 1).repeatForever(autoreverses: false)) {
-                        rotation = 360
-                    }
-                }
             Spacer()
         }
         .padding(.horizontal,24)
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+
+            }
+        }
     }
     
     private func onboardingAppBar() -> some View {
@@ -222,13 +215,14 @@ extension OnboardingScreen {
                             step = step.back()
                         } label: {
                             Circle()
-                                .fill(.ultraThinMaterial)
+                                .fill(Color.white.opacity(0.1))
                                 .frame(width: 48, height: 48)
                                 .overlay {
                                     Image(.backButton)
                                         .padding(.leading, 11)
                                         .padding(.trailing, 13)
                                 }
+                                .glassEffect(Glass.clear)
                         }
                     } else {
                         Color.clear
@@ -241,18 +235,14 @@ extension OnboardingScreen {
                             ZStack {
                                 if index == step.id - 1 {
                                     Capsule()
-                                        .fill(.ultraThinMaterial)
+                                        .fill(Color.white.opacity(0.1))
                                         .frame(width: 24, height: 8)
-                                        .overlay(
-                                            Capsule().stroke(.ultraThinMaterial, lineWidth: 0.1)
-                                        )
+                                        .glassEffect(Glass.clear)
                                 } else {
                                     Circle()
-                                        .fill(.ultraThinMaterial)
+                                        .fill(Color.white.opacity(0.1))
                                         .frame(width: 8, height: 8)
-                                        .overlay(
-                                            Circle().stroke(.ultraThinMaterial, lineWidth: 0.1)
-                                        )
+                                        .glassEffect(Glass.clear)
                                 }
                             }
                             .animation(.easeInOut(duration: 0.3), value: step)
