@@ -1,0 +1,41 @@
+//
+//  HomeGridView.swift
+//  BirdId
+//
+//  Created by ali bakhsha on 7/22/1404 AP.
+//
+
+import SwiftUI
+
+struct HomeHabitatItem: View {
+    let birdsHabitat = ["Grasslands", "Wetlands", "Woods", "Sea", "Mountains", "Desert"]
+    
+    let rows = [
+        GridItem(.fixed(100)),
+    ]
+    
+    var body: some View {
+        ScrollView(.horizontal,showsIndicators: false){
+            LazyHGrid(rows: rows,spacing: 16){
+                ForEach(birdsHabitat,id: \.self){ birdsHabitat in
+                    VStack {
+                        Image(.grasslands)
+                            .resizable()
+                            .frame(width: 64,height: 64)
+                            .scaledToFit()
+                            .clipShape(Circle())
+                            .padding(.bottom,8)
+                        Text(birdsHabitat)
+                            .font(.app(.Micro1))
+                            .foregroundStyle(.text)
+                    }
+                }
+            }
+            .padding(.leading,24)
+        }
+    }
+}
+
+#Preview {
+    HomeHabitatItem()
+}
