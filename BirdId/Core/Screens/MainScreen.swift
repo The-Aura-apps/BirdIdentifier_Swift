@@ -15,7 +15,7 @@ struct MainScreen: View {
             Image(.bgImg)
                 .resizable()
                 .ignoresSafeArea()
-
+            
             VStack(spacing: 0) {
                 Group {
                     switch selectedTab {

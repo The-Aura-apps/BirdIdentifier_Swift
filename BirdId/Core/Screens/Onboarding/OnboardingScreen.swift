@@ -84,6 +84,7 @@ extension OnboardingScreen {
                 }
                 .frame(width: UIScreen.screenWidth - 48, height: 52)
                 .adaptiveGlassEffect(Glass.clear)
+
             }
             Spacer()
         }
@@ -165,7 +166,6 @@ extension OnboardingScreen {
                         .frame(height: 52)
                         .padding(.horizontal,24)
                         .adaptiveGlassEffect(selectedAnswers[step] == index ? Glass.regular : Glass.clear)
-
                     }
                 }
             }
