@@ -83,7 +83,7 @@ extension OnboardingScreen {
                         .foregroundStyle(.text)
                 }
                 .frame(width: UIScreen.screenWidth - 48, height: 52)
-                .glassEffect(Glass.clear)
+                .adaptiveGlassEffect(Glass.clear)
             }
             Spacer()
         }
@@ -122,7 +122,7 @@ extension OnboardingScreen {
                         }
                         .frame(height: 52)
                         .padding(.horizontal,24)
-                        .glassEffect(selectedAnswers[step] == index ? Glass.regular : Glass.clear)
+                        .adaptiveGlassEffect(selectedAnswers[step] == index ? Glass.regular : Glass.clear)
                     }
                 }
             }
@@ -164,7 +164,7 @@ extension OnboardingScreen {
                         }
                         .frame(height: 52)
                         .padding(.horizontal,24)
-                        .glassEffect(selectedAnswers[step] == index ? Glass.regular : Glass.clear)
+                        .adaptiveGlassEffect(selectedAnswers[step] == index ? Glass.regular : Glass.clear)
 
                     }
                 }
@@ -222,7 +222,7 @@ extension OnboardingScreen {
                                         .padding(.leading, 11)
                                         .padding(.trailing, 13)
                                 }
-                                .glassEffect(Glass.clear)
+                                .adaptiveGlassEffect(Glass.clear)
                         }
                     } else {
                         Color.clear
@@ -237,12 +237,12 @@ extension OnboardingScreen {
                                     Capsule()
                                         .fill(Color.white.opacity(0.1))
                                         .frame(width: 24, height: 8)
-                                        .glassEffect(Glass.clear)
+                                        .adaptiveGlassEffect(Glass.clear)
                                 } else {
                                     Circle()
                                         .fill(Color.white.opacity(0.1))
                                         .frame(width: 8, height: 8)
-                                        .glassEffect(Glass.clear)
+                                        .adaptiveGlassEffect(Glass.clear)
                                 }
                             }
                             .animation(.easeInOut(duration: 0.3), value: step)

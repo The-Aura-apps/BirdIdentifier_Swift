@@ -12,6 +12,7 @@ enum AppFont {
     case Headline1
     case Headline2
     case Headline3
+    case Headline4
     
 
     case Sub1
@@ -29,6 +30,8 @@ extension Font {
             return .system(size: 20, weight: .bold, design: .default)
         case .Headline3:
             return .system(size: 20, weight: .regular, design: .default)
+        case .Headline4:
+            return .system(size: 16, weight: .semibold, design: .default)
         case .Sub1:
             return .system(size: 16, weight: .regular, design: .default)
         case .Sub2:

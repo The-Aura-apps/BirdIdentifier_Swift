@@ -31,7 +31,7 @@ enum OnboardingData: Int,CaseIterable,Identifiable {
     
     var backgroundImage: Image {
         switch self {
-        default: Image(.onboardingBgImg)
+        default: Image(.bgImg)
                 .resizable()
         }
     }

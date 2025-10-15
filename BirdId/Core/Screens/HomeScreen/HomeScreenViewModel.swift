@@ -8,6 +8,6 @@
 import Foundation
 import Combine
 
-class HomeViewModel : ObservableObject {
+class HomeScreenViewModel : ObservableObject {
     @Published var searchText = ""
 }

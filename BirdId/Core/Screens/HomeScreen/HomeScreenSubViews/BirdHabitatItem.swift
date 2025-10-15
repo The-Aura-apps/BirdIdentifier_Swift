@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HomeHabitatItem: View {
+struct BirdHabitatItem: View {
     let birdsHabitat = ["Grasslands", "Wetlands", "Woods", "Sea", "Mountains", "Desert"]
     
     let rows = [
@@ -18,16 +18,23 @@ struct HomeHabitatItem: View {
         ScrollView(.horizontal,showsIndicators: false){
             LazyHGrid(rows: rows,spacing: 16){
                 ForEach(birdsHabitat,id: \.self){ birdsHabitat in
-                    VStack {
-                        Image(.grasslands)
-                            .resizable()
-                            .frame(width: 64,height: 64)
-                            .scaledToFit()
-                            .clipShape(Circle())
-                            .padding(.bottom,8)
-                        Text(birdsHabitat)
-                            .font(.app(.Micro1))
-                            .foregroundStyle(.text)
+                    //TODO: Add Button
+                    Button {
+                        
+                    } label: {
+                        VStack {
+                            Image(.grasslands)
+                                .resizable()
+                                .frame(width: 64,height: 64)
+                                .scaledToFit()
+                                .clipShape(Circle())
+                                .padding(.bottom,8)
+                            Text(birdsHabitat)
+                                .font(.app(.Micro1))
+                                .foregroundStyle(.text)
+                        }
+                    
+
                     }
                 }
             }
@@ -37,5 +44,5 @@ struct HomeHabitatItem: View {
 }
 
 #Preview {
-    HomeHabitatItem()
+    BirdHabitatItem()
 }

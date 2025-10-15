@@ -9,7 +9,27 @@ import SwiftUI
 
 struct HighlightsCard: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        //TODO: Add Button
+        Button {
+            
+        } label: {
+            VStack(alignment: .leading) {
+                Image(.birdHighlightsImg)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 160)
+                Text("Best secrets of attracting birds to your garen")
+                    .font(.app(.Sub1))
+                    .foregroundStyle(.text)
+                    .padding(.horizontal,24)
+                    .padding(.vertical,16)
+                
+            }
+        }
+        .frame(width: UIScreen.screenWidth - 48,height: 240)
+        .adaptiveGlassEffect(Glass.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+            
     }
 }
 
