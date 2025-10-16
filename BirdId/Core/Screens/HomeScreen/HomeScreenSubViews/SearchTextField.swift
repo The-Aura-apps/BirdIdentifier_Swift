@@ -39,7 +39,7 @@ struct SearchTextField: View {
         }
         .padding(.horizontal)
         .frame(width: UIScreen.screenWidth - 48,height: 52)
-        .adaptiveGlassEffect(Glass.clear,cornerRadius: 99)
+        .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
     }
 }
 

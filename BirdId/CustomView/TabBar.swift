@@ -26,7 +26,8 @@ struct CustomTabBar: View {
 
             }
             .frame(height: UIScreen.screenHeight / 13.3)
-            .glassEffect(Glass.clear,in: Rectangle())
+//            .glassEffect(Glass.clear,in: Rectangle())
+            .adaptiveGlassEffect(style: .clear,cornerRadius: 0)
             
             Button {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
@@ -36,7 +37,8 @@ struct CustomTabBar: View {
                 ZStack {
                     Circle()
                         .frame(width: 64, height: 64)
-                        .glassEffect(Glass.clear)
+//                        .glassEffect(Glass.clear)
+                        .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
                     
                     TabBarItem.identify.image
                         .resizable()

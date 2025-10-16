@@ -8,14 +8,33 @@
 import Foundation
 import SwiftUI
 
+enum GlassStyle {
+    case regular
+    case clear
+    case identity
+}
+
 extension View {
     @ViewBuilder
-    func adaptiveGlassEffect(_ style: Glass, cornerRadius: CGFloat = 24) -> some View {
+    func adaptiveGlassEffect(style: GlassStyle? = nil, cornerRadius: CGFloat = 24) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius)
+        
         if #available(iOS 26.0, *) {
-            self.glassEffect(style, in: RoundedRectangle(cornerRadius: cornerRadius))
+            if let style = style {
+                switch style {
+                case .regular:
+                    self.glassEffect(.regular, in: shape)
+                case .clear:
+                    self.glassEffect(.clear, in: shape)
+                case .identity:
+                    self.glassEffect(.identity, in: shape)
+                }
+            } else {
+                self.glassEffect(.regular, in: shape)
+            }
         } else {
             self.background(.ultraThinMaterial)
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .clipShape(shape)
         }
     }
 }

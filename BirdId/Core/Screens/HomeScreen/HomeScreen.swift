@@ -34,7 +34,7 @@ struct HomeScreen: View {
                             }
                             .padding(.vertical,14)
                             .padding(.horizontal,16)
-                            .adaptiveGlassEffect(Glass.clear)
+                            .adaptiveGlassEffect(style: .clear)
                         }
                         Button {
                             //TODO: Get Sound Logic
@@ -49,7 +49,7 @@ struct HomeScreen: View {
                             }
                             .padding(.vertical,14)
                             .padding(.horizontal,16)
-                            .adaptiveGlassEffect(Glass.clear)
+                            .adaptiveGlassEffect(style: .clear)
                         }
                         
                     }

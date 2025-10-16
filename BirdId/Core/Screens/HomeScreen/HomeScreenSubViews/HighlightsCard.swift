@@ -16,8 +16,8 @@ struct HighlightsCard: View {
             VStack(alignment: .leading) {
                 Image(.birdHighlightsImg)
                     .resizable()
-                    .scaledToFit()
                     .frame(height: 160)
+                
                 Text("Best secrets of attracting birds to your garen")
                     .font(.app(.Sub1))
                     .foregroundStyle(.text)
@@ -27,9 +27,8 @@ struct HighlightsCard: View {
             }
         }
         .frame(width: UIScreen.screenWidth - 48,height: 240)
-        .adaptiveGlassEffect(Glass.clear)
+        .adaptiveGlassEffect(style: .clear)
         .clipShape(RoundedRectangle(cornerRadius: 24))
-            
     }
 }
 
