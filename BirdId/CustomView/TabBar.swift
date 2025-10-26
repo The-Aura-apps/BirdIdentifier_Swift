@@ -11,7 +11,7 @@ import SwiftUI
 struct CustomTabBar: View {
     @Namespace var animation
     @Binding var selectedTab: TabBarItem
-    @State var showOfflineMode = true
+    @State private var showIdentifyScreen = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -23,24 +23,21 @@ struct CustomTabBar: View {
                 Spacer()
                 tabButton(.history)
                 Spacer()
-
             }
             .frame(height: UIScreen.screenHeight / 13.3)
-//            .glassEffect(Glass.clear,in: Rectangle())
-            .adaptiveGlassEffect(style: .clear,cornerRadius: 0)
+            .adaptiveGlassEffect(style: .clear, cornerRadius: 0)
             
             Button {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                    selectedTab = .identify
+                    showIdentifyScreen = true
                 }
             } label: {
                 ZStack {
                     Circle()
                         .frame(width: 64, height: 64)
-//                        .glassEffect(Glass.clear)
-                        .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
+                        .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
                     
-                    TabBarItem.identify.image
+                    Image(.camera)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 32, height: 32)
@@ -49,7 +46,9 @@ struct CustomTabBar: View {
             }
             .buttonStyle(.plain)
             .offset(y: -32)
-        
+            .fullScreenCover(isPresented: $showIdentifyScreen) {
+                IdentifyScreen()
+            }
         }
         .ignoresSafeArea(.keyboard)
         .frame(maxWidth: UIScreen.screenWidth, alignment: .bottom)
@@ -88,9 +87,8 @@ struct CustomTabBar: View {
 }
 
 #Preview {
-    CustomTabBar( selectedTab: .constant(.home))
+    CustomTabBar(selectedTab: .constant(.home))
 }
-
 
 
 enum TabBarItem : Hashable {

@@ -222,7 +222,7 @@ extension OnboardingScreen {
                                         .padding(.leading, 11)
                                         .padding(.trailing, 13)
                                 }
-                                .adaptiveGlassEffect(style: .clear)
+                                .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
                         }
                     } else {
                         Color.clear
