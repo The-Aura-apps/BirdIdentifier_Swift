@@ -23,6 +23,7 @@ struct HighlightsCard: View {
                     .foregroundStyle(.text)
                     .padding(.horizontal,24)
                     .padding(.vertical,16)
+                    .multilineTextAlignment(.leading)
                 
             }
         }

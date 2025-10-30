@@ -8,43 +8,6 @@
 import SwiftUI
 import PhotosUI
 
-
-enum IdentificationMode: CaseIterable {
-    case camera
-    case mic
-    case gallery
-    
-    var title: String {
-        switch self {
-        case .camera: return "Identify a bird via photo"
-        case .mic: return "Identify a bird via sound"
-        case .gallery: return "Identify a bird from gallery"
-        }
-    }
-    
-    var backgroundColor: Color {
-        switch self {
-        default: return Color(hex: "#5B765C")
-        }
-    }
-    
-    var centerButtonIcon: Image {
-        switch self {
-        case .camera: return Image(.camera)
-        case .mic: return Image(.microphone)
-        case .gallery: return Image(.galleryAdd)
-        }
-    }
-    
-    var centerButtonAction: String {
-        switch self {
-        case .camera: return "capture"
-        case .mic: return "record"
-        case .gallery: return "select"
-        }
-    }
-}
-
 struct IdentifyScreen: View {
     @StateObject private var camera = CameraController()
     @StateObject private var gallery = PhotoPickerController()
@@ -57,33 +20,43 @@ struct IdentifyScreen: View {
             
             VStack {
                 // MARK: Header & Camera Section
-                currentScreenContent()
-                .frame(height: UIScreen.screenHeight / 1.25)
-                .padding(.horizontal, 24)
-                .background(Color(hex: "#5B765C"))
+                ZStack {
+                    if camera.isConfigured {
+                        CameraLiveView(controller: camera)
+                            .ignoresSafeArea()
+                    } else {
+                        Color(hex: "#5B765C")
+                            .ignoresSafeArea()
+                    }
+                    currentScreenContent()
+                        .frame(height: UIScreen.screenHeight / 1.25)
+                        .padding(.horizontal, 24)
+                }
                 
                 
                 // MARK: Bottom Bar
-                BottomBarView(
-                    currentMode: $currentMode,
-                    gallerySelection: gallery,
-                    animation: animation,
-                    onCapturePhoto: {
-                        if (currentMode == .camera){
-                            camera.capturePhoto()
-                        }else {
-                            currentMode = .camera
+                VStack {
+                    BottomBarView(
+                        currentMode: $currentMode,
+                        gallerySelection: gallery,
+                        animation: animation,
+                        onCapturePhoto: {
+                            if (currentMode == .camera){
+                                camera.capturePhoto()
+                            }else {
+                                currentMode = .camera
+                            }
+                        },
+                        onMicRecord: {
+                            // mic recording logic
+                        },
+                        onGallery: {
+                            // gallery selection logic
                         }
-                    },
-                    onMicRecord: {
-                        // mic recording logic
-                    },
-                    onGallery: {
-                        // gallery selection logic
-                    }
-                )
-                .frame(height: UIScreen.screenHeight / 5.325)
-                .background(Color.clear)
+                    )
+                    .frame(height: UIScreen.screenHeight / 5.325)
+                    .background(Color.clear)
+                }
             }
             .ignoresSafeArea()
         }
@@ -111,25 +84,26 @@ extension IdentifyScreen {
     }
     
     private func cameraScreen() -> some View {
-        VStack {
-            HStack {
-                BackButtonView()
+
+            VStack {
+                HStack {
+                    BackButtonView()
+                    Spacer()
+                    InfoCircleButton()
+                }
+                .padding(.top, 48)
+                
                 Spacer()
-                InfoCircleButton()
+                Image(.cameraIdentify)
+                    .frame(height: UIScreen.screenHeight / 2.13)
+                    .padding(.horizontal)
+                
+                Spacer()
+                Text("Identify a bird via photo")
+                    .font(.app(.Sub2))
+                    .foregroundStyle(.text)
+                Spacer()
             }
-            .padding(.top, 48)
-            
-            Spacer()
-            Image(.cameraIdentify)
-                .frame(height: UIScreen.screenHeight / 2.13)
-                .padding(.horizontal)
-            
-            Spacer()
-            Text("Identify a bird via photo")
-                .font(.app(.Sub2))
-                .foregroundStyle(.text)
-            Spacer()
-        }
     }
     private func micScreen() -> some View {
         VStack {

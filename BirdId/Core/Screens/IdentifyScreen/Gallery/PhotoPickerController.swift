@@ -20,7 +20,6 @@ final class PhotoPickerController: ObservableObject {
         }
     }
     
-    
     // MARK: set image
     private func setImage(from selection: PhotosPickerItem?) {
         guard let selection else {return}
@@ -34,6 +33,4 @@ final class PhotoPickerController: ObservableObject {
             }
         }
     }
-    
-    
 }

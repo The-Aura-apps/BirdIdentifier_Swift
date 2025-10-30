@@ -230,6 +230,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				83C63B662E979C9C00A4DF5F /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83A8922B2E8DA1AB00337242 /* Products */;
@@ -626,6 +627,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 4.5.2;
+			};
+		};
+		83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

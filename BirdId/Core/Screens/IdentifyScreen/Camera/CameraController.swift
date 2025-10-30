@@ -19,7 +19,7 @@ final class CameraController: NSObject, ObservableObject {
     private let session = AVCaptureSession()
     private let output = AVCapturePhotoOutput()
     private var deviceInput: AVCaptureDeviceInput?
-    private var isConfigured = false
+    @Published var isConfigured = false
 
     override init() {
         super.init()
