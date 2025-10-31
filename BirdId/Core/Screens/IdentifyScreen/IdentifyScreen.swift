@@ -11,6 +11,7 @@ import PhotosUI
 struct IdentifyScreen: View {
     @StateObject private var camera = CameraController()
     @StateObject private var gallery = PhotoPickerController()
+    @StateObject private var audio = AudioRecorderController()
     @Namespace private var animation
     @State private var currentMode: IdentificationMode = .camera
     
@@ -21,13 +22,20 @@ struct IdentifyScreen: View {
             VStack {
                 // MARK: Header & Camera Section
                 ZStack {
-                    if camera.isConfigured {
-                        CameraLiveView(controller: camera)
-                            .ignoresSafeArea()
-                    } else {
-                        Color(hex: "#5B765C")
+                    Color(hex: "#5B765C")
+                        .ignoresSafeArea()
+                if camera.isConfigured {
+                    CameraLiveView(controller: camera)
+                        .ignoresSafeArea()
+                }
+                    
+                    if let captured = camera.capturedImage {
+                        Image(uiImage: captured)
+                            .resizable()
+                            .scaledToFit()
                             .ignoresSafeArea()
                     }
+                    
                     currentScreenContent()
                         .frame(height: UIScreen.screenHeight / 1.25)
                         .padding(.horizontal, 24)
@@ -39,6 +47,7 @@ struct IdentifyScreen: View {
                     BottomBarView(
                         currentMode: $currentMode,
                         gallerySelection: gallery,
+                        audio: audio,
                         animation: animation,
                         onCapturePhoto: {
                             if (currentMode == .camera){
@@ -48,7 +57,11 @@ struct IdentifyScreen: View {
                             }
                         },
                         onMicRecord: {
-                            // mic recording logic
+                            if audio.recording {
+                                audio.stopRecording()
+                            } else {
+                                audio.startRecording()
+                            }
                         },
                         onGallery: {
                             // gallery selection logic
@@ -128,6 +141,37 @@ extension IdentifyScreen {
                 .foregroundStyle(.text)
                 .multilineTextAlignment(.center)
                 .padding(.vertical,24)
+            
+            if let fileURL = audio.recordedFileURL {
+                VStack(spacing: 12) {
+                    Text("🎙 Last Recording:")
+                        .font(.app(.Sub2))
+                        .foregroundStyle(.text)
+                    
+                    Text(fileURL.lastPathComponent)
+                        .font(.app(.Sub2))
+                        .foregroundStyle(.gray)
+                    
+                    HStack(spacing: 24) {
+                        Button {
+                            if audio.playing {
+                                audio.stopPlayback()
+                            } else {
+                                audio.playRecording()
+                            }
+                        } label: {
+                            Image(systemName: audio.playing ? "stop.circle.fill" : "play.circle.fill")
+                                .resizable()
+                                .frame(width: 48, height: 48)
+                                .foregroundStyle(audio.playing ? .red : .green)
+                        }
+                    }
+                    .padding(.top, 8)
+                }
+                .padding()
+                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
+            }
+
         }
     }
 }
@@ -136,6 +180,7 @@ extension IdentifyScreen {
 struct BottomBarView: View {
     @Binding var currentMode: IdentificationMode
     @ObservedObject var gallerySelection: PhotoPickerController
+    @ObservedObject var audio: AudioRecorderController
     let animation: Namespace.ID
     let onCapturePhoto: () -> Void
     let onMicRecord: () -> Void
@@ -175,7 +220,7 @@ struct BottomBarView: View {
                             .fill(Color.white.opacity(0.1))
                             .frame(width: 72, height: 72)
                             .overlay {
-                                Image(.microphone)
+                                Image(audio.recording ? .record : .microphone)
                                     .frame(width: 32, height: 32)
                             }
                             .adaptiveGlassEffect(style: .clear, cornerRadius: 99)

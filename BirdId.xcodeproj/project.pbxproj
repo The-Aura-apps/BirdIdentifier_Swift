@@ -437,7 +437,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BirdId/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "We need take photos to add to our app!";
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera access to identify birds.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "You need to allow Microphone in order to record";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access your photos  to add!";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -474,7 +475,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BirdId/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "We need take photos to add to our app!";
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera access to identify birds.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "You need to allow Microphone in order to record";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access your photos  to add!";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
