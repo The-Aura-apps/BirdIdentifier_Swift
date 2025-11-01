@@ -33,8 +33,17 @@ extension View {
                 self.glassEffect(.regular, in: shape)
             }
         } else {
-            self.background(.ultraThinMaterial)
-                .clipShape(shape)
+            if let style = style {
+                switch style {
+                case .regular:
+                    self.background(.ultraThickMaterial,in: shape)
+                case .clear:
+                    self.background(.ultraThinMaterial,in: shape)
+                default: self.background(.ultraThinMaterial,in: shape)
+                }
+            } else {
+                self.background(.ultraThinMaterial,in: shape)
+            }
         }
     }
 }

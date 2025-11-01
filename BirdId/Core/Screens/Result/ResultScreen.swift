@@ -8,26 +8,31 @@
 import SwiftUI
 
 struct ResultScreen: View {
+    
+    @State private var selectedTab: TabBarItem = .home
+    
     var body: some View {
-        ZStack {
-            Image(.bgImg)
-                .resizable()
-                .ignoresSafeArea()
-            
-            VStack {
-                makeBirdImageSection()
+            ZStack {
+                Image(.bgImg)
+                    .resizable()
+                    .ignoresSafeArea()
                 
-                Spacer()
+                    VStack {
+                        makeBirdImageSection()
+                        ScrollView {
+                            BirdInfoItem()
+                        }
+                        CustomTabBar(selectedTab: $selectedTab,showIdentifyButton: .constant(false))
+                }
             }
-
+            .ignoresSafeArea(edges: .bottom)
         }
-    }
 }
 
 extension ResultScreen{
     
     func makeBirdImageSection() -> some View {
-        ZStack (alignment: .top){
+        ZStack (alignment: .top) {
             Image(.textResultBird)
                 .resizable()
                 .mask(
@@ -107,6 +112,7 @@ extension ResultScreen{
 
         }
         .frame(height: UIScreen.screenHeight / 2.42)
+        .padding(.bottom,24)
     }
     
 }

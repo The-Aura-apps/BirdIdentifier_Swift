@@ -9,7 +9,6 @@ import SwiftUI
 
 struct MainScreen: View {
     @State private var selectedTab: TabBarItem = .home
-
     var body: some View {
         ZStack {
             Image(.bgImg)
@@ -33,7 +32,7 @@ struct MainScreen: View {
                             .frame(maxHeight: UIScreen.screenHeight)
                     }
                 }
-                CustomTabBar(selectedTab: $selectedTab)
+                CustomTabBar(selectedTab: $selectedTab, showIdentifyButton: .constant(true))
             }
         }
         .ignoresSafeArea(edges: .bottom)
