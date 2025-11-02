@@ -36,7 +36,7 @@ extension View {
             if let style = style {
                 switch style {
                 case .regular:
-                    self.background(.ultraThickMaterial,in: shape)
+                    self.background(.ultraThickMaterial.opacity(0.1),in: shape)
                 case .clear:
                     self.background(.ultraThinMaterial,in: shape)
                 default: self.background(.ultraThinMaterial,in: shape)

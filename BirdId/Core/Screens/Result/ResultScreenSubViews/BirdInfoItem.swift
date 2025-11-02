@@ -42,7 +42,7 @@ struct BirdInfoItem: View {
                         
                     }
                 }
-                .padding(.leading,24)
+                .padding(.horizontal,24)
                 .frame(height: 42)
             }
             .padding(.bottom,24)
