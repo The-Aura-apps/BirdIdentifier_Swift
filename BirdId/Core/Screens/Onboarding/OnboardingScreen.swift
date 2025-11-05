@@ -31,26 +31,29 @@ extension OnboardingScreen {
     @ViewBuilder
     private func currentStepContent() -> some View {
         
-        Group{
-            switch step {
-            case .firstPage:
-                firstStep()
-            case .secondPage:
-                secondStep()
-            case .thirdPage:
-                thirdStep()
-            case .forthPage:
-                forthStep()
+        VStack {
+            onboardingAppBar()
+                .padding(.bottom,40)
+            Group{
+                switch step {
+                case .firstPage:
+                    firstStep()
+                case .secondPage:
+                    secondStep()
+                case .thirdPage:
+                    thirdStep()
+                case .forthPage:
+                    forthStep()
+                }
             }
+            .transition(.opacity)
+            .animation(.easeInOut(duration: 0.3), value: step)
         }
-        .transition(.opacity)
-        .animation(.easeInOut(duration: 0.3), value: step)
+        .padding(.horizontal,24)
     }
     
     private func firstStep() -> some View {
         VStack{
-            
-            onboardingAppBar()
             Spacer()
             Image(.onboardingLogo)
                 .frame(height: 324)
@@ -75,7 +78,10 @@ extension OnboardingScreen {
             Spacer()
             
             Button {
-                step = step.next()
+                withAnimation {
+                    step = step.next()
+                }
+                
             } label: {
                 HStack {
                     Text("Get Started")
@@ -87,13 +93,10 @@ extension OnboardingScreen {
             }
             Spacer()
         }
-        .padding(.horizontal,24)
     }
     
     private func secondStep() -> some View {
         VStack{
-            onboardingAppBar()
-                .padding(.bottom,40)
             HStack {
                 Text(step.questions)
                     .font(.app(.Headline2))
@@ -106,7 +109,9 @@ extension OnboardingScreen {
                 ForEach(0..<step.answer.count,id: \.self) { index in
                     Button {
                         selectedAnswers[step] = index
-                        step = step.next()
+                        withAnimation {
+                            step = step.next()
+                        }
                     } label: {
                         HStack {
                             if let image = step.answer[index].0 {
@@ -129,13 +134,10 @@ extension OnboardingScreen {
             
             Spacer()
         }
-        .padding(.horizontal,24)
     }
     
     private func thirdStep() -> some View {
         VStack{
-            onboardingAppBar()
-                .padding(.bottom,40)
             HStack {
                 Text(step.questions)
                     .font(.app(.Headline2))
@@ -148,7 +150,9 @@ extension OnboardingScreen {
                 ForEach(0..<step.answer.count,id: \.self) { index in
                     Button {
                         selectedAnswers[step] = index
-                        step = step.next()
+                        withAnimation {
+                            step = step.next()
+                        }
                     } label: {
                         HStack {
                             if let image = step.answer[index].0 {
@@ -172,13 +176,10 @@ extension OnboardingScreen {
             
             Spacer()
         }
-        .padding(.horizontal,24)
     }
     
     private func forthStep() -> some View {
         VStack{
-            onboardingAppBar()
-                .padding(.bottom,40)
             Image(.onboardingLogo)
                 .frame(height: 324)
                 .padding(.bottom,40)
@@ -199,7 +200,6 @@ extension OnboardingScreen {
                 .frame(width: 60, height: 60)
             Spacer()
         }
-        .padding(.horizontal,24)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
@@ -212,7 +212,9 @@ extension OnboardingScreen {
         HStack(alignment: .center){
             if step != .firstPage {
                         Button {
-                            step = step.back()
+                            withAnimation {
+                                step = step.back()
+                            }
                         } label: {
                             Circle()
                                 .fill(Color.white.opacity(0.1))
@@ -245,7 +247,7 @@ extension OnboardingScreen {
                                         .adaptiveGlassEffect(style: .clear)
                                 }
                             }
-                            .animation(.easeInOut(duration: 0.3), value: step)
+                            .animation(.easeInOut, value: step)
                         }
                     }
                     .frame(maxWidth: .infinity)

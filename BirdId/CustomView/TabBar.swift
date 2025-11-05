@@ -11,59 +11,33 @@ import SwiftUI
 struct CustomTabBar: View {
     @Namespace var animation
     @Binding var selectedTab: TabBarItem
-    @State private var showIdentifyScreen = false
-    @Binding var showIdentifyButton: Bool
+//    @EnvironmentObject var coordinator: Coordinator
     var body: some View {
         ZStack(alignment: .bottom) {
             HStack {
                 Spacer()
                 tabButton(.home)
                 Spacer()
-                if showIdentifyButton{
-                    Spacer()
-                }
+                tabButton(.identify)
                 Spacer()
                 tabButton(.history)
+                Spacer()
+                tabButton(.setting)
                 Spacer()
             }
             .frame(height: UIScreen.screenHeight / 13.3)
             .adaptiveGlassEffect(style: .clear, cornerRadius: 0)
-            
-            if showIdentifyButton {
-                Button {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                        showIdentifyScreen = true
-                    }
-                } label: {
-                    ZStack {
-                        Circle()
-                            .frame(width: 64, height: 64)
-                            .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
-                        
-                        Image(.camera)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 32, height: 32)
-                            .foregroundStyle(.white)
-                    }
-                }
-                .buttonStyle(.plain)
-                .offset(y: -32)
-                .fullScreenCover(isPresented: $showIdentifyScreen) {
-                    IdentifyScreen()
-                }
-            }
         }
         .ignoresSafeArea(.keyboard)
-        .frame(maxWidth: UIScreen.screenWidth, alignment: .bottom)
-        .ignoresSafeArea(edges: .bottom)
+        .frame(maxWidth: UIScreen.screenWidth - 48, alignment: .bottom)
+        .cornerRadius(99)
     }
     
     @ViewBuilder
     private func tabButton(_ tab: TabBarItem) -> some View {
         Button {
             withAnimation(.easeInOut) {
-                selectedTab = tab
+                    selectedTab = tab
             }
         } label: {
             VStack(spacing: 4) {
@@ -71,27 +45,23 @@ struct CustomTabBar: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)
-                    .opacity(selectedTab == tab ? 1.0 : 0.5)
+                    .opacity(1.0)
                 
-                if selectedTab == tab {
-                    Rectangle()
-                        .fill(.white.opacity(0.8))
-                        .frame(width: 40, height: 2)
-                        .cornerRadius(1)
-                        .transition(.opacity)
-                } else {
-                    Rectangle()
-                        .fill(.clear)
-                        .frame(width: 40, height: 2)
-                }
+                Text(tab.label)
+                    .font(.app(.Micro1))
+                    .foregroundStyle(.text)
+                
             }
+            .padding(.horizontal,8)
+            .padding(.vertical,4)
+            .adaptiveGlassEffect(style: selectedTab == tab ? .regular : .identity,cornerRadius: 16)
         }
-        .buttonStyle(.plain)
+//        .buttonStyle(.plain)
     }
 }
 
 #Preview {
-    CustomTabBar(selectedTab: .constant(.home),showIdentifyButton: .constant(true))
+    CustomTabBar(selectedTab: .constant(.home))
 }
 
 
@@ -99,6 +69,7 @@ enum TabBarItem : Hashable {
     case home
     case identify
     case history
+    case setting
     
     
     var image : Image {
@@ -106,9 +77,24 @@ enum TabBarItem : Hashable {
         case .home:
             return Image(.home)
         case .identify:
-            return Image(.camera)
+            return Image(.identifyBird)
         case .history:
             return Image(.book)
+        case .setting:
+            return Image(.setting)
+        }
+    }
+    
+    var label : String {
+        switch self {
+        case .home:
+            return "Home"
+        case .identify:
+            return "Identify"
+        case .history:
+            return "history"
+        case .setting:
+            return "setting"
         }
     }
 }

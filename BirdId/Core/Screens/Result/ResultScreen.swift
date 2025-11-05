@@ -22,7 +22,7 @@ struct ResultScreen: View {
                         ScrollView {
                             BirdInfoItem()
                         }
-                        CustomTabBar(selectedTab: $selectedTab,showIdentifyButton: .constant(false))
+                        CustomTabBar(selectedTab: $selectedTab)
                 }
             }
             .ignoresSafeArea(edges: .bottom)

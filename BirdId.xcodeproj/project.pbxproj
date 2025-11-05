@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		832EC6ED2EBA07EB0090EAAB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 832EC6EC2EBA07EB0090EAAB /* Alamofire */; };
 		8384BD2E2E98037E0081FB14 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8384BD2D2E98037E0081FB14 /* Lottie */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8384BD2E2E98037E0081FB14 /* Lottie in Frameworks */,
+				832EC6ED2EBA07EB0090EAAB /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +147,7 @@
 			name = BirdId;
 			packageProductDependencies = (
 				8384BD2D2E98037E0081FB14 /* Lottie */,
+				832EC6EC2EBA07EB0090EAAB /* Alamofire */,
 			);
 			productName = BirdId;
 			productReference = 83A8922A2E8DA1AB00337242 /* BirdId.app */;
@@ -642,6 +645,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		832EC6EC2EBA07EB0090EAAB /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
 		8384BD2D2E98037E0081FB14 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 83C63B662E979C9C00A4DF5F /* XCRemoteSwiftPackageReference "lottie-ios" */;
