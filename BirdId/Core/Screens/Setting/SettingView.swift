@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SettingView: View {
+    
     let options: [OptionItem] = [
         OptionItem(icon: .privacyPolicy, title: "Privacy & Policy",url: URL(string: "https://www.google.com")!),
         OptionItem(icon: .termsOfUse, title: "Terms of Use",url: URL(string: "https://www.google.com")!),
@@ -27,37 +28,18 @@ struct SettingView: View {
                 }
                 .padding(.vertical,24)
                 
+                //MARK: Poster Section
+                //TODO: ...
                 premiumPosterSection()
                 
-                VStack(spacing: 16) {
-                    ForEach(options) { option in
-                        Button(action: {
-                            //MARK: open links
-                            UIApplication.shared.open(option.url)
-                        }, label: {
-                            HStack {
-                                Image(uiImage: option.icon)
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                    .padding(.trailing, 12)
-                                Text(option.title)
-                                    .font(.app(.Headline4))
-                                    .foregroundStyle(.text)
-                                Spacer()
-                                Image(.squareTopDown)
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                            }
-                            .padding(.all, 24)
-                            .frame(width: UIScreen.screenWidth - 48)
-                            .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
-                        })
-//                        .buttonStyle(PlainButtonStyle())
-                    }
-                }
+                //MARK: Links Section
+                //TODO: ...
+                linksSection()
+                
                 Spacer()
             }
             .padding(.horizontal,24)
+
         }
     }
 }
@@ -102,10 +84,42 @@ extension SettingView {
                     Spacer()
                 }
                 .padding(.horizontal,24)
-                .adaptiveGlassEffect(style: .clear)
+                .ifAvailable{ view in
+                    view.adaptiveGlassEffect(style: .clear)
+                }
             }
             .padding(.bottom,24)
     }
+    
+    func linksSection() -> some View {
+        VStack(spacing: 16) {
+            ForEach(options) { option in
+                Button(action: {
+                    //MARK: open links
+                    UIApplication.shared.open(option.url)
+                }, label: {
+                    HStack {
+                        Image(uiImage: option.icon)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                            .padding(.trailing, 12)
+                        Text(option.title)
+                            .font(.app(.Headline4))
+                            .foregroundStyle(.text)
+                        Spacer()
+                        Image(.squareTopDown)
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                    }
+                    .padding(.all, 24)
+                    .frame(width: UIScreen.screenWidth - 48)
+                    .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
+                })
+//                        .buttonStyle(PlainButtonStyle())
+            }
+        }
+    }
+    
 }
 
 

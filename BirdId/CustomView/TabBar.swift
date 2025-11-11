@@ -56,7 +56,6 @@ struct CustomTabBar: View {
             .padding(.vertical,4)
             .adaptiveGlassEffect(style: selectedTab == tab ? .regular : .identity,cornerRadius: 16)
         }
-//        .buttonStyle(.plain)
     }
 }
 

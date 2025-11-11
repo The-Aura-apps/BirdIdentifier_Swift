@@ -85,8 +85,8 @@ struct HomeScreen: View {
                                 .padding(.bottom,16)
                         }
                     }
-                    
-                    
+                    .padding(.bottom, UIScreen.screenHeight / 13.3)
+                    .padding(.bottom, 24)
                 }
             }
 

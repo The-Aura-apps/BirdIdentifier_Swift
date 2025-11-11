@@ -28,7 +28,7 @@ struct MainScreen: View {
                                 .tag(TabBarItem.identify)
                                 .frame(maxHeight: UIScreen.screenHeight)
                         case .history:
-                            Text("History Screen")
+                            HistoryScreen()
                                 .tag(TabBarItem.history)
                                 .frame(maxHeight: UIScreen.screenHeight)
                         case .setting:

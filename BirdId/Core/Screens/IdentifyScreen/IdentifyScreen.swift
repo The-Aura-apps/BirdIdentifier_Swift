@@ -18,8 +18,13 @@ struct IdentifyScreen: View {
     
     var body: some View {
         ZStack {
-            Color(hex: "#5B765C")
-                .ignoresSafeArea()
+            if camera.isConfigured && currentMode == .camera{
+                CameraLiveView(controller: camera)
+                    .ignoresSafeArea()
+            } else {
+                Color(hex: "#5B765C")
+                    .ignoresSafeArea()
+            }
             
             VStack {
                 // MARK: Header & Camera Section
@@ -27,11 +32,6 @@ struct IdentifyScreen: View {
                     VStack{
                         HStack {
                             IdentifyBackButton(selectedTab: $selectedTab)
-//                            Button(action: {
-//                                selectedTab = .home
-//                            }, label: {
-//                                BackButtonView()
-//                            })
                             Spacer()
                             InfoCircleButton()
                         }
@@ -40,22 +40,8 @@ struct IdentifyScreen: View {
                         Spacer()
                     }
                     
-                    
                     // MARK: Bottom Bar
                     VStack {
-                        Spacer()
-                        if camera.isConfigured {
-                            CameraLiveView(controller: camera)
-                                .ignoresSafeArea()
-                        }
-                            
-                            if let captured = camera.capturedImage {
-                                Image(uiImage: captured)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .ignoresSafeArea()
-                            }
-                            
                         VStack {
                             Spacer()
                             currentScreenContent()
@@ -68,15 +54,21 @@ struct IdentifyScreen: View {
                             animation: animation,
                             onCapturePhoto: {
                                 if (currentMode == .camera){
+                                    print("🛑 stopRecording() called")
+                                    audio.stopRecording()
                                     camera.capturePhoto()
-                                }else {
+                                } else {
+                                    print("🛑 stopRecording() called")
+                                    audio.stopRecording()
                                     currentMode = .camera
                                 }
                             },
                             onMicRecord: {
                                 if audio.recording {
+                                    print("🛑 stopRecording() called")
                                     audio.stopRecording()
                                 } else {
+                                    print("🎙 startRecording() called")
                                     audio.startRecording()
                                 }
                             },
@@ -89,10 +81,13 @@ struct IdentifyScreen: View {
                     }
                 }
             }
+            
+            .padding(.top)
             .ignoresSafeArea()
         }
         .onDisappear {
-            camera.stop()
+            if camera.isConfigured { camera.stop() }
+            if audio.recording { audio.stopRecording() }
         }
     }
     
@@ -120,8 +115,6 @@ extension IdentifyScreen {
                 Spacer()
                 Image(.cameraIdentify)
                     .frame(height: UIScreen.screenHeight / 2.13)
-//                    .padding()
-                
                 Spacer()
                 Text("Identify a bird via photo")
                     .font(.app(.Sub2))
@@ -131,53 +124,53 @@ extension IdentifyScreen {
     private func micScreen() -> some View {
         VStack {
             Spacer()
-            LottieView(animationName: "VoiceVisualization",color: UIColor.white)
+            LottieView(animationName: "VoiceVisualization",animationSpeed: audio.recording ? 1.0 : 0, color: UIColor.white)
+                .id(audio.recording)
                 .foregroundStyle(.text)
                 .frame(height: UIScreen.screenHeight / 2.13)
-//            Spacer()
-            Text("00.00.0")
+                .animation(.easeIn(duration: 0.3), value: audio.recording)
+            Text(formatTime(audio.recordingDuration))
                 .font(.app(.Sub2))
                 .foregroundStyle(.text)
                 .padding(.vertical,4)
                 .padding(.horizontal,16)
                 .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
             
-            Text("Tap the button below to start\n Recording")
+            Text(audio.recording ?  audio.recordingDuration < 5 ? "Pls record at least 5 seconds" : "Tap the button below to upload the recording" : "Tap the button below to start Recording")
                 .font(.app(.Sub2))
                 .foregroundStyle(.text)
                 .multilineTextAlignment(.center)
-//                .padding(.vertical,24)
+                .animation(.easeIn(duration: 0.3), value: audio.recording)
             
-//            if let fileURL = audio.recordedFileURL {
-//                VStack(spacing: 12) {
-//                    Text("🎙 Last Recording:")
-//                        .font(.app(.Sub2))
-//                        .foregroundStyle(.text)
-//                    
-//                    Text(fileURL.lastPathComponent)
-//                        .font(.app(.Sub2))
-//                        .foregroundStyle(.gray)
-//                    
-//                    HStack(spacing: 24) {
-//                        Button {
-//                            if audio.playing {
-//                                audio.stopPlayback()
-//                            } else {
-//                                audio.playRecording()
-//                            }
-//                        } label: {
-//                            Image(systemName: audio.playing ? "stop.circle.fill" : "play.circle.fill")
-//                                .resizable()
-//                                .frame(width: 48, height: 48)
-//                                .foregroundStyle(audio.playing ? .red : .green)
-//                        }
-//                    }
-//                    .padding(.top, 8)
-//                }
-//                .padding()
-//                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
-//            }
-
+            if let fileURL = audio.recordedFileURL, !audio.recording {
+                VStack {
+                    Text("Last Recording:")
+                        .font(.app(.Sub2))
+                        .foregroundStyle(.text)
+                    
+                    HStack {
+                        Button {
+                            if audio.playing {
+                                audio.stopPlayback()
+                            } else {
+                                audio.playRecording()
+                            }
+                        } label: {
+                            Image(systemName: audio.playing ? "stop.circle.fill" : "play.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(audio.playing ? .red : .green)
+                        }
+                        
+                        Text(audio.playing ? "Playing..." : "Tap to play")
+                            .font(.app(.Sub2))
+                            .foregroundStyle(.text)
+                    }
+                }
+                .padding()
+                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
+                .transition(.opacity)
+            }
         }
     }
 }
@@ -219,21 +212,21 @@ struct BottomBarView: View {
                             .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
                     }
                     .matchedGeometryEffect(id: "camera", in: animation)
-                } else if currentMode == .mic ||  currentMode == .gallery{
-                    // Microphone in center
+                } else if currentMode == .mic {
                     Button(action: onMicRecord) {
                         Circle()
                             .fill(Color.white.opacity(0.1))
                             .frame(width: 72, height: 72)
                             .overlay {
                                 Image(audio.recording ? .record : .microphone)
+                                    .resizable()
                                     .frame(width: 32, height: 32)
                             }
                             .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
                     }
-                    .matchedGeometryEffect(id: "mic", in: animation)
+                    .id(audio.recording)
+                    .matchedGeometryEffect(id: "micButton", in: animation)
                 }
-                
                 Spacer()
                 
                 if currentMode == .camera ||  currentMode == .gallery{
@@ -251,6 +244,8 @@ struct BottomBarView: View {
                 } else if currentMode == .mic ||  currentMode == .gallery{
                     Button(action: {
                         withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
+                            print("🛑 stopRecording() called")
+                            audio.stopRecording()
                             currentMode = .camera
                         }
                     }) {
