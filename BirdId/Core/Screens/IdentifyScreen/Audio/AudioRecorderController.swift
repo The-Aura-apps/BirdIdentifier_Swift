@@ -12,7 +12,6 @@ import AVFoundation
 
 class AudioRecorderController: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
-//    let objectWillChange = PassthroughSubject<AudioRecorderController, Never>()
     var audioRecorder: AVAudioRecorder?
     var audioPlayer: AVAudioPlayer?
     var recordingTimer: Timer?
@@ -63,8 +62,6 @@ class AudioRecorderController: NSObject, ObservableObject, AVAudioPlayerDelegate
         do {
             audioRecorder = try AVAudioRecorder(url: fileURL, settings: settings)
             audioRecorder?.record()
-//            recording = true
-//            recordedFileURL = fileURL
             
             recordingDuration = 0
             recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
@@ -97,7 +94,11 @@ class AudioRecorderController: NSObject, ObservableObject, AVAudioPlayerDelegate
         guard let fileURL = recordedFileURL else { return }
         
         do {
+            try AVAudioSession.sharedInstance().setCategory(.playback)
+            try AVAudioSession.sharedInstance().setActive(true)
+            
             audioPlayer = try AVAudioPlayer(contentsOf: fileURL)
+            audioPlayer?.volume = 1.0
             audioPlayer?.play()
             
             DispatchQueue.main.async {
@@ -108,7 +109,6 @@ class AudioRecorderController: NSObject, ObservableObject, AVAudioPlayerDelegate
         } catch {
             print("Playback failed: \(error)")
         }
-        
     }
     
     func stopPlayback() {

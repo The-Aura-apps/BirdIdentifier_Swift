@@ -9,49 +9,48 @@ import SwiftUI
 import UIKit
 import AVFoundation
 
-struct CameraLiveView: UIViewRepresentable {
+struct CameraLiveView: UIViewControllerRepresentable {
     @ObservedObject var controller: CameraController
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator()
+    
+    func makeUIViewController(context: Context) -> CameraViewController {
+        let viewController = CameraViewController()
+        viewController.controller = controller
+        return viewController
     }
+    
+    func updateUIViewController(_ uiViewController: CameraViewController, context: Context) {
+        // Handle updates if needed
+    }
+}
 
-    func makeUIView(context: Context) -> UIView {
-        let view = UIView(frame: .zero)
-        
-        // ساخت preview layer و اضافه کردن به view
-        let previewLayer = controller.makePreviewLayer()
+class CameraViewController: UIViewController {
+    var controller: CameraController!
+    private var previewLayer: AVCaptureVideoPreviewLayer!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupPreviewLayer()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer?.frame = view.bounds
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Start camera when view appears
+        if controller.isConfigured {
+            controller.start()
+        }
+    }
+    
+    private func setupPreviewLayer() {
+        previewLayer = AVCaptureVideoPreviewLayer(session: controller.session)
         previewLayer.videoGravity = .resizeAspectFill
+        previewLayer.frame = view.bounds
+        previewLayer.connection?.videoOrientation = .portrait
+        
         view.layer.addSublayer(previewLayer)
-        
-        // ذخیره previewLayer در coordinator برای updateUIView
-        context.coordinator.previewLayer = previewLayer
-        
-        return view
-    }
-
-    func updateUIView(_ uiView: UIView, context: Context) {
-        // سینک کردن اندازه preview layer با UIView
-        DispatchQueue.main.async {
-            context.coordinator.previewLayer?.frame = uiView.bounds
-        }
-        
-        // نمایش تصویر گرفته شده روی preview
-        if let image = controller.capturedImage {
-            let imageView: UIImageView
-            if let existing = uiView.subviews.first(where: { $0 is UIImageView }) as? UIImageView {
-                imageView = existing
-            } else {
-                imageView = UIImageView(frame: uiView.bounds)
-                imageView.contentMode = .scaleAspectFill
-                imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                uiView.addSubview(imageView)
-            }
-            imageView.image = image
-        }
-    }
-
-    class Coordinator {
-        var previewLayer: AVCaptureVideoPreviewLayer?
     }
 }

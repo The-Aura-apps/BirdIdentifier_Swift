@@ -54,12 +54,8 @@ struct IdentifyScreen: View {
                             animation: animation,
                             onCapturePhoto: {
                                 if (currentMode == .camera){
-                                    print("🛑 stopRecording() called")
-                                    audio.stopRecording()
                                     camera.capturePhoto()
                                 } else {
-                                    print("🛑 stopRecording() called")
-                                    audio.stopRecording()
                                     currentMode = .camera
                                 }
                             },
@@ -142,35 +138,35 @@ extension IdentifyScreen {
                 .multilineTextAlignment(.center)
                 .animation(.easeIn(duration: 0.3), value: audio.recording)
             
-            if let fileURL = audio.recordedFileURL, !audio.recording {
-                VStack {
-                    Text("Last Recording:")
-                        .font(.app(.Sub2))
-                        .foregroundStyle(.text)
-                    
-                    HStack {
-                        Button {
-                            if audio.playing {
-                                audio.stopPlayback()
-                            } else {
-                                audio.playRecording()
-                            }
-                        } label: {
-                            Image(systemName: audio.playing ? "stop.circle.fill" : "play.circle.fill")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(audio.playing ? .red : .green)
-                        }
-                        
-                        Text(audio.playing ? "Playing..." : "Tap to play")
-                            .font(.app(.Sub2))
-                            .foregroundStyle(.text)
-                    }
-                }
-                .padding()
-                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
-                .transition(.opacity)
-            }
+//            if let fileURL = audio.recordedFileURL, !audio.recording {
+//                VStack {
+//                    Text("Last Recording:")
+//                        .font(.app(.Sub2))
+//                        .foregroundStyle(.text)
+//                    
+//                    HStack {
+//                        Button {
+//                            if audio.playing {
+//                                audio.stopPlayback()
+//                            } else {
+//                                audio.playRecording()
+//                            }
+//                        } label: {
+//                            Image(systemName: audio.playing ? "stop.circle.fill" : "play.circle.fill")
+//                                .resizable()
+//                                .frame(width: 50, height: 50)
+//                                .foregroundColor(audio.playing ? .red : .green)
+//                        }
+//                        
+//                        Text(audio.playing ? "Playing..." : "Tap to play")
+//                            .font(.app(.Sub2))
+//                            .foregroundStyle(.text)
+//                    }
+//                }
+//                .padding()
+//                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
+//                .transition(.opacity)
+//            }
         }
     }
 }
