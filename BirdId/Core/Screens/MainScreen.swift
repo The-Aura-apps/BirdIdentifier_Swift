@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MainScreen: View {
     @State private var selectedTab: TabBarItem = .home
+    @State private var currentMode: IdentificationMode = .camera
     @EnvironmentObject var coordinator : Coordinator
     var body: some View {
         NavigationStack(path: $coordinator.path){
@@ -24,7 +25,7 @@ struct MainScreen: View {
                             HomeScreen()
                                 .tag(TabBarItem.home)
                         case .identify:
-                            IdentifyScreen(selectedTab: $selectedTab)
+                            IdentifyScreen(selectedTab: $selectedTab,currentMode: $currentMode)
                                 .tag(TabBarItem.identify)
                         case .history:
                             HistoryScreen()

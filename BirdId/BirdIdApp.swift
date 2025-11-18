@@ -10,11 +10,14 @@ import SwiftUI
 @main
 struct BirdIdApp: App {
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding: Bool = false
+    @StateObject var coordinator = Coordinator()
+    
     
     var body: some Scene {
         WindowGroup {
             if hasSeenOnboarding {
                 MainScreen()
+                    .environmentObject(coordinator)
             } else {
                 OnboardingScreen()
             }

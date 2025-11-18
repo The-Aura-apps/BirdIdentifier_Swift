@@ -10,6 +10,7 @@ import SwiftUI
 struct PaymentScreen: View {
     
     @State private var selectedPlan: PlanType? = .discount
+    @Environment(\.presentationMode) var presentationMode
     
     let plans: [PlanItem] = [
         PlanItem(type: .discount, title: "Yearly", price: "$199.99", discounted: "$39.99/year", badge: "-80% OFF"),
@@ -26,7 +27,19 @@ struct PaymentScreen: View {
             VStack{
                 // MARK: Header
                 HStack(){
-                    BackButtonView()
+                    Button {
+                        presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        Circle()
+                            .fill(Color.white.opacity(0.1))
+                            .frame(width: 48, height: 48)
+                            .overlay {
+                                Image(systemName: "xmark")
+                                    .padding(.all, 12)
+                                    .foregroundStyle(.text)
+                            }
+                            .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
+                    }
                     Spacer()
                 }
                 // MARK: Animation
@@ -89,6 +102,8 @@ struct PaymentScreen: View {
             }
             .padding(24)
         }
+        
+        .navigationBarBackButtonHidden(true)
 
     }
 }

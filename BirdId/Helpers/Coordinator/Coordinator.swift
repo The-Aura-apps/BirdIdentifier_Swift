@@ -11,12 +11,15 @@ import Combine
 
 
 enum Route: Hashable {
-    case IdentifyScreen
+//    case IdentifyScreen
+    case ResultScreen(birdName: String)
+    case IdentifyScreen(currentMode: IdentificationMode)
 }
 
 
 class Coordinator: ObservableObject {
     @Published var path: [Route] = []
+    @Published var identifyMode: IdentificationMode = .camera
     
     // Push a route with its model
     func push(_ route: Route) {
@@ -47,9 +50,17 @@ class Coordinator: ObservableObject {
     // Build view with model
     @ViewBuilder
     func buildView(for route: Route) -> some View {
-//        switch route {
-////        case .IdentifyScreen:
-////            IdentifyScreen(selectedTab: .constant(.identify), coordinator: self)
-//        }
+        switch route {
+            ////        case .IdentifyScreen:
+            ////            IdentifyScreen(selectedTab: .constant(.identify), coordinator: self)
+            //        }
+        case .ResultScreen(let birdName):
+            ResultScreen()
+        case .IdentifyScreen(let currentMode):
+            IdentifyScreen(selectedTab: .constant(.identify),     currentMode: Binding(
+                get: { self.identifyMode },
+                set: { self.identifyMode = $0 }
+            ))
+        }
     }
 }

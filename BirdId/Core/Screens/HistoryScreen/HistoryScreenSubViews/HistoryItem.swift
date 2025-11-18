@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HistoryItem: View {
+    @EnvironmentObject var coordinator: Coordinator
     
     let columns = [
         GridItem(.fixed(UIScreen.screenWidth / 2 - 24)),
@@ -20,7 +21,7 @@ struct HistoryItem: View {
                 ForEach(0...10,id: \.self){ birdsHabitat in
                     //TODO: Add Button
                     Button {
-                        
+                        coordinator.push(.ResultScreen(birdName: "Bird \(String(describing: index))"))
                     } label: {
                         Image(.recordPoster)
                             .resizable()
@@ -52,4 +53,5 @@ struct HistoryItem: View {
 
 #Preview {
     HistoryItem()
+        .environmentObject(Coordinator())
 }

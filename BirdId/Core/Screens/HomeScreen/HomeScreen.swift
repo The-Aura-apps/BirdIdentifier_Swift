@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeScreen: View {
+    @EnvironmentObject var coordinator: Coordinator
     @StateObject var viewModel = HomeScreenViewModel()
     var body: some View {
         ZStack{
@@ -23,6 +24,10 @@ struct HomeScreen: View {
                     HStack(spacing: 24) {
                         Button {
                             //TODO: Get Photo Logic
+                            coordinator.identifyMode = .camera
+                            coordinator.push(.IdentifyScreen(currentMode: .camera))
+                            
+                            
                         } label: {
                             HStack {
                                 Image(.camera)
@@ -38,6 +43,9 @@ struct HomeScreen: View {
                         }
                         Button {
                             //TODO: Get Sound Logic
+                            coordinator.identifyMode = .mic
+                            coordinator.push(.IdentifyScreen(currentMode: .mic))
+                            
                         } label: {
                             HStack {
                                 Image(.microphone)
@@ -91,9 +99,11 @@ struct HomeScreen: View {
             }
 
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 
 #Preview {
     HomeScreen()
+        .environmentObject(Coordinator())
 }

@@ -14,7 +14,7 @@ struct IdentifyScreen: View {
     @StateObject private var gallery = PhotoPickerController()
     @StateObject private var audio = AudioRecorderController()
     @Namespace private var animation
-    @State private var currentMode: IdentificationMode = .camera
+    @Binding var currentMode: IdentificationMode
     
     var body: some View {
         ZStack {
@@ -77,7 +77,6 @@ struct IdentifyScreen: View {
                     }
                 }
             }
-            
             .padding(.top)
             .ignoresSafeArea()
         }
@@ -85,6 +84,7 @@ struct IdentifyScreen: View {
             if camera.isConfigured { camera.stop() }
             if audio.recording { audio.stopRecording() }
         }
+        .navigationBarBackButtonHidden(true)
     }
     
 }
@@ -260,5 +260,5 @@ struct BottomBarView: View {
 }
 
 #Preview {
-    IdentifyScreen(selectedTab: .constant(.home))
+    IdentifyScreen(selectedTab: .constant(.home), currentMode: .constant(.camera))
 }

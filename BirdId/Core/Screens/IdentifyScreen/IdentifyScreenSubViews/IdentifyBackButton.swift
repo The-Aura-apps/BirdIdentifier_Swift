@@ -8,12 +8,17 @@
 import SwiftUI
 
 struct IdentifyBackButton: View {
+    @EnvironmentObject var coordinator: Coordinator
     @Binding var selectedTab: TabBarItem
     
     var body: some View {
         Button {
-            withAnimation(.easeInOut){
-                selectedTab = .home
+            withAnimation(.easeInOut) {
+                if !coordinator.path.isEmpty {
+                    coordinator.pop()
+                } else {
+                    selectedTab = .home
+                }
             }
         } label: {
             Circle()
@@ -30,4 +35,5 @@ struct IdentifyBackButton: View {
     }
 #Preview {
     IdentifyBackButton(selectedTab: .constant(.home))
+        .environmentObject(Coordinator())
 }

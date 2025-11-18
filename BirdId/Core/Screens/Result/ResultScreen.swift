@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ResultScreen: View {
     
+    
     @State private var selectedTab: TabBarItem = .home
     
     var body: some View {
@@ -26,6 +27,7 @@ struct ResultScreen: View {
                 }
             }
             .ignoresSafeArea(edges: .bottom)
+            .navigationBarBackButtonHidden(true) 
         }
 }
 
