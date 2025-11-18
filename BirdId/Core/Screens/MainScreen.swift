@@ -11,42 +11,48 @@ struct MainScreen: View {
     @State private var selectedTab: TabBarItem = .home
     @EnvironmentObject var coordinator : Coordinator
     var body: some View {
+        NavigationStack(path: $coordinator.path){
             ZStack {
                 Image(.bgImg)
                     .resizable()
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    Group {
+                    ZStack {
                         switch selectedTab {
                         case .home:
                             HomeScreen()
                                 .tag(TabBarItem.home)
-                                .frame(maxHeight: UIScreen.screenHeight)
                         case .identify:
                             IdentifyScreen(selectedTab: $selectedTab)
                                 .tag(TabBarItem.identify)
-                                .frame(maxHeight: UIScreen.screenHeight)
                         case .history:
                             HistoryScreen()
                                 .tag(TabBarItem.history)
-                                .frame(maxHeight: UIScreen.screenHeight)
                         case .setting:
                             SettingView()
                                 .tag(TabBarItem.setting)
-                                .frame(maxHeight: UIScreen.screenHeight)
+                        }
+
+
+                    }
+                }
+                .navigationDestination(for: Route.self) { route in
+                    coordinator.buildView(for: route)
+                }
+                .overlay (alignment: .bottom) {
+                    if selectedTab != .identify {
+                        VStack {
+                            Spacer()
+                            CustomTabBar(selectedTab: $selectedTab)
+                                .padding(.bottom, 24)
                         }
                     }
                 }
-                if selectedTab != .identify {
-                    VStack {
-                        Spacer()
-                        CustomTabBar(selectedTab: $selectedTab)
-                            .padding(.bottom, 24)
-                    }
-                }
+
             }
             .ignoresSafeArea(edges: .bottom)
+        }
     }
 }
 
