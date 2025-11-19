@@ -11,7 +11,7 @@ import SwiftUI
 struct CustomTabBar: View {
     @Namespace var animation
     @Binding var selectedTab: TabBarItem
-//    @EnvironmentObject var coordinator: Coordinator
+    @EnvironmentObject var coordinator: Coordinator
     var body: some View {
         ZStack(alignment: .bottom) {
             HStack {
@@ -36,9 +36,15 @@ struct CustomTabBar: View {
     @ViewBuilder
     private func tabButton(_ tab: TabBarItem) -> some View {
         Button {
-            withAnimation(.easeInOut) {
+            if !coordinator.path.isEmpty {
+                coordinator.popToRoot()
+                selectedTab = tab
+            } else {
+                withAnimation(.easeInOut) {
                     selectedTab = tab
+                }
             }
+
         } label: {
             VStack(spacing: 4) {
                 tab.image
@@ -61,6 +67,7 @@ struct CustomTabBar: View {
 
 #Preview {
     CustomTabBar(selectedTab: .constant(.home))
+        .environmentObject(Coordinator())
 }
 
 

@@ -10,7 +10,8 @@ import SwiftUI
 struct ResultScreen: View {
     
     
-    @State private var selectedTab: TabBarItem = .home
+//    @Binding var selectedTab: TabBarItem
+    @EnvironmentObject var tabManager: TabManager
     
     var body: some View {
             ZStack {
@@ -23,11 +24,22 @@ struct ResultScreen: View {
                         ScrollView {
                             BirdInfoItem()
                         }
-                        CustomTabBar(selectedTab: $selectedTab)
+                        .padding(.bottom, UIScreen.screenHeight / 13.3)
+                        .padding(.bottom, 24)
                 }
             }
+            .overlay (alignment: .bottom) {
+                    VStack {
+                        Spacer()
+                        CustomTabBar(selectedTab: $tabManager.selectedTab)
+                            .padding(.bottom, 24)
+                    }
+            }
             .ignoresSafeArea(edges: .bottom)
-            .navigationBarBackButtonHidden(true) 
+            .navigationBarBackButtonHidden(true)
+            .onAppear {
+                tabManager.selectedTab = .history
+            }
         }
 }
 

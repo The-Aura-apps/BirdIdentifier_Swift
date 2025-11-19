@@ -8,7 +8,8 @@
 import SwiftUI
 
 struct MainScreen: View {
-    @State private var selectedTab: TabBarItem = .home
+//    @State private var selectedTab: TabBarItem = .home
+    @EnvironmentObject var tabManager: TabManager
     @State private var currentMode: IdentificationMode = .camera
     @EnvironmentObject var coordinator : Coordinator
     var body: some View {
@@ -20,32 +21,35 @@ struct MainScreen: View {
                 
                 VStack(spacing: 0) {
                     ZStack {
-                        switch selectedTab {
+                        switch tabManager.selectedTab {
                         case .home:
                             HomeScreen()
+                                .environmentObject(coordinator)
                                 .tag(TabBarItem.home)
                         case .identify:
-                            IdentifyScreen(selectedTab: $selectedTab,currentMode: $currentMode)
+                            IdentifyScreen(selectedTab: $tabManager.selectedTab,currentMode: $currentMode)
+                                .environmentObject(coordinator)
                                 .tag(TabBarItem.identify)
                         case .history:
                             HistoryScreen()
+                                .environmentObject(coordinator)
                                 .tag(TabBarItem.history)
                         case .setting:
                             SettingView()
+                                .environmentObject(coordinator)
                                 .tag(TabBarItem.setting)
                         }
-
-
                     }
                 }
+                .id(tabManager.selectedTab)
                 .navigationDestination(for: Route.self) { route in
                     coordinator.buildView(for: route)
                 }
                 .overlay (alignment: .bottom) {
-                    if selectedTab != .identify {
+                    if tabManager.selectedTab != .identify {
                         VStack {
                             Spacer()
-                            CustomTabBar(selectedTab: $selectedTab)
+                            CustomTabBar(selectedTab: $tabManager.selectedTab)
                                 .padding(.bottom, 24)
                         }
                     }

@@ -13,7 +13,6 @@ struct HistoryScreen: View {
             Image(.bgImg)
                 .resizable()
                 .ignoresSafeArea()
-            ScrollView{
                 VStack{
                     HStack {
                         Text("Records")
@@ -21,13 +20,15 @@ struct HistoryScreen: View {
                             .foregroundStyle(.text)
                         Spacer()
                     }
-                    .padding(.vertical,24)
-                    Spacer()
-                    HistoryItem()
+                    .padding(.top,24)
+                    ScrollView {
+                        HistoryItem()
+                            .padding(.bottom, UIScreen.screenHeight / 13.3)
+                            .padding(.bottom, 32)
+                    }
                 }
                 .padding(.horizontal,24)
             }
-        }
         
     }
 }

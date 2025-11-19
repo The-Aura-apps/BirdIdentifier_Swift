@@ -56,11 +56,15 @@ class Coordinator: ObservableObject {
             //        }
         case .ResultScreen(let birdName):
             ResultScreen()
+            .environmentObject(self)
         case .IdentifyScreen(let currentMode):
-            IdentifyScreen(selectedTab: .constant(.identify),     currentMode: Binding(
-                get: { self.identifyMode },
-                set: { self.identifyMode = $0 }
-            ))
+            IdentifyScreen(
+                selectedTab: .constant(.identify),
+                currentMode: Binding(
+                    get: { self.identifyMode },
+                    set: { self.identifyMode = $0 }
+                ))
+            .environmentObject(self)
         }
     }
 }
