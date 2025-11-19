@@ -33,7 +33,11 @@ struct IdentifyScreen: View {
                         HStack {
                             IdentifyBackButton(selectedTab: $selectedTab)
                             Spacer()
-                            InfoCircleButton()
+                            
+                            if currentMode == .camera {
+                                InfoCircleButton()
+                            }
+
                         }
                         .padding(.top, 48)
                         .padding(.horizontal,24)
