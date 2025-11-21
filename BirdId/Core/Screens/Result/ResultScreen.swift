@@ -23,9 +23,10 @@ struct ResultScreen: View {
                         makeBirdImageSection()
                         ScrollView {
                             BirdInfoItem()
+                                .padding(.bottom, UIScreen.screenHeight / 13.3)
+                                .padding(.bottom, 24)
                         }
-                        .padding(.bottom, UIScreen.screenHeight / 13.3)
-                        .padding(.bottom, 24)
+
                 }
             }
             .overlay (alignment: .bottom) {
@@ -133,4 +134,6 @@ extension ResultScreen{
 
 #Preview {
     ResultScreen()
+        .environmentObject(TabManager())
+        .environmentObject(Coordinator())
 }

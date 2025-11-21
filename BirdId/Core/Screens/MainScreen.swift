@@ -64,4 +64,5 @@ struct MainScreen: View {
 #Preview {
     MainScreen()
         .environmentObject(Coordinator())
+        .environmentObject(TabManager())
 }

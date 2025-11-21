@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct BirdHabitatItem: View {
+    
+    @EnvironmentObject var coordinator: Coordinator
     let birdsHabitat = ["Grasslands", "Wetlands", "Woods", "Sea", "Mountains", "Desert"]
     
     let rows = [
@@ -20,7 +22,7 @@ struct BirdHabitatItem: View {
                 ForEach(birdsHabitat,id: \.self){ birdsHabitat in
                     //TODO: Add Button
                     Button {
-                        
+                        coordinator.push(.HabitatScreen(title: birdsHabitat))
                     } label: {
                         VStack {
                             Image(.grasslands)
@@ -39,10 +41,12 @@ struct BirdHabitatItem: View {
                 }
             }
             .padding(.leading,24)
+            .padding(.trailing,24)
         }
     }
 }
 
 #Preview {
     BirdHabitatItem()
+        .environmentObject(Coordinator())
 }

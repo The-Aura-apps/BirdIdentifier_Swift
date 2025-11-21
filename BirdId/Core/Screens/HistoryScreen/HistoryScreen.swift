@@ -21,7 +21,7 @@ struct HistoryScreen: View {
                         Spacer()
                     }
                     .padding(.top,24)
-                    ScrollView {
+                    ScrollView(showsIndicators: false) {
                         HistoryItem()
                             .padding(.bottom, UIScreen.screenHeight / 13.3)
                             .padding(.bottom, 32)

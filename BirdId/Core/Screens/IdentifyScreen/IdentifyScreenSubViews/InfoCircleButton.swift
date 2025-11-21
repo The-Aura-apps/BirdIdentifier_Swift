@@ -182,8 +182,8 @@ struct InfoCircleButton: View {
                 Spacer()
             }
             .padding(.horizontal,24)
-            .padding(.vertical,48)
-            .presentationBackground(Color.white)
+            .padding(.top,48)
+//            .presentationBackground(Color.white)
             .presentationDetents([.height(UIScreen.screenHeight / 1.38)])
         }
     }

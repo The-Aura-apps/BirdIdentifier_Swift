@@ -14,6 +14,8 @@ enum Route: Hashable {
 //    case IdentifyScreen
     case ResultScreen(birdName: String)
     case IdentifyScreen(currentMode: IdentificationMode)
+    case HabitatScreen(title :String)
+    case ArticleScreen(title :String)
 }
 
 
@@ -51,9 +53,6 @@ class Coordinator: ObservableObject {
     @ViewBuilder
     func buildView(for route: Route) -> some View {
         switch route {
-            ////        case .IdentifyScreen:
-            ////            IdentifyScreen(selectedTab: .constant(.identify), coordinator: self)
-            //        }
         case .ResultScreen(let birdName):
             ResultScreen()
             .environmentObject(self)
@@ -65,6 +64,12 @@ class Coordinator: ObservableObject {
                     set: { self.identifyMode = $0 }
                 ))
             .environmentObject(self)
+        case .HabitatScreen(let habitatName):
+            HabitatScreen(title: habitatName)
+                .environmentObject(self)
+        case .ArticleScreen(let title):
+            ArticleScreen()
+                .environmentObject(self)
         }
     }
 }
