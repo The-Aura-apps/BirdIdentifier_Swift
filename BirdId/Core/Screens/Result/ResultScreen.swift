@@ -11,6 +11,7 @@ struct ResultScreen: View {
     
     
 //    @Binding var selectedTab: TabBarItem
+    let observationDetail: ObservationDetailResponse
     @EnvironmentObject var tabManager: TabManager
     
     var body: some View {
@@ -22,7 +23,7 @@ struct ResultScreen: View {
                     VStack {
                         makeBirdImageSection()
                         ScrollView {
-                            BirdInfoItem()
+                            BirdInfoItem(birdDetail: observationDetail.aiResult?.result)
                                 .padding(.bottom, UIScreen.screenHeight / 13.3)
                                 .padding(.bottom, 24)
                         }
@@ -102,12 +103,14 @@ extension ResultScreen{
                 Spacer()
                 HStack {
                     VStack (alignment: .leading){
-                        Text("Bird Name")
+                        Text(observationDetail.bird?.scientificName ?? "Unknown Bird")
                             .font(.app(.Headline1))
                             .foregroundStyle(.text)
-                        Text("Parrot • Large • 30+ yea")
-                            .font(.app(.Micro1))
-                            .foregroundStyle(.text)
+                        if let bird = observationDetail.bird {
+                            Text("\(bird.taxonomy.genus) • \(bird.size.lengthCm.min, specifier: "%.0f")-\(bird.size.lengthCm.max, specifier: "%.0f")cm • \(bird.lifeExpectancyYears) yrs")
+                                .font(.app(.Micro1))
+                                .foregroundStyle(.text)
+                        }
                     }
                     Spacer()
                     HStack{
@@ -133,7 +136,7 @@ extension ResultScreen{
 }
 
 #Preview {
-    ResultScreen()
+    ResultScreen(observationDetail: .mock)
         .environmentObject(TabManager())
         .environmentObject(Coordinator())
 }

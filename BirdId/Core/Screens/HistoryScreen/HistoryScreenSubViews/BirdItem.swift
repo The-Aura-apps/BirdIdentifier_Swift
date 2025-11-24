@@ -15,13 +15,15 @@ struct HistoryItem: View {
         GridItem(.fixed(UIScreen.screenWidth / 2 - 24)),
     ]
     
+    let mockObservations: [ObservationDetailResponse] = Array(repeating: .mock, count: 11)
+    
     var body: some View {
         ScrollView(.vertical,showsIndicators: false){
             LazyVGrid(columns: columns,spacing: 16){
-                ForEach(0...10,id: \.self){ birdsHabitat in
+                ForEach(Array(mockObservations.enumerated()), id: \.offset) { index, observation in
                     //TODO: Add Button
                     Button {
-                        coordinator.push(.ResultScreen(birdName: "Bird \(String(describing: index))"))
+                        coordinator.push(.ResultScreen(observationDetail: observation))
                     } label: {
                         Image(.recordPoster)
                             .resizable()

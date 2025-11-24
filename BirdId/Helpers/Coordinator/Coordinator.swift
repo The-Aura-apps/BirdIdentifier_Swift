@@ -12,10 +12,43 @@ import Combine
 
 enum Route: Hashable {
 //    case IdentifyScreen
-    case ResultScreen(birdName: String)
+    case ResultScreen(observationDetail: ObservationDetailResponse)
     case IdentifyScreen(currentMode: IdentificationMode)
     case HabitatScreen(title :String)
     case ArticleScreen(title :String)
+    
+    // Custom Hashable implementation since ObservationDetailResponse needs to be Hashable
+    func hash(into hasher: inout Hasher) {
+        switch self {
+        case .ResultScreen(let detail):
+            hasher.combine("ResultScreen")
+            hasher.combine(detail.id)
+        case .IdentifyScreen(let mode):
+            hasher.combine("IdentifyScreen")
+            hasher.combine(mode)
+        case .HabitatScreen(let title):
+            hasher.combine("HabitatScreen")
+            hasher.combine(title)
+        case .ArticleScreen(let title):
+            hasher.combine("ArticleScreen")
+            hasher.combine(title)
+        }
+    }
+    
+    static func == (lhs: Route, rhs: Route) -> Bool {
+        switch (lhs, rhs) {
+        case (.ResultScreen(let lDetail), .ResultScreen(let rDetail)):
+            return lDetail.id == rDetail.id
+        case (.IdentifyScreen(let lMode), .IdentifyScreen(let rMode)):
+            return lMode == rMode
+        case (.HabitatScreen(let lTitle), .HabitatScreen(let rTitle)):
+            return lTitle == rTitle
+        case (.ArticleScreen(let lTitle), .ArticleScreen(let rTitle)):
+            return lTitle == rTitle
+        default:
+            return false
+        }
+    }
 }
 
 
@@ -53,8 +86,8 @@ class Coordinator: ObservableObject {
     @ViewBuilder
     func buildView(for route: Route) -> some View {
         switch route {
-        case .ResultScreen(let birdName):
-            ResultScreen()
+        case .ResultScreen(let observationDetail):
+            ResultScreen(observationDetail: observationDetail)
             .environmentObject(self)
         case .IdentifyScreen(let currentMode):
             IdentifyScreen(
