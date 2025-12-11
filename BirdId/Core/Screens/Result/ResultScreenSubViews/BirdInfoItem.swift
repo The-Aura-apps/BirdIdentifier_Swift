@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct BirdInfoItem: View {
-    let birdDetail: BirdDetail?
+    let uploadResponse: UploadResponse
+    var birdDetail: BirdDetailResponse {
+        uploadResponse.bird
+    }
     
     @State private var selectedInfo: BirdInfoType = .commonNames
     @State private var showFullDescription: Bool = false
@@ -26,7 +29,7 @@ struct BirdInfoItem: View {
                         Button(action: {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 selectedInfo = info
-                                showFullDescription = false // Reset when switching tabs
+                                showFullDescription = false
                             }
                         }, label: {
                             Text(info.title)
@@ -45,20 +48,13 @@ struct BirdInfoItem: View {
             .padding(.bottom, 24)
             
             // Content Section
-            if let birdDetail = birdDetail {
-                makeContentSection(for: selectedInfo, birdDetail: birdDetail)
-            } else {
-                Text("No bird information available")
-                    .font(.app(.Sub1))
-                    .foregroundStyle(.text.opacity(0.6))
-                    .padding(.horizontal, 24)
-            }
+            makeContentSection(for: selectedInfo)
         }
     }
     
     // MARK: - Content Builder
     @ViewBuilder
-    private func makeContentSection(for type: BirdInfoType, birdDetail: BirdDetail) -> some View {
+    private func makeContentSection(for type: BirdInfoType) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(type.title)
                 .font(.app(.Headline4))
@@ -67,67 +63,76 @@ struct BirdInfoItem: View {
             
             switch type {
             case .birdFoods:
-                VStack(alignment: .leading, spacing: 16) {
-                    if !birdDetail.birdFoods.isEmpty {
-                        VStack(alignment: .leading, spacing: 12) {
-                            ForEach(birdDetail.birdFoods, id: \.name) { food in
-                                VStack(alignment: .leading, spacing: 8) {
-                                    // Header with food name
-                                    HStack {
-                                        Text(food.name)
-                                            .font(.app(.Sub1))
-                                            .foregroundStyle(.text)
-                                            .fontWeight(.semibold)
-                                        
-                                        Spacer()
-                                    }
-                                    
-                                    // Description
-                                    Text(food.description)
-                                        .font(.app(.Sub2))
-                                        .foregroundStyle(.text.opacity(0.8))
-                                        .multilineTextAlignment(.leading)
-                                        .padding(.leading, 24)
-                                }
-                                .padding(.vertical, 12)
-                            }
+                if !birdDetail.birdFoods.isEmpty {
+                    ForEach(birdDetail.birdFoods, id: \.food.id) { wrapper in
+                        let food = wrapper.food
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(food.name)
+                                .font(.app(.Sub1))
+                                .foregroundStyle(.text)
+                                .fontWeight(.semibold)
+                            Text(food.description ?? "No additional information available")
+                                .font(.app(.Sub2))
+                                .foregroundStyle(.text.opacity(0.8))
+                                .padding(.leading, 24)
                         }
-                    } else {
-                        Text("No dietary information available")
-                            .font(.app(.Sub1))
-                            .foregroundStyle(.text.opacity(0.6))
-                            .italic()
+                        .padding(.vertical, 12)
                     }
+                } else {
+                    Text("No dietary information available")
+                        .font(.app(.Sub1))
+                        .foregroundStyle(.text.opacity(0.6))
+                        .italic()
                 }
                 
             case .habitat:
-                makeTextContent(birdDetail.habitats.joined(separator: ", "))
+                if !birdDetail.habitats.isEmpty {
+                    ForEach(birdDetail.habitats, id: \.id) { habitat in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(habitat.name)
+                                .font(.app(.Sub1))
+                                .foregroundStyle(.text)
+                                .fontWeight(.semibold)
+                            
+                            if let description = habitat.description, !description.isEmpty {
+                                Text(description)
+                                    .font(.app(.Sub2))
+                                    .foregroundStyle(.text.opacity(0.8))
+                                    .padding(.leading, 24)
+                            }
+                        }
+                        .padding(.vertical, 12)
+                    }
+                } else {
+                    Text("No habitat information available yet")
+                        .font(.app(.Sub1))
+                        .foregroundStyle(.text.opacity(0.6))
+                        .italic()
+                }
                 
             case .behavior:
-                makeExpandableText(birdDetail.behavior)
+                makeExpandableText(birdDetail.behavior  ?? "No additional information available")
                 
             case .description:
-                makeExpandableText(birdDetail.description)
+                makeExpandableText(birdDetail.description  ?? "No additional information available")
                 
             case .feeding:
                 VStack(alignment: .leading, spacing: 12) {
-                    makeExpandableText(birdDetail.feedingHabits)
-                    
+                    makeExpandableText(birdDetail.feedingHabits  ?? "No additional information available")
                     if !birdDetail.birdFoods.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Diet")
                                 .font(.app(.Headline4))
                                 .foregroundStyle(.text)
                                 .padding(.top, 8)
-                            
-                            ForEach(birdDetail.birdFoods, id: \.name) { food in
+                            ForEach(birdDetail.birdFoods, id: \.food.id) { wrapper in
+                                let food = wrapper.food
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("• \(food.name)")
                                         .font(.app(.Sub1))
                                         .foregroundStyle(.text)
                                         .fontWeight(.semibold)
-                                    
-                                    Text(food.description)
+                                    Text(food.description  ?? "No additional information available")
                                         .font(.app(.Sub2))
                                         .foregroundStyle(.text.opacity(0.8))
                                         .padding(.leading, 12)
@@ -139,30 +144,26 @@ struct BirdInfoItem: View {
                 
             case .nesting:
                 VStack(alignment: .leading, spacing: 12) {
-                    makeExpandableText(birdDetail.nestingHabits)
-                    
+                    makeExpandableText(birdDetail.nestingHabits  ?? "No additional information available")
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Eggs")
                             .font(.app(.Headline4))
                             .foregroundStyle(.text)
                             .padding(.top, 8)
-                        
-                        makeTextContent(birdDetail.eggsDescription)
+                        makeTextContent(birdDetail.eggsDescription  ?? "No additional information available")
                     }
                 }
                 
             case .distribution:
-                VStack(alignment: .leading, spacing: 12) {
-                    ForEach(birdDetail.distributions.prefix(5), id: \.month) { dist in
+                if !birdDetail.distributions.isEmpty {
+                    ForEach(birdDetail.distributions.prefix(5), id: \.id) { dist in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
                                 Text(monthName(dist.month))
                                     .font(.app(.Sub1))
                                     .foregroundStyle(.text)
                                     .fontWeight(.semibold)
-                                
                                 Spacer()
-                                
                                 Text(dist.season.capitalized)
                                     .font(.app(.Micro1))
                                     .foregroundStyle(Color(hex: "#BCB22A"))
@@ -170,99 +171,92 @@ struct BirdInfoItem: View {
                                     .padding(.vertical, 4)
                                     .adaptiveGlassEffect(style: .clear)
                             }
-                            
-                            Text(dist.location.region + ", " + dist.location.country)
+                            Text("\(dist.location.region ?? ""), \(dist.location.country)")
                                 .font(.app(.Sub2))
                                 .foregroundStyle(.text.opacity(0.8))
-                            
-                            Text(dist.description)
+                            Text(dist.description  ?? "No additional information available")
                                 .font(.app(.Sub2))
                                 .foregroundStyle(.text.opacity(0.7))
                                 .padding(.top, 2)
                         }
                         .padding(.vertical, 8)
-                        
-                        if dist.month != birdDetail.distributions.prefix(5).last?.month {
-                            Divider()
-                                .background(.text.opacity(0.2))
+                        if dist.id != birdDetail.distributions.prefix(5).last?.id {
+                            Divider().background(.text.opacity(0.2))
                         }
                     }
+                } else {
+                    Text("No distribution data available")
+                        .font(.app(.Sub1))
+                        .foregroundStyle(.text.opacity(0.6))
+                        .italic()
                 }
                 
             case .taxonomy:
+                let tax = birdDetail.taxonomy
                 VStack(alignment: .leading, spacing: 8) {
-                    makeTaxonomyRow("Genus", birdDetail.taxonomy.genus)
-                    makeTaxonomyRow("Family", birdDetail.taxonomy.family)
-                    makeTaxonomyRow("Order", birdDetail.taxonomy.order)
-                    makeTaxonomyRow("Class", birdDetail.taxonomy.class)
-                    makeTaxonomyRow("Phylum", birdDetail.taxonomy.phylum)
+                    makeTaxonomyRow("Genus", tax.genus  ?? "No additional information available")
+                    makeTaxonomyRow("Family", tax.family  ?? "No additional information available")
+                    makeTaxonomyRow("Order", tax.order  ?? "No additional information available")
+                    makeTaxonomyRow("Class", tax.`class`  ?? "No additional information available")
+                    makeTaxonomyRow("Phylum", tax.phylum ?? "No additional information available")
                 }
                 
             case .conservation:
+                let cons = birdDetail.conservationStatus
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
-                        Text(birdDetail.conservationStatus.fullName)
+                        Text(cons.fullName)
                             .font(.app(.Headline4))
-                            .foregroundStyle(conservationColor(birdDetail.conservationStatus.severityLevel))
-                        
+                            .foregroundStyle(conservationColor(cons.severityLevel ?? 0))
                         Spacer()
-                        
-                        Text(birdDetail.conservationStatus.code)
+                        Text(cons.code)
                             .font(.app(.Micro1))
                             .foregroundStyle(.text)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .adaptiveGlassEffect(style: .clear)
                     }
-                    
-                    Text("Authority: \(birdDetail.conservationStatus.authority)")
+                    Text("Authority: \(cons.authority ?? "")")
                         .font(.app(.Sub2))
                         .foregroundStyle(.text.opacity(0.8))
-                    
-                    makeTextContent(birdDetail.conservationStatus.description)
+                    makeTextContent(cons.description  ?? "No additional information available")
                 }
                 
             case .commonNames:
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(birdDetail.commonNames, id: \.name) { commonName in
-                        HStack {
-                            Text(commonName.name)
-                                .font(.app(.Sub1))
-                                .foregroundStyle(.text)
-                            
-                            Spacer()
-                            
-                            Text("\(commonName.region) (\(commonName.language))")
-                                .font(.app(.Micro1))
-                                .foregroundStyle(.text.opacity(0.7))
-                        }
-                        .padding(.vertical, 4)
+                ForEach(birdDetail.commonNames, id: \.id) { name in
+                    HStack {
+                        Text(name.name)
+                            .font(.app(.Sub1))
+                            .foregroundStyle(.text)
+                        Spacer()
+                        Text("\(name.region ?? "") (\(name.language))")
+                            .font(.app(.Micro1))
+                            .foregroundStyle(.text.opacity(0.7))
                     }
+                    .padding(.vertical, 4)
                 }
                 
             case .coolFacts:
-                VStack(alignment: .leading, spacing: 12) {
-                    ForEach(Array(birdDetail.coolFacts.enumerated()), id: \.offset) { index, fact in
-                        HStack(alignment: .top, spacing: 8) {
-                            Text("\(index + 1).")
-                                .font(.app(.Sub1))
-                                .foregroundStyle(Color(hex: "#BCB22A"))
-                                .fontWeight(.bold)
-                            
-                            Text(fact)
-                                .font(.app(.Sub1))
-                                .foregroundStyle(.text)
-                        }
+                let facts = birdDetail.coolFacts!.split(separator: "\n\n").map { String($0) }
+                ForEach(Array(facts.enumerated()), id: \.offset) { index, fact in
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("\(index + 1).")
+                            .font(.app(.Sub1))
+                            .foregroundStyle(Color(hex: "#BCB22A"))
+                            .fontWeight(.bold)
+                        Text(fact)
+                            .font(.app(.Sub1))
+                            .foregroundStyle(.text)
                     }
                 }
                 
             case .size:
+                let size = birdDetail.size
                 VStack(alignment: .leading, spacing: 12) {
-                    makeSizeRow("Length", min: birdDetail.size.lengthCm.min, max: birdDetail.size.lengthCm.max, unit: "cm")
-                    makeSizeRow("Wingspan", min: birdDetail.size.wingspanCm.min, max: birdDetail.size.wingspanCm.max, unit: "cm")
-                    makeSizeRow("Weight", min: birdDetail.size.weightGrams.min, max: birdDetail.size.weightGrams.max, unit: "g")
-                    
-                    Text("Life Expectancy: ~\(birdDetail.lifeExpectancyYears) years")
+                    makeSizeRow("Length", min: Int(size.lengthCm.min ?? 0), max: Int(size.lengthCm.max ?? 0), unit: "cm")
+                    makeSizeRow("Wingspan", min: Int(size.wingspanCm.min ?? 0), max: Int(size.wingspanCm.max ?? 0), unit: "cm")
+                    makeSizeRow("Weight", min: Int(size.weightGrams.min ?? 0), max: Int(size.weightGrams.max ?? 0), unit: "g")
+                    Text("Life Expectancy: ~\(birdDetail.lifeExpectancyYears ?? "") years")
                         .font(.app(.Sub1))
                         .foregroundStyle(.text)
                         .padding(.top, 8)
@@ -273,7 +267,6 @@ struct BirdInfoItem: View {
         .padding(.horizontal, 24)
     }
     
-    // MARK: - Helper Views
     @ViewBuilder
     private func makeExpandableText(_ text: String) -> some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -282,17 +275,12 @@ struct BirdInfoItem: View {
                 .font(.app(.Sub1))
                 .foregroundStyle(.text)
                 .multilineTextAlignment(.leading)
-            
             if text.count > 150 {
-                Button(action: {
-                    withAnimation(.easeInOut) {
-                        showFullDescription.toggle()
-                    }
-                }, label: {
-                    Text(showFullDescription ? "Less" : "Read more")
-                        .font(.app(.Headline4))
-                        .foregroundStyle(Color(hex: "#BCBCBC"))
-                })
+                Button(showFullDescription ? "Less" : "Read more") {
+                    withAnimation(.easeInOut) { showFullDescription.toggle() }
+                }
+                .font(.app(.Headline4))
+                .foregroundStyle(Color(hex: "#BCBCBC"))
                 .padding(.top, 4)
             }
         }
@@ -312,9 +300,7 @@ struct BirdInfoItem: View {
             Text(label)
                 .font(.app(.Sub1))
                 .foregroundStyle(.text.opacity(0.7))
-            
             Spacer()
-            
             Text(value)
                 .font(.app(.Sub1))
                 .foregroundStyle(.text)
@@ -324,22 +310,20 @@ struct BirdInfoItem: View {
     }
     
     @ViewBuilder
-    private func makeSizeRow(_ label: String, min: Double, max: Double, unit: String) -> some View {
+    private func makeSizeRow(_ label: String, min: Int, max: Int, unit: String) -> some View {
         HStack {
             Text(label)
                 .font(.app(.Sub1))
                 .foregroundStyle(.text)
-            
             Spacer()
-            
-            Text("\(min, specifier: "%.1f") - \(max, specifier: "%.1f") \(unit)")
+            Text("\(min) - \(max) \(unit)")
                 .font(.app(.Sub1))
                 .foregroundStyle(.text)
                 .fontWeight(.medium)
         }
     }
     
-    // MARK: - Helper Functions
+    // MARK: - Helpers
     private func monthName(_ month: Int) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM"
@@ -357,13 +341,13 @@ struct BirdInfoItem: View {
     }
 }
 
-// MARK: - Bird Info Types
+// MARK: - BirdInfoType
 enum BirdInfoType: String, CaseIterable {
     case commonNames = "Common Names"
     case size = "Size & Lifespan"
     case description = "Description"
     case habitat = "Habitat"
-    case birdFoods = "BirdFoods"
+    case birdFoods = "Bird Foods"
     case behavior = "Behavior"
     case feeding = "Feeding"
     case nesting = "Nesting"
@@ -372,61 +356,12 @@ enum BirdInfoType: String, CaseIterable {
     case conservation = "Conservation"
     case coolFacts = "Cool Facts"
     
-    
-    var title: String {
-        return self.rawValue
-    }
+    var title: String { rawValue }
 }
 
 #Preview {
     ScrollView {
-        BirdInfoItem(birdDetail: BirdDetail(
-            size: BirdSize(
-                lengthCm: SizeRange(max: 30, min: 22),
-                wingspanCm: SizeRange(max: 43, min: 34),
-                weightGrams: SizeRange(max: 100, min: 70)
-            ),
-            behavior: "Blue jays are known for their intelligence and complex social behaviors.",
-            habitats: ["Forest", "Grassland", "Scrub"],
-            taxonomy: Taxonomy(
-                id: 3,
-                phylum: "Chordata",
-                class: "Aves",
-                order: "Passeriformes",
-                family: "Corvidae",
-                genus: "Cyanocitta",
-                createdAt: nil,
-                updatedAt: nil
-            ),
-            birdFoods: [
-                BirdFood(name: "Seeds", description: "Various seeds including sunflower"),
-                BirdFood(name: "Insects", description: "Caterpillars and beetles")
-            ],
-            coolFacts: [
-                "Blue jays can mimic hawk calls",
-                "They can recognize human faces"
-            ],
-            commonNames: [
-                CommonName(name: "Blue Jay", region: "North America", language: "en")
-            ],
-            description: "A striking medium-sized bird with vibrant blue plumage.",
-            distributions: [],
-            feedingHabits: "Omnivorous with diverse diet",
-            nestingHabits: "Nests in trees using twigs and grass",
-            scientificName: "Cyanocitta cristata",
-            eggsDescription: "Pale blue eggs with brown speckles",
-            conservationStatus: ConservationStatus(
-                id: 1,
-                code: "LC",
-                fullName: "Least Concern",
-                authority: "IUCN",
-                description: "Stable population",
-                severityLevel: 3,
-                createdAt: nil,
-                updatedAt: nil
-            ),
-            lifeExpectancyYears: 7
-        ))
+        BirdInfoItem(uploadResponse: .mock) 
     }
     .background(Color(hex: "#5B765C"))
 }

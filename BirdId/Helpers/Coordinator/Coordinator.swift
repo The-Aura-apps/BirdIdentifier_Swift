@@ -12,7 +12,7 @@ import Combine
 
 enum Route: Hashable {
 //    case IdentifyScreen
-    case ResultScreen(observationDetail: ObservationDetailResponse)
+    case ResultScreen(uploadResponse: UploadResponse)
     case IdentifyScreen(currentMode: IdentificationMode)
     case HabitatScreen(title :String)
     case ArticleScreen(title :String)
@@ -22,7 +22,7 @@ enum Route: Hashable {
         switch self {
         case .ResultScreen(let detail):
             hasher.combine("ResultScreen")
-            hasher.combine(detail.id)
+            hasher.combine(detail.bird.id)
         case .IdentifyScreen(let mode):
             hasher.combine("IdentifyScreen")
             hasher.combine(mode)
@@ -38,7 +38,7 @@ enum Route: Hashable {
     static func == (lhs: Route, rhs: Route) -> Bool {
         switch (lhs, rhs) {
         case (.ResultScreen(let lDetail), .ResultScreen(let rDetail)):
-            return lDetail.id == rDetail.id
+            return lDetail.bird.id == rDetail.bird.id
         case (.IdentifyScreen(let lMode), .IdentifyScreen(let rMode)):
             return lMode == rMode
         case (.HabitatScreen(let lTitle), .HabitatScreen(let rTitle)):
@@ -86,9 +86,9 @@ class Coordinator: ObservableObject {
     @ViewBuilder
     func buildView(for route: Route) -> some View {
         switch route {
-        case .ResultScreen(let observationDetail):
-            ResultScreen(observationDetail: observationDetail)
-            .environmentObject(self)
+        case .ResultScreen(let uploadResponse):
+                    ResultScreen(uploadResponse: uploadResponse)
+                        .environmentObject(self)
         case .IdentifyScreen(let currentMode):
             IdentifyScreen(
                 selectedTab: .constant(.identify),

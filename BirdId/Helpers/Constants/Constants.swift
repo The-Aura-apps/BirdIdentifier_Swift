@@ -16,6 +16,6 @@ struct Constants{
     //MARK: URLs
     struct Urls {
         static let uploads = "\(baseUrl)/uploads"
-        static let observations = "\(baseUrl)/observations/"
+//        static let observations = "\(baseUrl)/observations/"
     }
 }

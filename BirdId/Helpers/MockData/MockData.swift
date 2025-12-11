@@ -7,127 +7,144 @@
 
 import Foundation
 
-// MARK: - Mock Data Extension
-extension ObservationDetailResponse {
-    static var mock: ObservationDetailResponse {
-        ObservationDetailResponse(
-            id: "27f36cb5-1e4e-4278-beb2-d2d53ec0f00e",
-            deviceId: "11111",
-            type: "image",
-            status: .completed,
-            uploadId: 1,
-            birdId: 3,
-            aiResult: AIResult(
-                result: BirdDetail.mock,
-                status: "identified",
-                confidence: 0.9
+// MARK: - Mock Extensions
+extension BirdDetailResponse {
+    static var mock: BirdDetailResponse {
+        BirdDetailResponse(
+            id: 14,
+            scientificName: "Branta canadensis",
+            description: "Branta canadensis, commonly known as the Canada Goose, is a large waterfowl characterized by its long neck, black head, and white chinstrap...",
+            behavior: "Canada Geese are highly social birds, often seen in large flocks, especially during migration...",
+            nestingHabits: "Nesting typically occurs from March to June, with females selecting sites near water sources...",
+            feedingHabits: "Canada Geese are primarily herbivorous, feeding on a variety of grasses, grains, and aquatic plants...",
+            eggsDescription: "The eggs of the Canada Goose are typically oval-shaped, measuring approximately 7.5 to 9.0 cm in length...",
+            coolFacts: "Canada Geese are known for their impressive migratory patterns...\n\nThey have a unique adaptation of flying in a V-formation...",
+            lifeExpectancyYears: "10.0",
+            size: Size(
+                lengthCm: RangeValue(max: 110, min: 75),
+                wingspanCm: RangeValue(max: 185, min: 150),
+                weightGrams: RangeValue(max: 6000, min: 2500)
             ),
-            confidence: "0.9000",
-            errorMessage: nil,
-            createdAt: "2025-11-24T09:26:54.457Z",
-            updatedAt: "2025-11-24T09:27:30.412Z",
-            bird: Bird.mock
-        )
-    }
-}
-
-extension BirdDetail {
-    static var mock: BirdDetail {
-        BirdDetail(
-            size: BirdSize(
-                lengthCm: SizeRange(max: 30, min: 22),
-                wingspanCm: SizeRange(max: 43, min: 34),
-                weightGrams: SizeRange(max: 100, min: 70)
-            ),
-            behavior: "Blue jays are known for their intelligence and complex social behaviors.",
-            habitats: ["Forest", "Grassland", "Scrub"],
-            taxonomy: Taxonomy.mock,
-            birdFoods: [
-                BirdFood(name: "Seeds", description: "Various seeds including sunflower"),
-                BirdFood(name: "Insects", description: "Caterpillars and beetles")
-            ],
-            coolFacts: [
-                "Blue jays can mimic hawk calls",
-                "They can recognize human faces"
-            ],
             commonNames: [
-                CommonName(name: "Blue Jay", region: "North America", language: "en")
+                CommonName(id: 39, name: "Canada Goose", language: "en", region: "North America", createdAt: "", updatedAt: ""),
+                CommonName(id: 40, name: "Bernache du Canada", language: "fr", region: "Canada", createdAt: "", updatedAt: ""),
+                CommonName(id: 41, name: "Ganso canadiense", language: "es", region: "Mexico", createdAt: "", updatedAt: "")
             ],
-            description: "A striking medium-sized bird with vibrant blue plumage.",
+            taxonomy: Taxonomy(
+                id: 12,
+                phylum: "Chordata",
+                class: "Aves",
+                order: "Anseriformes",
+                family: "Anatidae",
+                genus: "Branta",
+                createdAt: "",
+                updatedAt: ""
+            ),
+            conservationStatus: ConservationStatus(
+                id: 1,
+                code: "LC",
+                fullName: "Least Concern",
+                description: "The Greater Flamingo is currently classified as Least Concern due to its wide distribution and stable populations...",
+                severityLevel: 3,
+                authority: "IUCN",
+                createdAt: "",
+                updatedAt: ""
+            ),
+            habitats: [
+                BirdHabitat(id: 1, name: "Wetlands", description: "Wetland habitats include marshes, swamps, and bogs."),
+                BirdHabitat(id: 2, name: "Grasslands", description: "Open grassland areas with scattered trees.")
+            ],
+            birdFoods: [
+                BirdFoodWrapper(id: 25, isActive: true, createdAt: "", updatedAt: "",
+                               food: Food(id: 15, name: "Aquatic Plants", description: "They forage on submerged and emergent aquatic vegetation...", imageStorageKey: nil)),
+                BirdFoodWrapper(id: 23, isActive: true, createdAt: "", updatedAt: "",
+                               food: Food(id: 14, name: "Grasses", description: "Canada Geese primarily feed on various species of grasses...", imageStorageKey: nil)),
+                BirdFoodWrapper(id: 24, isActive: true, createdAt: "", updatedAt: "",
+                               food: Food(id: 10, name: "Grains", description: "Commonly feed on grains like corn, wheat, and rice...", imageStorageKey: nil))
+            ],
             distributions: [
                 Distribution(
-                    month: 1,
-                    season: "non-breeding",
-                    location: Location(
-                        region: "Eastern regions",
-                        country: "United States",
-                        coordinates: Coordinates(lat: 39, lng: -95)
-                    ),
+                    id: 55,
+                    month: 4,
+                    season: "breeding",
+                    location: Location(region: "Northern provinces", country: "Canada",
+                                     coordinates: Coordinates(lat: 60, lng: -95)),
+                    presenceScore: 0.9,
+                    description: "In April, Canada Geese return to their breeding grounds in Canada...",
+                    countries: ["Canada", "United States"],
+                    createdAt: "",
+                    updatedAt: ""
+                ),
+                Distribution(
+                    id: 56,
+                    month: 8,
+                    season: "migration",
+                    location: Location(region: "Midwestern states", country: "United States",
+                                     coordinates: Coordinates(lat: 40, lng: -100)),
+                    presenceScore: 0.7,
+                    description: "During August, Canada Geese begin their migration south...",
                     countries: ["United States", "Canada"],
-                    description: "Found in wooded areas",
-                    presenceScore: 0.8
+                    createdAt: "",
+                    updatedAt: ""
                 )
             ],
-            feedingHabits: "Omnivorous with diverse diet",
-            nestingHabits: "Nests in trees using twigs and grass",
-            scientificName: "Cyanocitta cristata",
-            eggsDescription: "Pale blue eggs with brown speckles",
-            conservationStatus: ConservationStatus.mock,
-            lifeExpectancyYears: 7
+            media: [
+                Media(
+                    id: 11,
+                    storageKey: "https://upload.wikimedia.org/wikipedia/commons/7/74/Canadagoose.jpg",
+                    type: "photo",
+                    size: nil,
+                    caption: "Canadagoose.jpg",
+                    source: "wikimedia",
+                    attribution: "Karrackoo - CC BY-SA 3.0",
+                    orderIndex: 0,
+                    metadata: MediaMetadata(thumbnailKey: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Canadagoose.jpg/960px-Canadagoose.jpg"),
+                    createdAt: "",
+                    updatedAt: ""
+                )
+            ]
         )
     }
 }
 
-extension Bird {
-    static var mock: Bird {
-        Bird(
-            id: 3,
-            scientificName: "Cyanocitta cristata",
-            description: "Vibrant blue bird",
-            behavior: "Intelligent and social",
-            nestingHabits: "Tree nester",
-            feedingHabits: "Omnivorous",
-            eggsDescription: "Pale blue eggs",
-            coolFacts: "Can mimic calls",
-            size: BirdSize(
-                lengthCm: SizeRange(max: 30, min: 22),
-                wingspanCm: SizeRange(max: 43, min: 34),
-                weightGrams: SizeRange(max: 100, min: 70)
-            ),
-            lifeExpectancyYears: "7.0",
-            taxonomy: Taxonomy.mock,
-            conservationStatus: ConservationStatus.mock,
-            habitats: []
+// MARK: - UploadResponse Mock
+extension UploadResponse {
+    static var mock: UploadResponse {
+        UploadResponse(
+            success: true,
+            bird: BirdDetailResponse.mock,
+            confidence: "0.9200",
+            status: "completed",
+            observation: ObservationInfo(
+                id: "test-observation-id-123",
+                createdAt: "2025-12-10T10:00:00.000Z"
+            )
         )
     }
-}
-
-extension Taxonomy {
-    static var mock: Taxonomy {
-        Taxonomy(
-            id: 3,
-            phylum: "Chordata",
-            class: "Aves",
-            order: "Passeriformes",
-            family: "Corvidae",
-            genus: "Cyanocitta",
-            createdAt: nil,
-            updatedAt: nil
+    
+    static var mockProcessing: UploadResponse {
+        UploadResponse(
+            success: true,
+            bird: BirdDetailResponse.mock,
+            confidence: "0.0000",
+            status: "processing",
+            observation: ObservationInfo(
+                id: "test-observation-id-456",
+                createdAt: "2025-12-10T10:00:00.000Z"
+            )
         )
     }
-}
-
-extension ConservationStatus {
-    static var mock: ConservationStatus {
-        ConservationStatus(
-            id: 1,
-            code: "LC",
-            fullName: "Least Concern",
-            authority: "IUCN",
-            description: "Stable population",
-            severityLevel: 3,
-            createdAt: nil,
-            updatedAt: nil
+    
+    static var mockFailed: UploadResponse {
+        UploadResponse(
+            success: false,
+            bird: BirdDetailResponse.mock,
+            confidence: "0.0000",
+            status: "failed",
+            observation: ObservationInfo(
+                id: "test-observation-id-789",
+                createdAt: "2025-12-10T10:00:00.000Z"
+            )
         )
     }
 }
