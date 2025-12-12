@@ -67,6 +67,7 @@ extension ResultScreen {
                     case .success(let image):
                         image
                             .resizable()
+//                            .scaledToFit()
                     case .failure:
                         Image(.textResultBird)
                             .resizable()
@@ -143,7 +144,7 @@ extension ResultScreen {
             .padding(.horizontal, 24)
             .padding(.bottom, 24)
         }
-        .frame(height: UIScreen.screenHeight / 2.42)
+        .frame(height: UIScreen.screenHeight / 2.80)
         .padding(.bottom, 24)
     }
 }

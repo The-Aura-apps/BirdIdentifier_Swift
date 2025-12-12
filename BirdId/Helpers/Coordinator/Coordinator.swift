@@ -14,7 +14,7 @@ enum Route: Hashable {
 //    case IdentifyScreen
     case ResultScreen(uploadResponse: UploadResponse)
     case IdentifyScreen(currentMode: IdentificationMode)
-    case HabitatScreen(title :String)
+    case HabitatScreen(title :String,description: String)
     case ArticleScreen(title :String)
     
     // Custom Hashable implementation since ObservationDetailResponse needs to be Hashable
@@ -26,9 +26,10 @@ enum Route: Hashable {
         case .IdentifyScreen(let mode):
             hasher.combine("IdentifyScreen")
             hasher.combine(mode)
-        case .HabitatScreen(let title):
+        case .HabitatScreen(let title,let description):
             hasher.combine("HabitatScreen")
             hasher.combine(title)
+            hasher.combine(description)
         case .ArticleScreen(let title):
             hasher.combine("ArticleScreen")
             hasher.combine(title)
@@ -97,8 +98,8 @@ class Coordinator: ObservableObject {
                     set: { self.identifyMode = $0 }
                 ))
             .environmentObject(self)
-        case .HabitatScreen(let habitatName):
-            HabitatScreen(title: habitatName)
+        case .HabitatScreen(let habitatName,let description):
+            HabitatScreen(title: habitatName,description: description)
                 .environmentObject(self)
         case .ArticleScreen(let title):
             ArticleScreen()

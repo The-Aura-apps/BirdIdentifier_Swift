@@ -93,9 +93,10 @@ final class IdentifyViewModel: ObservableObject {
         
         switch completion {
         case .finished:
+            print("درخواست با موفقیت تمام شد (ولی ممکنه success قبلاً فراخوانی شده باشه)")
             
         case .failure(let error):
-            
+        
             if let urlError = error as? URLError {
                 print("   URLError Code: \(urlError.code.rawValue)")
                 print("   URLError Description: \(urlError.localizedDescription)")
@@ -138,6 +139,8 @@ final class IdentifyViewModel: ObservableObject {
         else {
             errorMessage = error.localizedDescription
         }
+        
+        print("نمایش خطا به کاربر: \(errorMessage ?? "نامشخص")")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + Config.failureDisplayDuration) { [weak self] in
             self?.showCheckedView = false

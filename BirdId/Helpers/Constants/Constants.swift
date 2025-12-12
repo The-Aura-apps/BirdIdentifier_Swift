@@ -15,7 +15,14 @@ struct Constants{
     
     //MARK: URLs
     struct Urls {
+        
+        //upload
         static let uploads = "\(baseUrl)/uploads"
-//        static let observations = "\(baseUrl)/observations/"
+        
+        //habitats
+        static let habitats = "\(baseUrl)/habitats"
+        
+        //history
+        static let historySimple = "\(baseUrl)/observations/history-simple/"
     }
 }

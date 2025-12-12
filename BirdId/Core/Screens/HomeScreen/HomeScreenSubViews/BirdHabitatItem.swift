@@ -10,57 +10,62 @@ import SwiftUI
 struct BirdHabitatItem: View {
     
     @EnvironmentObject var coordinator: Coordinator
-    let birdsHabitat: [Habitat] = [
-        .init(name: "Desert",image: .desert),
-        .init(name: "Forest",image: .forest),
-        .init(name: "Grassland",image: .grassland),
-        .init(name: "Savanna",image: .savanna),
-        .init(name: "Scrub",image: .scrub),
-        .init(name: "Subterranean",image: .subterranean),
-        .init(name: "Wetlands",image: .wetlands),
-        .init(name: "Marine",image: .marine),
-        ]
+    @ObservedObject var viewModel: HomeScreenViewModel
     
     let rows = [
         GridItem(.fixed(100)),
     ]
     
     var body: some View {
-        ScrollView(.horizontal,showsIndicators: false){
-            LazyHGrid(rows: rows,spacing: 16){
-                ForEach(birdsHabitat,id: \.name){ birdsHabitat in
-                    //TODO: Add Button
-                    Button {
-                        coordinator.push(.HabitatScreen(title: birdsHabitat.name))
-                    } label: {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHGrid(rows: rows, spacing: 16) {
+                if viewModel.isLoadingHabitats {
+                    // Loading state
+                    ForEach(0..<viewModel.habitats.count, id: \.self) { _ in
                         VStack {
-                            Image(uiImage: birdsHabitat.image)
-                                .resizable()
-                                .frame(width: 64,height: 64)
-                                .scaledToFit()
-                                .clipShape(Circle())
-                                .padding(.bottom,8)
-                            Text(birdsHabitat.name)
+                            Circle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 64, height: 64)
+                                .padding(.bottom, 8)
+                            Text("Loading...")
                                 .font(.app(.Micro1))
-                                .foregroundStyle(.text)
+                                .foregroundStyle(.gray)
                         }
-                    
-
+                    }
+                } else if let error = viewModel.errorMessage {
+                    // Error state
+                    Text("Error: \(error)")
+                        .font(.app(.Micro1))
+                        .foregroundStyle(.red)
+                        .padding()
+                } else {
+                    // Success state with actual data
+                    ForEach(viewModel.habitats) { habitat in
+                        Button {
+                            coordinator.push(.HabitatScreen(title: habitat.name,description: habitat.description))
+                        } label: {
+                            VStack {
+                                Image(viewModel.getHabitatImage(for: habitat.name))
+                                    .resizable()
+                                    .frame(width: 64, height: 64)
+                                    .scaledToFill()
+                                    .clipShape(Circle())
+                                    .padding(.bottom, 8)
+                                Text(habitat.name)
+                                    .font(.app(.Micro1))
+                                    .foregroundStyle(.text)
+                            }
+                        }
                     }
                 }
             }
-            .padding(.leading,24)
-            .padding(.trailing,24)
+            .padding(.leading, 24)
+            .padding(.trailing, 24)
         }
     }
 }
 
-struct Habitat {
-    let name: String
-    let image: UIImage
-}
-
 #Preview {
-    BirdHabitatItem()
+    BirdHabitatItem(viewModel: HomeScreenViewModel())
         .environmentObject(Coordinator())
 }

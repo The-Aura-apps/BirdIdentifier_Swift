@@ -1,27 +1,25 @@
 //
-//  HistoryItem.swift
+//  HabitatItem.swift
 //  BirdId
 //
-//  Created by ali bakhsha on 8/20/1404 AP.
+//  Created by ali bakhsha on 9/20/1404 AP.
 //
 
 import SwiftUI
 
-struct HistoryItem: View {
+struct HabitatItem: View {
     @EnvironmentObject var coordinator: Coordinator
     
-    // دو ستونه، هر کارت تقریباً نصف صفحه منهای فاصله
     private let columns = [
         GridItem(.fixed(UIScreen.screenWidth / 2 - 24), spacing: 16),
         GridItem(.fixed(UIScreen.screenWidth / 2 - 24), spacing: 16)
     ]
     
-    // ۱۱ تا داده mock ثابت (از مدل جدید)
     private let mockBirds: [UploadResponse] = [
-        .mock,                    // Canada Goose (همون mock اصلی)
+        .mock,
         .mock, .mock, .mock, .mock,
         .mock, .mock, .mock, .mock,
-        .mock, .mock              // فعلاً تکراری — بعداً می‌تونی متنوع کنی
+        .mock, .mock
     ]
     
     var body: some View {
@@ -29,10 +27,9 @@ struct HistoryItem: View {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(mockBirds, id: \.observation.id) { bird in
                     Button {
-                        // حالا درست push می‌کنه با birdDetail
                         coordinator.push(.ResultScreen(uploadResponse:  bird))
                     } label: {
-                        HistoryCard(bird: bird.bird)
+                        HabitatCard(bird: bird.bird)
                     }
                 }
             }
@@ -42,13 +39,11 @@ struct HistoryItem: View {
     }
 }
 
-// MARK: - کارت جدا شده برای تمیزی و خوانایی
-struct HistoryCard: View {
+struct HabitatCard: View {
     let bird: BirdDetailResponse
     
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-            // تصویر پس‌زمینه (فعلاً ثابت — بعداً می‌تونی از bird.media.first استفاده کنی)
             Image(.recordPoster)
                 .resizable()
                 .scaledToFill()
@@ -56,7 +51,6 @@ struct HistoryCard: View {
                 .clipped()
                 .cornerRadius(28)
             
-            // گرادیان تیره برای خوانایی متن
             LinearGradient(
                 colors: [.clear, .black.opacity(0.8)],
                 startPoint: .top,
@@ -64,9 +58,7 @@ struct HistoryCard: View {
             )
             .cornerRadius(28)
             
-            // اطلاعات پرنده
             VStack(alignment: .leading, spacing: 4) {
-                // اسم رایج (اولین نام انگلیسی)
                 if let englishName = bird.commonNames.first(where: { $0.language == "en" })?.name {
                     Text(englishName)
                         .font(.app(.Sub1))
@@ -78,7 +70,6 @@ struct HistoryCard: View {
                         .foregroundStyle(.white)
                 }
                 
-                // نام علمی
                 Text(bird.scientificName)
                     .font(.app(.Micro1))
                     .foregroundStyle(.white.opacity(0.85))
@@ -92,7 +83,7 @@ struct HistoryCard: View {
 }
 
 #Preview {
-    HistoryItem()
+    HabitatItem()
         .environmentObject(Coordinator())
         .background(Color.black)
 }

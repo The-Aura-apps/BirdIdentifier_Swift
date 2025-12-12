@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HabitatScreen: View {
     let title: String
+    let description: String
     @EnvironmentObject var coordinator: Coordinator
     @EnvironmentObject var tabManager: TabManager
     @StateObject var viewModel = HabitatViewModel()
@@ -22,20 +23,31 @@ struct HabitatScreen: View {
             VStack{
                 HStack{
                     BackButtonView()
-                    Spacer()
-                    Text(title)
-                        .font(.app(.Headline1))
-                        .foregroundStyle(.text)
-                    Spacer()
-                    Image(systemName: "xmark")
-                        .frame(width: 48, height: 48)
-                        .opacity(0)
+                        .padding(.trailing,24)
+//                    Spacer()
+                    SearchTextField(searchText: $viewModel.searchText)
+//                        .padding(.bottom,24)
+//                    Spacer()
+//                    Image(systemName: "xmark")
+//                        .frame(width: 48, height: 48)
+//                        .opacity(0)
                 }
-                .padding(.bottom,24)
-                SearchTextField(searchText: $viewModel.searchText)
-                    .padding(.bottom,24)
+                .padding(.bottom,16)
+                .padding(.horizontal,24)
+                Text(title)
+                    .font(.app(.Headline1))
+                    .foregroundStyle(.text)
+                
+                Text(description)
+                    .font(.app(.Sub2))
+                    .foregroundStyle(.text)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 8)
+                    .padding(.bottom,16)
+                
                 ScrollView(showsIndicators: false) {
-                    HistoryItem()
+                    HabitatItem()
                         .padding(.bottom, UIScreen.screenHeight / 13.3)
                         .padding(.bottom, 32)
                 }
@@ -59,7 +71,7 @@ struct HabitatScreen: View {
 }
 
 #Preview {
-    HabitatScreen(title: "Habitat")
+    HabitatScreen(title: "Habitat",description: "Description")
         .environmentObject(TabManager())
         .environmentObject(Coordinator())
 }

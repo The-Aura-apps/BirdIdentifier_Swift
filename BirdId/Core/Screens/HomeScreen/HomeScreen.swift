@@ -20,6 +20,7 @@ struct HomeScreen: View {
                     //MARK: TextField
                     SearchTextField(searchText: $viewModel.searchText)
                         .padding(.bottom,16)
+                        .padding(.horizontal,24)
                         .padding(.top,24)
                     HStack(spacing: 24) {
                         Button {
@@ -73,7 +74,7 @@ struct HomeScreen: View {
                             Spacer()
                         }
                         //MARK: Bird`s Habitat Section
-                        BirdHabitatItem()
+                        BirdHabitatItem(viewModel: viewModel)
                     }
                     .padding(.bottom,24)
                     
