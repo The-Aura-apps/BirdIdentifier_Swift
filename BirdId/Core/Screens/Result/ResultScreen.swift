@@ -11,28 +11,58 @@
 //  Refactored: Use BirdDetailResponse directly
 //
 
+
 import SwiftUI
 
 struct ResultScreen: View {
-    let uploadResponse: UploadResponse
-    var birdDetailResponse: BirdDetailResponse {
-        uploadResponse.bird
-    }
+    // Two possible init methods
+    let uploadResponse: UploadResponse?
+    let birdId: Int?
+    
+    @StateObject private var viewModel = BirdDetailViewModel()
     @EnvironmentObject var tabManager: TabManager
     
-    var body: some View {
+    var birdDetailResponse: BirdDetailResponse?  {
+        if let uploadResponse = uploadResponse {
+            return uploadResponse.bird
+        }
+        return viewModel.birdDetail
+    }
+    
+    // Init from UploadResponse (existing flow)
+    init(uploadResponse:  UploadResponse) {
+        self.uploadResponse = uploadResponse
+        self.birdId = nil
+    }
+    
+    // Init from bird ID (history flow)
+    init(birdId: Int) {
+        self.uploadResponse = nil
+        self.birdId = birdId
+    }
+    
+    var body:  some View {
         ZStack {
-            Image(.bgImg)
+            Image(. bgImg)
                 .resizable()
                 .ignoresSafeArea()
             
-            VStack {
-                makeBirdImageSection()
-                ScrollView {
-                    BirdInfoItem(uploadResponse: uploadResponse)
-                        .padding(.bottom, UIScreen.screenHeight / 13.3)
-                        .padding(.bottom, 24)
+            if viewModel.isLoading {
+                ProgressView()
+                    . scaleEffect(1.5)
+                    .tint(.text)
+            } else if let bird = birdDetailResponse {
+                VStack {
+                    makeBirdImageSection(bird: bird)
+                    ScrollView {
+                        BirdInfoItem(birdDetail: bird)
+                            .padding(.bottom, UIScreen.screenHeight / 13.3)
+                            .padding(.bottom, 24)
+                    }
                 }
+            } else {
+                Text("No data available")
+                    .foregroundStyle(.text)
             }
         }
         .overlay(alignment: .bottom) {
@@ -45,41 +75,44 @@ struct ResultScreen: View {
         .ignoresSafeArea(edges: .bottom)
         .navigationBarBackButtonHidden(true)
         .onAppear {
-            tabManager.selectedTab = .history
+            if let birdId = birdId, viewModel.birdDetail == nil {
+                viewModel.fetchBirdDetail(id: birdId)
+            }
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            if let birdId = birdId {
+                Button("Retry") {
+                    viewModel.retry(id: birdId)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text(viewModel.errorMessage ?? "Unknown error")
         }
     }
 }
 
 extension ResultScreen {
-    func makeBirdImageSection() -> some View {
+    func makeBirdImageSection(bird:  BirdDetailResponse) -> some View {
         ZStack(alignment: .top) {
             // Get first photo from media
-            if let firstPhoto = birdDetailResponse.media.first(where: { $0.type == "photo" }) {
-                AsyncImage(url: URL(string: firstPhoto.storageKey)) { phase in
-                    switch phase {
-                    case .empty:
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                            .overlay {
-                                ProgressView()
-                                    .tint(.white)
-                            }
-                    case .success(let image):
-                        image
-                            .resizable()
-//                            .scaledToFit()
-                    case .failure:
-                        Image(.textResultBird)
-                            .resizable()
-                    @unknown default:
-                        Image(.textResultBird)
-                            .resizable()
-                    }
+            if let firstPhoto = bird.media.first(where: { $0.type == "photo" }) {
+                CachedAsyncImage(url: URL(string: firstPhoto.storageKey)) { image in
+                    image
+                        .resizable()
+//                        .aspectRatio(contentMode: . fill)
+                } placeholder: {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .overlay {
+                            ProgressView()
+                                .tint(.white)
+                        }
                 }
                 .ignoresSafeArea()
             } else {
                 Image(.textResultBird)
-                    .resizable()
+                    . resizable()
                     .mask(
                         VStack(spacing: 0) {
                             Color.white
@@ -91,7 +124,7 @@ extension ResultScreen {
             }
             
             LinearGradient(
-                gradient: Gradient(colors: [
+                gradient:  Gradient(colors: [
                     Color.black.opacity(0.0),
                     Color.black.opacity(0.4)
                 ]),
@@ -101,7 +134,7 @@ extension ResultScreen {
             .ignoresSafeArea()
             
             LinearGradient(
-                gradient: Gradient(colors: [
+                gradient:  Gradient(colors: [
                     Color.black.opacity(0.2),
                     Color.black.opacity(0.2)
                 ]),
@@ -117,15 +150,15 @@ extension ResultScreen {
                 }
                 Spacer()
                 HStack {
-                    let minLength = String(format: "%.1f", birdDetailResponse.size.lengthCm.min ?? 0)
-                    let maxLength = String(format: "%.1f", birdDetailResponse.size.lengthCm.max ?? 0)
+                    let minLength = String(format: "%.1f", bird.size.lengthCm.min ??  0)
+                    let maxLength = String(format: "%. 1f", bird.size.lengthCm.max ?? 0)
                     
                     VStack(alignment: .leading) {
-                        Text(birdDetailResponse.scientificName)
-                            .font(.app(.Headline1))
+                        Text(bird.scientificName)
+                            .font(.app(. Headline1))
                             .foregroundStyle(.text)
-                        Text("\(birdDetailResponse.taxonomy.genus ?? "") • \(minLength)-\(maxLength) cm • \(birdDetailResponse.lifeExpectancyYears ?? "") yrs")
-                            .font(.app(.Micro1))
+                        Text("\(bird.taxonomy.genus ??  "") • \(minLength)-\(maxLength) cm • \(bird.lifeExpectancyYears ?? "") yrs")
+                            .font(. app(. Micro1))
                             .foregroundStyle(.text)
                     }
                     Spacer()

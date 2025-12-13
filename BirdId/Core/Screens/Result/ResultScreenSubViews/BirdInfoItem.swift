@@ -5,25 +5,33 @@
 //  Created by ali bakhsha on 8/9/1404 AP.
 //
 
+
 import SwiftUI
 
 struct BirdInfoItem: View {
-    let uploadResponse: UploadResponse
-    var birdDetail: BirdDetailResponse {
-        uploadResponse.bird
+    let birdDetail: BirdDetailResponse
+    
+    // Convenience init for backward compatibility
+    init(uploadResponse: UploadResponse) {
+        self.birdDetail = uploadResponse.bird
+    }
+    
+    // Direct init with BirdDetailResponse
+    init(birdDetail: BirdDetailResponse) {
+        self.birdDetail = birdDetail
     }
     
     @State private var selectedInfo: BirdInfoType = .commonNames
-    @State private var showFullDescription: Bool = false
+    @State private var showFullDescription:  Bool = false
     
     let rows = [
         GridItem(.fixed(100)),
     ]
     
-    var body: some View {
+    var body:  some View {
         VStack(alignment: .leading) {
             // Category Selection
-            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(. horizontal, showsIndicators: false) {
                 LazyHGrid(rows: rows, spacing: 12) {
                     ForEach(BirdInfoType.allCases, id: \.self) { info in
                         Button(action: {
@@ -33,11 +41,11 @@ struct BirdInfoItem: View {
                             }
                         }, label: {
                             Text(info.title)
-                                .font(.app(.Micro1))
+                                .font(.app(. Micro1))
                                 .foregroundStyle(selectedInfo == info ? Color(hex: "#BCB22A") : .text)
                                 .padding(.horizontal, 16)
                                 .padding(.vertical, 12)
-                                .adaptiveGlassEffect(style: selectedInfo == info ? .regular : .clear)
+                                .adaptiveGlassEffect(style:  selectedInfo == info ? .regular : .clear)
                                 .animation(.easeInOut(duration: 0.2), value: selectedInfo)
                         })
                     }
@@ -45,12 +53,14 @@ struct BirdInfoItem: View {
                 .padding(.horizontal, 24)
                 .frame(height: 42)
             }
-            .padding(.bottom, 24)
+            . padding(.bottom, 24)
             
             // Content Section
             makeContentSection(for: selectedInfo)
         }
     }
+    
+    // ...  rest of your existing code remains the same
     
     // MARK: - Content Builder
     @ViewBuilder
@@ -58,7 +68,7 @@ struct BirdInfoItem: View {
         VStack(alignment: .leading, spacing: 16) {
             Text(type.title)
                 .font(.app(.Headline4))
-                .foregroundStyle(.text)
+                .foregroundStyle(. text)
                 .multilineTextAlignment(.leading)
             
             switch type {
@@ -71,7 +81,7 @@ struct BirdInfoItem: View {
                                 .font(.app(.Sub1))
                                 .foregroundStyle(.text)
                                 .fontWeight(.semibold)
-                            Text(food.description ?? "No additional information available")
+                            Text(food.description ??  "No additional information available")
                                 .font(.app(.Sub2))
                                 .foregroundStyle(.text.opacity(0.8))
                                 .padding(.leading, 24)
@@ -91,14 +101,14 @@ struct BirdInfoItem: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(habitat.name)
                                 .font(.app(.Sub1))
-                                .foregroundStyle(.text)
+                                .foregroundStyle(. text)
                                 .fontWeight(.semibold)
                             
                             if let description = habitat.description, !description.isEmpty {
                                 Text(description)
                                     .font(.app(.Sub2))
                                     .foregroundStyle(.text.opacity(0.8))
-                                    .padding(.leading, 24)
+                                    .padding(. leading, 24)
                             }
                         }
                         .padding(.vertical, 12)
@@ -106,8 +116,8 @@ struct BirdInfoItem: View {
                 } else {
                     Text("No habitat information available yet")
                         .font(.app(.Sub1))
-                        .foregroundStyle(.text.opacity(0.6))
-                        .italic()
+                        . foregroundStyle(.text.opacity(0.6))
+                        . italic()
                 }
                 
             case .behavior:
@@ -122,19 +132,19 @@ struct BirdInfoItem: View {
                     if !birdDetail.birdFoods.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Diet")
-                                .font(.app(.Headline4))
+                                .font(.app(. Headline4))
                                 .foregroundStyle(.text)
                                 .padding(.top, 8)
                             ForEach(birdDetail.birdFoods, id: \.food.id) { wrapper in
                                 let food = wrapper.food
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("• \(food.name)")
-                                        .font(.app(.Sub1))
-                                        .foregroundStyle(.text)
+                                        .font(.app(. Sub1))
+                                        . foregroundStyle(.text)
                                         .fontWeight(.semibold)
                                     Text(food.description  ?? "No additional information available")
-                                        .font(.app(.Sub2))
-                                        .foregroundStyle(.text.opacity(0.8))
+                                        .font(.app(. Sub2))
+                                        . foregroundStyle(.text.opacity(0.8))
                                         .padding(.leading, 12)
                                 }
                             }
@@ -165,14 +175,14 @@ struct BirdInfoItem: View {
                                     .fontWeight(.semibold)
                                 Spacer()
                                 Text(dist.season.capitalized)
-                                    .font(.app(.Micro1))
+                                    . font(.app(. Micro1))
                                     .foregroundStyle(Color(hex: "#BCB22A"))
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)
-                                    .adaptiveGlassEffect(style: .clear)
+                                    .adaptiveGlassEffect(style:  .clear)
                             }
-                            Text("\(dist.location.region ?? ""), \(dist.location.country)")
-                                .font(.app(.Sub2))
+                            Text("\(dist.location.region ??  ""), \(dist.location.country)")
+                                .font(.app(. Sub2))
                                 .foregroundStyle(.text.opacity(0.8))
                             Text(dist.description  ?? "No additional information available")
                                 .font(.app(.Sub2))
@@ -181,12 +191,12 @@ struct BirdInfoItem: View {
                         }
                         .padding(.vertical, 8)
                         if dist.id != birdDetail.distributions.prefix(5).last?.id {
-                            Divider().background(.text.opacity(0.2))
+                            Divider().background(. text.opacity(0.2))
                         }
                     }
                 } else {
                     Text("No distribution data available")
-                        .font(.app(.Sub1))
+                        .font(. app(.Sub1))
                         .foregroundStyle(.text.opacity(0.6))
                         .italic()
                 }
@@ -198,7 +208,7 @@ struct BirdInfoItem: View {
                     makeTaxonomyRow("Family", tax.family  ?? "No additional information available")
                     makeTaxonomyRow("Order", tax.order  ?? "No additional information available")
                     makeTaxonomyRow("Class", tax.`class`  ?? "No additional information available")
-                    makeTaxonomyRow("Phylum", tax.phylum ?? "No additional information available")
+                    makeTaxonomyRow("Phylum", tax.phylum ??  "No additional information available")
                 }
                 
             case .conservation:
@@ -206,20 +216,20 @@ struct BirdInfoItem: View {
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text(cons.fullName)
-                            .font(.app(.Headline4))
-                            .foregroundStyle(conservationColor(cons.severityLevel ?? 0))
+                            .font(. app(. Headline4))
+                            .foregroundStyle(conservationColor(cons.severityLevel ??  0))
                         Spacer()
                         Text(cons.code)
-                            .font(.app(.Micro1))
+                            .font(.app(. Micro1))
                             .foregroundStyle(.text)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .adaptiveGlassEffect(style: .clear)
+                            . adaptiveGlassEffect(style: .clear)
                     }
-                    Text("Authority: \(cons.authority ?? "")")
+                    Text("Authority: \(cons.authority ??  "")")
                         .font(.app(.Sub2))
-                        .foregroundStyle(.text.opacity(0.8))
-                    makeTextContent(cons.description  ?? "No additional information available")
+                        . foregroundStyle(.text.opacity(0.8))
+                    makeTextContent(cons.description  ??  "No additional information available")
                 }
                 
             case .commonNames:
@@ -230,22 +240,22 @@ struct BirdInfoItem: View {
                             .foregroundStyle(.text)
                         Spacer()
                         Text("\(name.region ?? "") (\(name.language))")
-                            .font(.app(.Micro1))
+                            .font(.app(. Micro1))
                             .foregroundStyle(.text.opacity(0.7))
                     }
-                    .padding(.vertical, 4)
+                    .padding(. vertical, 4)
                 }
                 
             case .coolFacts:
-                let facts = birdDetail.coolFacts!.split(separator: "\n\n").map { String($0) }
+                let facts = birdDetail.coolFacts! . split(separator: "\n\n").map { String($0) }
                 ForEach(Array(facts.enumerated()), id: \.offset) { index, fact in
                     HStack(alignment: .top, spacing: 8) {
                         Text("\(index + 1).")
                             .font(.app(.Sub1))
-                            .foregroundStyle(Color(hex: "#BCB22A"))
+                            . foregroundStyle(Color(hex: "#BCB22A"))
                             .fontWeight(.bold)
                         Text(fact)
-                            .font(.app(.Sub1))
+                            .font(.app(. Sub1))
                             .foregroundStyle(.text)
                     }
                 }
@@ -257,7 +267,7 @@ struct BirdInfoItem: View {
                     makeSizeRow("Wingspan", min: Int(size.wingspanCm.min ?? 0), max: Int(size.wingspanCm.max ?? 0), unit: "cm")
                     makeSizeRow("Weight", min: Int(size.weightGrams.min ?? 0), max: Int(size.weightGrams.max ?? 0), unit: "g")
                     Text("Life Expectancy: ~\(birdDetail.lifeExpectancyYears ?? "") years")
-                        .font(.app(.Sub1))
+                        .font(. app(.Sub1))
                         .foregroundStyle(.text)
                         .padding(.top, 8)
                 }
@@ -273,13 +283,13 @@ struct BirdInfoItem: View {
             Text(text)
                 .lineLimit(showFullDescription ? nil : 3)
                 .font(.app(.Sub1))
-                .foregroundStyle(.text)
+                .foregroundStyle(. text)
                 .multilineTextAlignment(.leading)
             if text.count > 150 {
                 Button(showFullDescription ? "Less" : "Read more") {
                     withAnimation(.easeInOut) { showFullDescription.toggle() }
                 }
-                .font(.app(.Headline4))
+                .font(.app(. Headline4))
                 .foregroundStyle(Color(hex: "#BCBCBC"))
                 .padding(.top, 4)
             }
@@ -289,8 +299,8 @@ struct BirdInfoItem: View {
     @ViewBuilder
     private func makeTextContent(_ text: String) -> some View {
         Text(text)
-            .font(.app(.Sub1))
-            .foregroundStyle(.text)
+            .font(. app(.Sub1))
+            .foregroundStyle(. text)
             .multilineTextAlignment(.leading)
     }
     
@@ -303,7 +313,7 @@ struct BirdInfoItem: View {
             Spacer()
             Text(value)
                 .font(.app(.Sub1))
-                .foregroundStyle(.text)
+                .foregroundStyle(. text)
                 .fontWeight(.medium)
         }
         .padding(.vertical, 4)
@@ -333,9 +343,9 @@ struct BirdInfoItem: View {
     
     private func conservationColor(_ severity: Int) -> Color {
         switch severity {
-        case 1...2: return .red
+        case 1...2:  return .red
         case 3...4: return Color(hex: "#BCB22A")
-        case 5...6: return .green
+        case 5...6: return . green
         default: return .text
         }
     }
@@ -361,7 +371,7 @@ enum BirdInfoType: String, CaseIterable {
 
 #Preview {
     ScrollView {
-        BirdInfoItem(uploadResponse: .mock) 
+        BirdInfoItem(uploadResponse: .mock)
     }
     .background(Color(hex: "#5B765C"))
 }

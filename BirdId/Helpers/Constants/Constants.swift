@@ -23,6 +23,10 @@ struct Constants{
         static let habitats = "\(baseUrl)/habitats"
         
         //history
-        static let historySimple = "\(baseUrl)/observations/history-simple/"
+        static let historySimple = "\(baseUrl)/observations/history-unique/"
+        
+        
+        static let birdDetail = "\(baseUrl)/birds/"
+        static let birdHabitat = "\(baseUrl)/birds/by-habitat-simple/"
     }
 }

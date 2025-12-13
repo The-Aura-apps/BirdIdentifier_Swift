@@ -1,51 +1,48 @@
 //
-//  HistoryRepository.swift
+//  BirdDetailRepository.swift
 //  BirdId
 //
-//  Created by ali bakhsha on 9/20/1404 AP.
+//  Created by ali bakhsha on 9/21/1404 AP.
 //
-
 
 import Foundation
 import Combine
 import Alamofire
 
-protocol HistoryRepositoryProtocol {
-    func fetchHistory() -> AnyPublisher<[HistorySimpleModel], Error>
+protocol BirdDetailRepositoryProtocol {
+    func fetchBirdDetail(id: Int) -> AnyPublisher<BirdDetailResponse, Error>
 }
 
-class HistoryRepository: HistoryRepositoryProtocol {
+class BirdDetailRepository: BirdDetailRepositoryProtocol {
     private let apiService: ApiServiceProtocol
     
     init(apiService: ApiServiceProtocol = ApiService()) {
         self.apiService = apiService
     }
     
-    func fetchHistory() -> AnyPublisher<[HistorySimpleModel], Error> {
-        let deviceId = DeviceIDManager.shared.getDeviceUUID()
-        
-        let url = "\(Constants.Urls.historySimple)\(deviceId)"
+    func fetchBirdDetail(id: Int) -> AnyPublisher<BirdDetailResponse, Error> {
+        let url = "\(Constants.Urls.birdDetail)\(id)"
         
         return apiService.request(
             url,
             method: .get,
             body: nil,
             headers: nil,
-            expecting: [HistorySimpleModel].self
+            expecting: BirdDetailResponse.self
         )
     }
 }
 
 // MARK: - Mock Repository for Testing
-class MockHistoryRepository: HistoryRepositoryProtocol {
+class MockBirdDetailRepository:  BirdDetailRepositoryProtocol {
     var shouldFail = false
-    var mockData: [HistorySimpleModel] = HistorySimpleModel.mockList
-    var delaySeconds: TimeInterval = 1.0
+    var mockData: BirdDetailResponse = . mock
+    var delaySeconds:  TimeInterval = 1.0
     
-    func fetchHistory() -> AnyPublisher<[HistorySimpleModel], Error> {
+    func fetchBirdDetail(id: Int) -> AnyPublisher<BirdDetailResponse, Error> {
         if shouldFail {
             return Fail(error: APIError.networkError(underlyingError: URLError(.notConnectedToInternet)))
-                .delay(for: .seconds(delaySeconds), scheduler: DispatchQueue.main)
+                .delay(for: . seconds(delaySeconds), scheduler: DispatchQueue.main)
                 .eraseToAnyPublisher()
         }
         

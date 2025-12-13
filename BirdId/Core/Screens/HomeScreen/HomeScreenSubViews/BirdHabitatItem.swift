@@ -42,7 +42,7 @@ struct BirdHabitatItem: View {
                     // Success state with actual data
                     ForEach(viewModel.habitats) { habitat in
                         Button {
-                            coordinator.push(.HabitatScreen(title: habitat.name,description: habitat.description))
+                            coordinator.push(.HabitatScreen(habitatId: habitat.id,title: habitat.name,description: habitat.description))
                         } label: {
                             VStack {
                                 Image(viewModel.getHabitatImage(for: habitat.name))

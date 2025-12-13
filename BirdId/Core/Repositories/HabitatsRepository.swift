@@ -11,6 +11,8 @@ import Alamofire
 
 protocol HabitatsRepositoryProtocol {
     func getHabitats() -> AnyPublisher<HabitatsResponse, Error>
+    func getHabitatDetail(id: Int) -> AnyPublisher<HabitatDetailResponse, Error>
+    func getHabitatBird(id: Int) -> AnyPublisher<[BirdHabitatSimple], Error>
 }
 
 class HabitatsRepository: HabitatsRepositoryProtocol {
@@ -28,6 +30,26 @@ class HabitatsRepository: HabitatsRepositoryProtocol {
             body: nil,
             headers: nil,
             expecting: HabitatsResponse.self
+        )
+    }
+    
+    func getHabitatBird(id: Int) -> AnyPublisher<[BirdHabitatSimple], Error> {
+        return apiService.request(
+            "\(Constants.Urls.birdHabitat)\(id)",
+            method: .get,
+            body: nil,
+            headers: nil,
+            expecting: [BirdHabitatSimple].self
+        )
+    }
+    
+    func getHabitatDetail(id: Int) -> AnyPublisher<HabitatDetailResponse, Error> {
+        return apiService.request(
+            "\(Constants.Urls.habitats)/\(id)",
+            method: .get,
+            body: nil,
+            headers: nil,
+            expecting: HabitatDetailResponse.self
         )
     }
 }

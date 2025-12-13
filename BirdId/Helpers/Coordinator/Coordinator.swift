@@ -12,24 +12,29 @@ import Combine
 
 enum Route: Hashable {
 //    case IdentifyScreen
+    case birdDetail(birdId: Int)
     case ResultScreen(uploadResponse: UploadResponse)
     case IdentifyScreen(currentMode: IdentificationMode)
-    case HabitatScreen(title :String,description: String)
+    case HabitatScreen(habitatId: Int,title :String,description: String)
     case ArticleScreen(title :String)
     
     // Custom Hashable implementation since ObservationDetailResponse needs to be Hashable
     func hash(into hasher: inout Hasher) {
         switch self {
+        case.birdDetail(let birdId):
+            hasher.combine("birdDetail")
+            hasher.combine(birdId)
         case .ResultScreen(let detail):
             hasher.combine("ResultScreen")
             hasher.combine(detail.bird.id)
         case .IdentifyScreen(let mode):
             hasher.combine("IdentifyScreen")
             hasher.combine(mode)
-        case .HabitatScreen(let title,let description):
+        case .HabitatScreen(let habitatId,let title,let description):
             hasher.combine("HabitatScreen")
             hasher.combine(title)
             hasher.combine(description)
+            hasher.combine(habitatId)
         case .ArticleScreen(let title):
             hasher.combine("ArticleScreen")
             hasher.combine(title)
@@ -87,6 +92,8 @@ class Coordinator: ObservableObject {
     @ViewBuilder
     func buildView(for route: Route) -> some View {
         switch route {
+        case .birdDetail(let birdId):
+            ResultScreen(birdId: birdId)
         case .ResultScreen(let uploadResponse):
                     ResultScreen(uploadResponse: uploadResponse)
                         .environmentObject(self)
@@ -98,8 +105,8 @@ class Coordinator: ObservableObject {
                     set: { self.identifyMode = $0 }
                 ))
             .environmentObject(self)
-        case .HabitatScreen(let habitatName,let description):
-            HabitatScreen(title: habitatName,description: description)
+        case .HabitatScreen(let habitatId,let habitatName,let description):
+            HabitatScreen(habitatId: habitatId,title: habitatName,description: description)
                 .environmentObject(self)
         case .ArticleScreen(let title):
             ArticleScreen()

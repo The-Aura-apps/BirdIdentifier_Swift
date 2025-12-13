@@ -35,7 +35,7 @@ class HistoryViewModel: ObservableObject {
         showError = false
         
         repository.fetchHistory()
-            .receive(on: DispatchQueue.main) // ✅ FIX: اطمینان از اجرا روی main thread
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 guard let self = self else { return }
                 
@@ -67,7 +67,7 @@ class HistoryViewModel: ObservableObject {
             case .httpError(let statusCode, _):
                 errorMessage = "Server error (\(statusCode))"
             case .decodingError(let decodingError):
-                // ✅ FIX: اطلاعات بیشتر برای debugging
+
                 print("🔴 Decoding Error: \(decodingError)")
                 errorMessage = "Failed to process data"
             case .networkError(let urlError):
@@ -79,7 +79,6 @@ class HistoryViewModel: ObservableObject {
                     errorMessage = "Network error occurred"
                 }
             case .unknownError:
-//                print("🔴 Unknown Error: \(underlyingError)")
                 errorMessage = "An unexpected error occurred"
             }
         } else {

@@ -13,6 +13,7 @@ struct IdentifyScreen: View {
     @StateObject private var viewModel = IdentifyViewModel()
     @StateObject private var camera = CameraController()
     @StateObject private var gallery = PhotoPickerController()
+    @StateObject private var audioPicker = AudioPickerController()
     @StateObject private var audio = AudioRecorderController()
     @EnvironmentObject private var coordinator: Coordinator
     
@@ -21,23 +22,23 @@ struct IdentifyScreen: View {
     
     @Namespace private var animation
     
-    // MARK: - Body
+    // MARK:  - Body
     var body: some View {
         ZStack {
             backgroundView
             mainContent
             
-                if viewModel.showSearchResult {
-                    SearchResultScreen()
-                        .transition(.move(edge: .bottom))
-                        .zIndex(1)
-                }
+            if viewModel.showSearchResult {
+                SearchResultScreen()
+                    .transition(.move(edge: .bottom))
+                    .zIndex(1)
+            }
 
-                if viewModel.showCheckedView {
-                    CheckedView(checkedState: viewModel.checkedState ?? .failure)
-                        .transition(.scale.combined(with: .opacity))
-                        .zIndex(2)
-                }
+            if viewModel.showCheckedView {
+                CheckedView(checkedState: viewModel.checkedState ??  .failure)
+                    .transition(.scale.combined(with: .opacity))
+                    .zIndex(2)
+            }
         }
         .setupLifecycle(
             viewModel: viewModel,
@@ -46,6 +47,10 @@ struct IdentifyScreen: View {
             audio: audio
         )
         .handleGallerySelection(gallery: gallery, viewModel: viewModel)
+        .handleAudioPickerSelection(audioPicker: audioPicker, viewModel: viewModel) 
+        .sheet(isPresented: $audioPicker.isPresented) { 
+            AudioPicker(controller: audioPicker)
+        }
         .navigationBarBackButtonHidden(true)
     }
 }
@@ -70,7 +75,7 @@ private extension IdentifyScreen {
                 bottomSection
             }
         }
-        .padding(.top)
+        .padding(. top)
         .ignoresSafeArea()
     }
     
@@ -101,11 +106,13 @@ private extension IdentifyScreen {
             BottomBarView(
                 currentMode: $currentMode,
                 gallerySelection: gallery,
+                audioPicker: audioPicker,
                 audio: audio,
                 animation: animation,
                 onCapturePhoto: handleCapturePhoto,
                 onMicRecord: handleMicRecord,
-                onGallery: handleGallery
+                onGallery: handleGallery,
+                onAudioPicker: handleAudioPicker
             )
             .frame(height: UIScreen.screenHeight / 5.325)
             .background(Color.clear)
@@ -152,10 +159,10 @@ private extension IdentifyScreen {
             audio.stopRecording()
             
             guard let fileURL = audio.recordedFileURL,
-                  let data = try? Data(contentsOf: fileURL) else {
+                  let data = try?  Data(contentsOf: fileURL) else {
                 return
             }
-            
+        
             viewModel.uploadAudio(data)
         } else {
             audio.startRecording()
@@ -163,7 +170,11 @@ private extension IdentifyScreen {
     }
     
     func handleGallery() {
-        // Gallery selection logic handled by PhotosPicker
+
+    }
+    
+    func handleAudioPicker() {
+        audioPicker.presentAudioPicker()
     }
 }
 
@@ -172,7 +183,7 @@ struct CameraScreenContent: View {
     var body: some View {
         VStack {
             Spacer()
-            Image(.cameraIdentify)
+            Image(. cameraIdentify)
                 .frame(height: UIScreen.screenHeight / 2.13)
             Spacer()
             Text("Identify a bird via photo")
@@ -195,9 +206,9 @@ struct MicScreenContent: View {
                 color: UIColor.white
             )
             .id(audio.recording)
-            .foregroundStyle(.text)
+            . foregroundStyle(.text)
             .frame(height: UIScreen.screenHeight / 2.13)
-            .animation(.easeIn(duration: 0.3), value: audio.recording)
+            . animation(.easeIn(duration: 0.3), value: audio.recording)
             
             recordingDuration
             recordingInstructions
@@ -213,7 +224,7 @@ struct MicScreenContent: View {
             .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
     }
     
-    private var recordingInstructions: some View {
+    private var recordingInstructions:  some View {
         Text(instructionText)
             .font(.app(.Sub2))
             .foregroundStyle(.text)
@@ -233,21 +244,23 @@ struct MicScreenContent: View {
 }
 
 // MARK: - Bottom Bar View
-struct BottomBarView: View {
+struct BottomBarView:  View {
     @Binding var currentMode: IdentificationMode
     @ObservedObject var gallerySelection: PhotoPickerController
+    @ObservedObject var audioPicker: AudioPickerController
     @ObservedObject var audio: AudioRecorderController
     
     let animation: Namespace.ID
     let onCapturePhoto: () -> Void
     let onMicRecord: () -> Void
     let onGallery: () -> Void
+    let onAudioPicker: () -> Void
     
     var body: some View {
         VStack {
             Spacer()
             HStack(alignment: .center) {
-                galleryButton
+                leftButton
                 Spacer()
                 centerButton
                 Spacer()
@@ -258,12 +271,31 @@ struct BottomBarView: View {
         }
     }
     
+    @ViewBuilder
+    private var leftButton: some View {
+        if currentMode == .mic {
+            audioPickerButton
+        } else {
+            galleryButton
+        }
+    }
+    
     private var galleryButton: some View {
         PhotosPicker(selection: $gallerySelection.imageSelection) {
-            Image(.galleryAdd)
+            Image(. galleryAdd)
                 .frame(width: 24, height: 24)
                 .padding(.all, 12)
-                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
+                .adaptiveGlassEffect(style:  .clear, cornerRadius: 16)
+        }
+    }
+    
+    private var audioPickerButton: some View {
+        Button(action: onAudioPicker) {
+            Image(systemName: "folder.fill.badge.plus")
+                .frame(width: 24, height:  24)
+                .padding(. all, 12)
+                .foregroundColor(.white)
+                .adaptiveGlassEffect(style:  .clear, cornerRadius: 16)
         }
     }
     
@@ -282,12 +314,12 @@ struct BottomBarView: View {
                 .fill(Color.white.opacity(0.1))
                 .frame(width: 72, height: 72)
                 .overlay {
-                    Image(.camera)
+                    Image(. camera)
                         .frame(width: 32, height: 32)
                 }
                 .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
         }
-        .matchedGeometryEffect(id: "camera", in: animation)
+        .matchedGeometryEffect(id:  "camera", in: animation)
     }
     
     private var micButton: some View {
@@ -296,19 +328,19 @@ struct BottomBarView: View {
                 .fill(Color.white.opacity(0.1))
                 .frame(width: 72, height: 72)
                 .overlay {
-                    Image(audio.recording ? .record : .microphone)
+                    Image(audio.recording ? . record : .microphone)
                         .resizable()
                         .frame(width: 32, height: 32)
                 }
-                .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
+                . adaptiveGlassEffect(style: .clear, cornerRadius: 99)
         }
-        .id(audio.recording)
+        . id(audio.recording)
         .matchedGeometryEffect(id: "micButton", in: animation)
     }
     
     @ViewBuilder
     private var toggleButton: some View {
-        if currentMode == .camera || currentMode == .gallery {
+        if currentMode == . camera || currentMode == .gallery {
             switchToMicButton
         } else if currentMode == .mic {
             switchToCameraButton
@@ -317,10 +349,10 @@ struct BottomBarView: View {
     
     private var switchToMicButton: some View {
         Button(action: { switchMode(to: .mic) }) {
-            Image(.microphone)
+            Image(. microphone)
                 .frame(width: 24, height: 24)
                 .padding(.all, 12)
-                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
+                .adaptiveGlassEffect(style:  .clear, cornerRadius: 16)
         }
         .matchedGeometryEffect(id: "mic", in: animation)
     }
@@ -340,7 +372,7 @@ struct BottomBarView: View {
     }
     
     private func switchMode(to mode: IdentificationMode) {
-        withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
+        withAnimation(. spring(response: 0.45, dampingFraction: 0.75)) {
             currentMode = mode
         }
     }
@@ -357,7 +389,6 @@ private extension View {
         self
             .onAppear {
                 viewModel.setCoordinator(coordinator)
-                
             }
             .onDisappear {
                 if camera.isConfigured { camera.stop() }
@@ -379,8 +410,20 @@ private extension View {
         }
     }
     
+    // ✅ هندلر جدید برای فایل‌های صوتی انتخاب شده
+    func handleAudioPickerSelection(
+        audioPicker: AudioPickerController,
+        viewModel:  IdentifyViewModel
+    ) -> some View {
+        self.onChange(of: audioPicker.selectedAudioData) { newData in
+            guard let data = newData else { return }
+            viewModel.uploadAudio(data)
+            audioPicker.resetSelection()
+        }
+    }
+    
     func presentSearchResult(isPresented: Binding<Bool>) -> some View {
-        self.fullScreenCover(isPresented: isPresented) {
+        self.fullScreenCover(isPresented:  isPresented) {
             SearchResultScreen()
         }
     }

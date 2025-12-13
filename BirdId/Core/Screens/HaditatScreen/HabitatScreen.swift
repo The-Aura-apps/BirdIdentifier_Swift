@@ -5,35 +5,33 @@
 //  Created by ali bakhsha on 8/30/1404 AP.
 //
 
+
 import SwiftUI
 
 struct HabitatScreen: View {
+    let habitatId: Int
     let title: String
     let description: String
+    
     @EnvironmentObject var coordinator: Coordinator
     @EnvironmentObject var tabManager: TabManager
     @StateObject var viewModel = HabitatViewModel()
     
     var body: some View {
-        ZStack{
-            Image(.bgImg)
+        ZStack {
+            Image(. bgImg)
                 .resizable()
                 .ignoresSafeArea()
             
-            VStack{
-                HStack{
+            VStack {
+                HStack {
                     BackButtonView()
-                        .padding(.trailing,24)
-//                    Spacer()
+                        .padding(.trailing, 24)
                     SearchTextField(searchText: $viewModel.searchText)
-//                        .padding(.bottom,24)
-//                    Spacer()
-//                    Image(systemName: "xmark")
-//                        .frame(width: 48, height: 48)
-//                        .opacity(0)
                 }
-                .padding(.bottom,16)
-                .padding(.horizontal,24)
+                . padding(.bottom, 16)
+                .padding(.horizontal, 24)
+                
                 Text(title)
                     .font(.app(.Headline1))
                     .foregroundStyle(.text)
@@ -43,19 +41,17 @@ struct HabitatScreen: View {
                     .foregroundStyle(.text)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
-                    .padding(.top, 8)
-                    .padding(.bottom,16)
+                    . padding(.top, 8)
+                    .padding(.bottom, 16)
                 
-                ScrollView(showsIndicators: false) {
-                    HabitatItem()
-                        .padding(.bottom, UIScreen.screenHeight / 13.3)
-                        .padding(.bottom, 32)
-                }
+                HabitatItem(viewModel:  viewModel)
+                    .padding(.bottom, UIScreen.screenHeight / 13.3)
+                    .padding(.bottom, 32)
+                
                 Spacer()
             }
-            .padding(.horizontal,24)
         }
-        .overlay (alignment: .bottom) {
+        .overlay(alignment: .bottom) {
             VStack {
                 Spacer()
                 CustomTabBar(selectedTab: $tabManager.selectedTab)
@@ -66,12 +62,17 @@ struct HabitatScreen: View {
         .navigationBarBackButtonHidden(true)
         .onAppear {
             tabManager.selectedTab = .home
-            }
+            viewModel.loadHabitatBirds(id: habitatId)
         }
+    }
 }
 
 #Preview {
-    HabitatScreen(title: "Habitat",description: "Description")
-        .environmentObject(TabManager())
-        .environmentObject(Coordinator())
+    HabitatScreen(
+        habitatId: 2,
+        title: "Forest",
+        description: "Forest habitats are densely wooded areas"
+    )
+    .environmentObject(TabManager())
+    .environmentObject(Coordinator())
 }

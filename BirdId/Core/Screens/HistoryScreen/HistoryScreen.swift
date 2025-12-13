@@ -33,7 +33,7 @@ struct HistoryScreen: View {
                     Spacer()
                     ProgressView()
                         .scaleEffect(1.5)
-                        .tint(.primary)
+                        .tint(.text)
                     Spacer()
                 } else if viewModel.birds.isEmpty {
                     EmptyHistoryView()
@@ -43,10 +43,11 @@ struct HistoryScreen: View {
                             .padding(.bottom, UIScreen.screenHeight / 13.3)
                             .padding(.bottom, 32)
                     }
-                    .padding(.horizontal, 24)
+//                    .padding(.horizontal, 24)
                 }
             }
         }
+//        .padding(.horizontal,24)
         .onAppear {
             if viewModel.birds.isEmpty {
                 viewModel.loadHistory()
@@ -69,8 +70,8 @@ struct EmptyHistoryView: View {
         VStack(spacing: 16) {
             Spacer()
             Image(systemName: "bird.fill")
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+                .font(.app(.Headline1))
+                .foregroundStyle(.text)
             
             Text("No Records Yet")
                 .font(.app(.Headline2))
@@ -78,7 +79,7 @@ struct EmptyHistoryView: View {
             
             Text("Start identifying birds to see them here")
                 .font(.app(.Headline3))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.text)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
             

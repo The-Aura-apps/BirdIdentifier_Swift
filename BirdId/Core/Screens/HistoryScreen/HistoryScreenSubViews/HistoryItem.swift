@@ -5,6 +5,13 @@
 //  Created by ali bakhsha on 8/20/1404 AP.
 //
 
+//
+//  HistoryItem.swift
+//  BirdId
+//
+//  Created by ali bakhsha on 8/20/1404 AP.
+//
+
 import SwiftUI
 
 struct HistoryItem: View {
@@ -13,31 +20,30 @@ struct HistoryItem: View {
     let birds: [HistorySimpleModel]
     
     private let columns = [
-        GridItem(.fixed(UIScreen.screenWidth / 2 - 24), spacing: 16),
-        GridItem(.fixed(UIScreen.screenWidth / 2 - 24), spacing: 16)
+        GridItem(. fixed(UIScreen.screenWidth / 2 - 32), spacing: 16),
+        GridItem(.fixed(UIScreen.screenWidth / 2 - 32), spacing: 16)
     ]
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
+        ScrollView(. vertical, showsIndicators: false) {
             LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(birds) { bird in
+                ForEach(Array(birds.enumerated()), id: \.offset) { index, bird in
                     Button {
-                        // TODO: اینجا باید navigation به صفحه جزئیات اضافه بشه
-                        // coordinator.push(.BirdDetail(bird: bird))
+                        coordinator.push(.birdDetail(birdId: bird.birdId))
                     } label: {
                         HistorySimpleCard(bird: bird)
                     }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(. horizontal, 24)
             .padding(.top, 8)
         }
     }
 }
 
-// MARK: - کارت ساده برای History Simple
-struct HistorySimpleCard: View {
-    let bird: HistorySimpleModel
+// MARK: - History Simple
+struct HistorySimpleCard:  View {
+    let bird:  HistorySimpleModel
     @State private var imageLoadFailed = false
     
     var body: some View {
@@ -45,65 +51,59 @@ struct HistorySimpleCard: View {
             if imageLoadFailed {
                 Image(.recordPoster)
                     .resizable()
+//                    .aspectRatio(contentMode: .fill)
                     .scaledToFill()
                     .frame(height: UIScreen.screenHeight / 6.08)
-                    .clipped()
+                    . clipped()
                     .cornerRadius(28)
             } else {
-                AsyncImage(url: URL(string: bird.image)) { phase in
-                    switch phase {
-                    case .empty:
-                        ZStack {
-                            Color.gray.opacity(0.3)
-                            ProgressView()
-                                .tint(.white)
-                        }
-                    case .success(let image):
-                        image
-                            .resizable()
-//                            .scaledToFill()
-                    case .failure:
-                        Image(.recordPoster)
-                            .resizable()
-                            .scaledToFill()
-                            .onAppear {
-                                imageLoadFailed = true
-                            }
-                    @unknown default:
+                CachedAsyncImage(url: URL(string: bird.image)) { image in
+                    image
+                        .resizable()
+//                        . aspectRatio(contentMode: .fill)
+                        .scaledToFill()
+                        .frame(width: UIScreen.screenWidth / 2 - 24,height: UIScreen.screenHeight / 6.08)
+                        .clipped()
+                        .cornerRadius(28)
+                } placeholder: {
+                    ZStack {
                         Color.gray.opacity(0.3)
+                        ProgressView()
+                            .tint(.white)
+                    }
+                    .frame(height: UIScreen.screenHeight / 6.08)
+                    .cornerRadius(28)
+                }
+                .onAppear {
+                    // Check if image exists in cache
+                    if let url = URL(string: bird.image),
+                       ImageCacheManager.shared.getImage(forKey: url.absoluteString) == nil {
+                        // Image not in cache, will load
                     }
                 }
-                .frame(height: UIScreen.screenHeight / 6.08)
-                .clipped()
-                .cornerRadius(28)
             }
             
             LinearGradient(
-                colors: [.clear, .black.opacity(0.8)],
+                colors: [. clear, .black.opacity(0.8)],
                 startPoint: .top,
                 endPoint: .bottom
             )
             .cornerRadius(28)
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: . leading, spacing: 4) {
                 Text(bird.scientificName)
                     .font(.app(.Sub1))
                     .fontWeight(.semibold)
-                    .foregroundStyle(.white)
-//                    .lineLimit(1)
-                    .padding(.horizontal,8)
-                    .padding(.vertical,4)
+                    .foregroundStyle(. white)
+                    .lineLimit(2)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
                     .adaptiveGlassEffect(style: .clear)
-                
-//                Text(bird.scientificName)
-//                    .font(.app(.Micro1))
-//                    .foregroundStyle(.white.opacity(0.85))
-//                    .lineLimit(1)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 12)
+            .padding(. vertical, 12)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: . infinity)
         .frame(height: UIScreen.screenHeight / 6.08)
     }
 }
