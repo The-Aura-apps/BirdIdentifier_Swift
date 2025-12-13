@@ -28,5 +28,6 @@ struct Constants{
         
         static let birdDetail = "\(baseUrl)/birds/"
         static let birdHabitat = "\(baseUrl)/birds/by-habitat-simple/"
+        static let birdSearch = "\(baseUrl)/birds/catalog/search"
     }
 }
