@@ -73,27 +73,28 @@ struct BirdInfoItem: View {
             
             switch type {
             case .birdFoods:
-                if !birdDetail.birdFoods.isEmpty {
-                    ForEach(birdDetail.birdFoods, id: \.food.id) { wrapper in
+                if let birdFoods = birdDetail.birdFoods, !birdFoods.isEmpty {
+                    ForEach(birdFoods, id: \.food.id) { wrapper in
                         let food = wrapper.food
                         VStack(alignment: .leading, spacing: 8) {
                             Text(food.name)
                                 .font(.app(.Sub1))
                                 .foregroundStyle(.text)
                                 .fontWeight(.semibold)
-                            Text(food.description ??  "No additional information available")
+                            Text(food.description ?? "No additional information available")
                                 .font(.app(.Sub2))
-                                .foregroundStyle(.text.opacity(0.8))
+                                . foregroundStyle(.text.opacity(0.8))
                                 .padding(.leading, 24)
                         }
                         .padding(.vertical, 12)
                     }
                 } else {
                     Text("No dietary information available")
-                        .font(.app(.Sub1))
-                        .foregroundStyle(.text.opacity(0.6))
+                        .font(. app(.Sub1))
+                        .foregroundStyle(. text.opacity(0.6))
                         .italic()
                 }
+
                 
             case .habitat:
                 if !birdDetail.habitats.isEmpty {
@@ -128,14 +129,14 @@ struct BirdInfoItem: View {
                 
             case .feeding:
                 VStack(alignment: .leading, spacing: 12) {
-                    makeExpandableText(birdDetail.feedingHabits  ?? "No additional information available")
-                    if !birdDetail.birdFoods.isEmpty {
+                    makeExpandableText(birdDetail.feedingHabits ?? "No additional information available")
+                    if let birdFoods = birdDetail.birdFoods, !birdFoods.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Diet")
                                 .font(.app(. Headline4))
                                 .foregroundStyle(.text)
                                 .padding(.top, 8)
-                            ForEach(birdDetail.birdFoods, id: \.food.id) { wrapper in
+                            ForEach(birdFoods, id: \.food.id) { wrapper in
                                 let food = wrapper.food
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text("• \(food.name)")
@@ -165,8 +166,8 @@ struct BirdInfoItem: View {
                 }
                 
             case .distribution:
-                if !birdDetail.distributions.isEmpty {
-                    ForEach(birdDetail.distributions.prefix(5), id: \.id) { dist in
+                if let distributions = birdDetail.distributions, !distributions.isEmpty {
+                    ForEach(distributions.prefix(5), id: \.id) { dist in
                         VStack(alignment: .leading, spacing: 4) {
                             HStack {
                                 Text(monthName(dist.month))
@@ -190,7 +191,7 @@ struct BirdInfoItem: View {
                                 .padding(.top, 2)
                         }
                         .padding(.vertical, 8)
-                        if dist.id != birdDetail.distributions.prefix(5).last?.id {
+                        if dist.id != distributions.prefix(5).last?.id {
                             Divider().background(. text.opacity(0.2))
                         }
                     }

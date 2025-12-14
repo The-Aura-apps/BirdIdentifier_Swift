@@ -11,6 +11,7 @@ import Alamofire
 
 protocol BirdSearchRepositoryProtocol {
     func searchBirds(query: String) -> AnyPublisher<BirdSearchResponse, Error>
+    func fetchBirdByScientificName(scientificName: String) -> AnyPublisher<BirdDetailResponse, Error>
 }
 
 class BirdSearchRepository: BirdSearchRepositoryProtocol {
@@ -30,6 +31,19 @@ class BirdSearchRepository: BirdSearchRepositoryProtocol {
             body: nil,
             headers: nil,
             expecting: BirdSearchResponse.self
+        )
+    }
+    
+    func fetchBirdByScientificName(scientificName: String) -> AnyPublisher<BirdDetailResponse, Error> {
+        let encodedName = scientificName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? scientificName
+        let url = "\(Constants.Urls.birdSearchFetch)\(encodedName)"
+        
+        return apiService.request(
+            url,
+            method: . get,
+            body: nil,
+            headers: nil,
+            expecting: BirdDetailResponse.self
         )
     }
 }

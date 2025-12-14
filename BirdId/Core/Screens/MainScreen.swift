@@ -12,6 +12,8 @@ struct MainScreen: View {
     @EnvironmentObject var tabManager: TabManager
     @State private var currentMode: IdentificationMode = .camera
     @EnvironmentObject var coordinator : Coordinator
+    
+    @StateObject private var homeViewModel = HomeScreenViewModel()
     var body: some View {
         NavigationStack(path: $coordinator.path){
             ZStack {
@@ -23,7 +25,7 @@ struct MainScreen: View {
                     ZStack {
                         switch tabManager.selectedTab {
                         case .home:
-                            HomeScreen()
+                            HomeScreen(viewModel: homeViewModel)
                                 .environmentObject(coordinator)
                                 .tag(TabBarItem.home)
                         case .identify:
@@ -46,7 +48,7 @@ struct MainScreen: View {
                     coordinator.buildView(for: route)
                 }
                 .overlay (alignment: .bottom) {
-                    if tabManager.selectedTab != .identify {
+                    if tabManager.selectedTab != .identify && !homeViewModel.showLoadingScreen{
                         VStack {
                             Spacer()
                             CustomTabBar(selectedTab: $tabManager.selectedTab)

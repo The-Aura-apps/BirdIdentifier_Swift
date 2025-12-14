@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - Main Upload Response (Root)
-struct UploadResponse: Decodable {
+struct UploadResponse:  Decodable {
     let success: Bool
     let bird: BirdDetailResponse
     let confidence: String
@@ -30,7 +30,7 @@ struct ObservationInfo: Decodable {
     }
 }
 
-// MARK: - Bird Detail Response
+// MARK:  - Bird Detail Response
 struct BirdDetailResponse: Decodable {
     let id: Int
     let scientificName: String
@@ -40,14 +40,14 @@ struct BirdDetailResponse: Decodable {
     let feedingHabits: String?
     let eggsDescription: String?
     let coolFacts: String?
-    let lifeExpectancyYears: String?
+    let lifeExpectancyYears:  String?
     let size: Size
     let commonNames: [CommonName]
     let taxonomy: Taxonomy
     let conservationStatus: ConservationStatus
     let habitats: [BirdHabitat]
-    let birdFoods: [BirdFoodWrapper]
-    let distributions: [Distribution]
+    let birdFoods: [BirdFoodWrapper]?  // 👈 optional شد
+    let distributions: [Distribution]? // 👈 optional شد
     let media: [Media]
     
     enum CodingKeys: String, CodingKey {
@@ -64,7 +64,7 @@ struct Size: Decodable {
     let wingspanCm: RangeValue
     let weightGrams: RangeValue
     
-    enum CodingKeys: String, CodingKey {
+    enum CodingKeys:  String, CodingKey {
         case lengthCm, wingspanCm, weightGrams
     }
 }
@@ -73,7 +73,7 @@ struct RangeValue: Decodable {
     let max: Double?
     let min: Double?
     
-    enum CodingKeys: String, CodingKey {
+    enum CodingKeys:  String, CodingKey {
         case max, min
     }
     
@@ -109,10 +109,10 @@ struct Taxonomy: Decodable {
     let phylum: String?
     let `class`: String?
     let order: String?
-    let family: String?
+    let family:  String?
     let genus: String?
-    let createdAt: String
-    let updatedAt: String
+    let createdAt:  String
+    let updatedAt:  String
     
     enum CodingKeys: String, CodingKey {
         case id, phylum, `class`, order, family, genus, createdAt, updatedAt
@@ -124,7 +124,7 @@ struct ConservationStatus: Decodable {
     let id: Int
     let code: String
     let fullName: String
-    let description: String?
+    let description:  String?
     let severityLevel: Int?
     let authority: String?
     let createdAt: String
@@ -136,9 +136,9 @@ struct ConservationStatus: Decodable {
 }
 
 // MARK: - Habitat
-struct BirdHabitat: Decodable {
+struct BirdHabitat:  Decodable {
     let id: Int
-    let name: String
+    let name:  String
     let description: String?
     
     enum CodingKeys: String, CodingKey {
@@ -146,8 +146,8 @@ struct BirdHabitat: Decodable {
     }
 }
 
-// MARK: - Bird Foods
-struct BirdFoodWrapper: Decodable {
+// MARK:  - Bird Foods
+struct BirdFoodWrapper:  Decodable {
     let id: Int
     let isActive: Bool?
     let createdAt: String
@@ -162,7 +162,7 @@ struct BirdFoodWrapper: Decodable {
 struct Food: Decodable {
     let id: Int
     let name: String
-    let description: String?
+    let description:  String?
     let imageStorageKey: String?
     
     enum CodingKeys: String, CodingKey {
@@ -197,7 +197,7 @@ struct Location: Decodable {
     }
 }
 
-struct Coordinates: Decodable {
+struct Coordinates:  Decodable {
     let lat: Double
     let lng: Double
     

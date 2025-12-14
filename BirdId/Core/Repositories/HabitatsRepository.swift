@@ -13,6 +13,7 @@ protocol HabitatsRepositoryProtocol {
     func getHabitats() -> AnyPublisher<HabitatsResponse, Error>
     func getHabitatDetail(id: Int) -> AnyPublisher<HabitatDetailResponse, Error>
     func getHabitatBird(id: Int) -> AnyPublisher<[BirdHabitatSimple], Error>
+    func filterBirdsByHabitat(habitatId: Int, search: String) -> AnyPublisher<BirdFilterResponse, Error>
 }
 
 class HabitatsRepository: HabitatsRepositoryProtocol {
@@ -38,18 +39,33 @@ class HabitatsRepository: HabitatsRepositoryProtocol {
             "\(Constants.Urls.birdHabitat)\(id)",
             method: .get,
             body: nil,
-            headers: nil,
+            headers:  nil,
             expecting: [BirdHabitatSimple].self
         )
     }
     
-    func getHabitatDetail(id: Int) -> AnyPublisher<HabitatDetailResponse, Error> {
+    func getHabitatDetail(id:  Int) -> AnyPublisher<HabitatDetailResponse, Error> {
         return apiService.request(
             "\(Constants.Urls.habitats)/\(id)",
-            method: .get,
+            method:  .get,
             body: nil,
             headers: nil,
             expecting: HabitatDetailResponse.self
+        )
+    }
+    
+    func filterBirdsByHabitat(habitatId: Int, search: String) -> AnyPublisher<BirdFilterResponse, Error> {
+        let encodedSearch = search.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? search
+        let url = "\(Constants.Urls.birdFilterByHabitat)?habitatId=\(habitatId)&search=\(encodedSearch)"
+        
+        print("🌐 Filter API URL:  \(url)")
+        
+        return apiService.request(
+            url,
+            method: .get,
+            body: nil,
+            headers: nil,
+            expecting: BirdFilterResponse.self
         )
     }
 }

@@ -11,15 +11,13 @@ import Foundation
 struct BirdHabitatSimple: Codable, Identifiable {
     let birdId: Int
     let scientificName: String
-    let image: String
+    let image: String?
     
+    enum CodingKeys: String, CodingKey {
+        case birdId, scientificName, image
+    }
     var id: Int {
         birdId
-    }
-    
-    // Helper computed property to get image URL
-    var imageURL: URL? {
-        URL(string:  image)
     }
 }
 

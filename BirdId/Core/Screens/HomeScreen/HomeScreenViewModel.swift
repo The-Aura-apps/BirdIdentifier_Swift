@@ -5,7 +5,6 @@
 //  Created by ali bakhsha on 7/22/1404 AP.
 //
 
-
 import Foundation
 import Combine
 import SwiftUI
@@ -15,17 +14,22 @@ class HomeScreenViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var habitats: [HabitatsModel] = []
     @Published var isLoadingHabitats = false
-    @Published var errorMessage:  String?
+    @Published var errorMessage:   String?
     
     // Search related properties
     @Published var searchResults: [BirdSearchItem] = []
     @Published var isSearching = false
     @Published var showSearchResults = false
     
+    // Bird detail fetch - برای نمایش SearchResultScreen
+    @Published var isLoadingBirdDetail = false
+    @Published var showLoadingScreen = false
+    
     private let habitatsRepository:  HabitatsRepositoryProtocol
     private let searchRepository:  BirdSearchRepositoryProtocol
     private var cancellables = Set<AnyCancellable>()
     private var searchCancellable: AnyCancellable?
+    private weak var coordinator: Coordinator?
     
     init(
         habitatsRepository: HabitatsRepositoryProtocol = HabitatsRepository(),
@@ -37,6 +41,10 @@ class HomeScreenViewModel: ObservableObject {
         setupSearchDebounce()
     }
     
+    func setCoordinator(_ coordinator: Coordinator) {
+        self.coordinator = coordinator
+    }
+    
     func fetchHabitats() {
         isLoadingHabitats = true
         errorMessage = nil
@@ -44,7 +52,7 @@ class HomeScreenViewModel: ObservableObject {
         habitatsRepository.getHabitats()
             .sink { [weak self] completion in
                 self?.isLoadingHabitats = false
-                if case . failure(let error) = completion {
+                if case .failure(let error) = completion {
                     self?.errorMessage = error.localizedDescription
                     print("Error fetching habitats:  \(error.localizedDescription)")
                 }
@@ -90,6 +98,42 @@ class HomeScreenViewModel: ObservableObject {
                 self?.searchResults = results
                 self?.isSearching = false
             }
+    }
+    
+    func fetchBirdDetail(scientificName: String) {
+        showLoadingScreen = true
+        isLoadingBirdDetail = true
+        
+        searchRepository.fetchBirdByScientificName(scientificName: scientificName)
+            .sink { [weak self] result in
+                self?.isLoadingBirdDetail = false
+                if case .failure(let error) = result {
+                    print("Error fetching bird detail: \(error.localizedDescription)")
+                    self?.showLoadingScreen = false
+                    self?.errorMessage = error.localizedDescription
+                }
+            } receiveValue: { [weak self] birdDetail in
+                guard let self = self else { return }
+                
+                let mockUploadResponse = UploadResponse(
+                    success: true,
+                    bird:  birdDetail,
+                    confidence: "100%",
+                    status: "success",
+                    observation: ObservationInfo(
+                        id: UUID().uuidString,
+                        createdAt: ISO8601DateFormatter().string(from: Date())
+                    )
+                )
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.showLoadingScreen = false
+                    self.clearSearch()
+                    
+                    self.coordinator?.push(.ResultScreen(uploadResponse: mockUploadResponse))
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func clearSearch() {

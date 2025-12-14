@@ -16,7 +16,7 @@ import SwiftUI
 
 struct ResultScreen: View {
     // Two possible init methods
-    let uploadResponse: UploadResponse?
+    let uploadResponse:  UploadResponse?
     let birdId: Int?
     
     @StateObject private var viewModel = BirdDetailViewModel()
@@ -52,14 +52,16 @@ struct ResultScreen: View {
                     . scaleEffect(1.5)
                     .tint(.text)
             } else if let bird = birdDetailResponse {
-                VStack {
-                    makeBirdImageSection(bird: bird)
-                    ScrollView {
-                        BirdInfoItem(birdDetail: bird)
-                            .padding(.bottom, UIScreen.screenHeight / 13.3)
-                            .padding(.bottom, 24)
+                    VStack(spacing: 0) {
+                        makeBirdImageSection(bird: bird)
+                            .padding(.bottom,24)
+                        ScrollView {
+                            BirdInfoItem(birdDetail:  bird)
+                                .padding(. bottom, UIScreen.screenHeight / 13.3)
+                                .padding(.bottom, 24)
+                        }
                     }
-                }
+                .ignoresSafeArea(edges: .top)
             } else {
                 Text("No data available")
                     .foregroundStyle(.text)
@@ -69,10 +71,10 @@ struct ResultScreen: View {
             VStack {
                 Spacer()
                 CustomTabBar(selectedTab: $tabManager.selectedTab)
-                    .padding(.bottom, 24)
+                    . padding(.bottom, 24)
             }
         }
-        .ignoresSafeArea(edges: .bottom)
+        . ignoresSafeArea(edges: .bottom)
         .navigationBarBackButtonHidden(true)
         .onAppear {
             if let birdId = birdId, viewModel.birdDetail == nil {
@@ -94,96 +96,103 @@ struct ResultScreen: View {
 
 extension ResultScreen {
     func makeBirdImageSection(bird:  BirdDetailResponse) -> some View {
-        ZStack(alignment: .top) {
+        ZStack(alignment:  .top) {
             // Get first photo from media
             if let firstPhoto = bird.media.first(where: { $0.type == "photo" }) {
                 CachedAsyncImage(url: URL(string: firstPhoto.storageKey)) { image in
                     image
                         .resizable()
-//                        .aspectRatio(contentMode: . fill)
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: UIScreen.screenWidth)
+                        .frame(minHeight: UIScreen.screenHeight * 0.4, maxHeight: UIScreen.screenHeight * 0.6)
+                        .clipped()
                 } placeholder: {
                     Rectangle()
                         .fill(Color.gray.opacity(0.3))
+                        .frame(width: UIScreen.screenWidth)
+                        .frame(height: UIScreen.screenHeight * 0.5)
                         .overlay {
                             ProgressView()
                                 .tint(.white)
                         }
                 }
-                .ignoresSafeArea()
             } else {
                 Image(.textResultBird)
                     . resizable()
-                    .mask(
-                        VStack(spacing: 0) {
-                            Color.white
-                            RoundedRectangle(cornerRadius: 24)
-                                .frame(height: 24)
-                        }
-                    )
-                    .ignoresSafeArea()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: UIScreen.screenWidth)
+                    .frame(minHeight: UIScreen.screenHeight * 0.4, maxHeight: UIScreen.screenHeight * 0.6)
+                    .clipped()
             }
             
+            // Gradient overlays
             LinearGradient(
                 gradient:  Gradient(colors: [
                     Color.black.opacity(0.0),
-                    Color.black.opacity(0.4)
+                    Color.black.opacity(0.6)
                 ]),
                 startPoint: .top,
                 endPoint: .bottom
             )
-            .ignoresSafeArea()
             
             LinearGradient(
-                gradient:  Gradient(colors: [
-                    Color.black.opacity(0.2),
-                    Color.black.opacity(0.2)
+                gradient: Gradient(colors: [
+                    Color.black.opacity(0.3),
+                    Color.clear
                 ]),
                 startPoint: .top,
-                endPoint: .bottom
+                endPoint: .center
             )
-            .ignoresSafeArea()
             
+            // Content overlay
             VStack {
                 HStack {
                     BackButtonView()
                     Spacer()
                 }
+                . padding(.top, 48)
+                
                 Spacer()
-                HStack {
+                
+                HStack(alignment: .bottom) {
                     let minLength = String(format: "%.1f", bird.size.lengthCm.min ??  0)
                     let maxLength = String(format: "%. 1f", bird.size.lengthCm.max ?? 0)
                     
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(bird.scientificName)
                             .font(.app(. Headline1))
+                            . foregroundStyle(.text)
+                            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                        
+                        Text("\(bird.taxonomy.genus ?? "") • \(minLength)-\(maxLength) cm • \(bird.lifeExpectancyYears ?? "") yrs")
+                            .font(. app(.Micro1))
                             .foregroundStyle(.text)
-                        Text("\(bird.taxonomy.genus ??  "") • \(minLength)-\(maxLength) cm • \(bird.lifeExpectancyYears ?? "") yrs")
-                            .font(. app(. Micro1))
-                            .foregroundStyle(.text)
+                            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
                     }
+                    
                     Spacer()
-                    HStack {
-                        Image(.play)
-                            .padding(.trailing, 4)
-                        Text("Play bird song")
-                            .font(.app(.Sub2))
-                            .foregroundStyle(.text)
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .adaptiveGlassEffect(style: .clear)
+                    
+//                    HStack {
+//                        Image(.play)
+//                            .padding(.trailing, 4)
+//                        Text("Play bird song")
+//                            .font(.app(.Sub2))
+//                            .foregroundStyle(. text)
+//                    }
+//                    .padding(.horizontal, 12)
+//                    .padding(.vertical, 10)
+//                    . adaptiveGlassEffect(style: .clear)
                 }
+                .padding(.bottom, 24)
             }
             .padding(.horizontal, 24)
-            .padding(.bottom, 24)
         }
-        .frame(height: UIScreen.screenHeight / 2.80)
-        .padding(.bottom, 24)
+        .frame(minHeight: UIScreen.screenHeight * 0.4, maxHeight: UIScreen.screenHeight * 0.6)
     }
 }
 
 #Preview {
-    ResultScreen(uploadResponse: .mock)
+    ResultScreen(uploadResponse: . mock)
         .environmentObject(TabManager())
         .environmentObject(Coordinator())
 }
