@@ -14,6 +14,7 @@ struct LottieView: UIViewRepresentable {
     var loopMode: LottieLoopMode = .loop
     var animationSpeed: CGFloat = 1.0
     var contentMode: UIView.ContentMode = .scaleAspectFit
+    var color: UIColor? = nil
 
     let animationView = LottieAnimationView()
 
@@ -24,6 +25,12 @@ struct LottieView: UIViewRepresentable {
         animationView.loopMode = loopMode
         animationView.animationSpeed = animationSpeed
         animationView.contentMode = contentMode
+        
+        if let color = color {
+            let provider = ColorValueProvider(color.lottieColorValue)
+            animationView.setValueProvider(provider, keypath: AnimationKeypath(keypath: "**.Fill 1.Color"))
+        }
+        
         animationView.play()
 
         animationView.translatesAutoresizingMaskIntoConstraints = false
@@ -40,7 +47,11 @@ struct LottieView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
-        // Can handle updates here if needed
+        if let color = color {
+            let provider = ColorValueProvider(color.lottieColorValue)
+            animationView.setValueProvider(provider, keypath: AnimationKeypath(keypath: "**.Fill 1.Color"))
+        }
     }
 }
+
 

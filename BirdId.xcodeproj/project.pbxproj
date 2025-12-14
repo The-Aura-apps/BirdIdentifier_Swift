@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		832EC6ED2EBA07EB0090EAAB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 832EC6EC2EBA07EB0090EAAB /* Alamofire */; };
 		8384BD2E2E98037E0081FB14 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8384BD2D2E98037E0081FB14 /* Lottie */; };
+		83FE369C2ED374C300E31ABC /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 83FE369B2ED374C300E31ABC /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +85,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8384BD2E2E98037E0081FB14 /* Lottie in Frameworks */,
+				832EC6ED2EBA07EB0090EAAB /* Alamofire in Frameworks */,
+				83FE369C2ED374C300E31ABC /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +149,8 @@
 			name = BirdId;
 			packageProductDependencies = (
 				8384BD2D2E98037E0081FB14 /* Lottie */,
+				832EC6EC2EBA07EB0090EAAB /* Alamofire */,
+				83FE369B2ED374C300E31ABC /* KeychainAccess */,
 			);
 			productName = BirdId;
 			productReference = 83A8922A2E8DA1AB00337242 /* BirdId.app */;
@@ -231,6 +237,7 @@
 			packageReferences = (
 				83C63B662E979C9C00A4DF5F /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				83FE369A2ED3743F00E31ABC /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83A8922B2E8DA1AB00337242 /* Products */;
@@ -445,7 +452,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -483,7 +490,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -639,13 +646,31 @@
 				minimumVersion = 5.10.2;
 			};
 		};
+		83FE369A2ED3743F00E31ABC /* XCRemoteSwiftPackageReference "KeychainAccess" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kishikawakatsumi/KeychainAccess";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		832EC6EC2EBA07EB0090EAAB /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
 		8384BD2D2E98037E0081FB14 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 83C63B662E979C9C00A4DF5F /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
+		};
+		83FE369B2ED374C300E31ABC /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 83FE369A2ED3743F00E31ABC /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

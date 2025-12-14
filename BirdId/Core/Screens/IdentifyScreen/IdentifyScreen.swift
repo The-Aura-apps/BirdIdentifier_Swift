@@ -9,259 +9,442 @@ import SwiftUI
 import PhotosUI
 
 struct IdentifyScreen: View {
+    // MARK: - Properties
+    @StateObject private var viewModel = IdentifyViewModel()
     @StateObject private var camera = CameraController()
     @StateObject private var gallery = PhotoPickerController()
+    @StateObject private var audioPicker = AudioPickerController()
     @StateObject private var audio = AudioRecorderController()
-    @Namespace private var animation
-    @State private var currentMode: IdentificationMode = .camera
+    @EnvironmentObject private var coordinator: Coordinator
     
+    @Binding var selectedTab: TabBarItem
+    @Binding var currentMode: IdentificationMode
+    
+    @Namespace private var animation
+    
+    // MARK:  - Body
     var body: some View {
         ZStack {
-            Image(.bgImg).resizable().ignoresSafeArea()
+            backgroundView
+            mainContent
             
-            VStack {
-                // MARK: Header & Camera Section
-                ZStack {
-                    Color(hex: "#5B765C")
-                        .ignoresSafeArea()
-                if camera.isConfigured {
-                    CameraLiveView(controller: camera)
-                        .ignoresSafeArea()
-                }
-                    
-                    if let captured = camera.capturedImage {
-                        Image(uiImage: captured)
-                            .resizable()
-                            .scaledToFit()
-                            .ignoresSafeArea()
-                    }
-                    
-                    currentScreenContent()
-                        .frame(height: UIScreen.screenHeight / 1.25)
-                        .padding(.horizontal, 24)
-                }
+            if viewModel.showSearchResult {
+                SearchResultScreen()
+                    .transition(.move(edge: .bottom))
+                    .zIndex(1)
+            }
+
+            if viewModel.showCheckedView {
+                CheckedView(checkedState: viewModel.checkedState ??  .failure)
+                    .transition(.scale.combined(with: .opacity))
+                    .zIndex(2)
+            }
+        }
+        .setupLifecycle(
+            viewModel: viewModel,
+            coordinator: coordinator,
+            camera: camera,
+            audio: audio
+        )
+        .handleGallerySelection(gallery: gallery, viewModel: viewModel)
+        .handleAudioPickerSelection(audioPicker: audioPicker, viewModel: viewModel) 
+        .sheet(isPresented: $audioPicker.isPresented) { 
+            AudioPicker(controller: audioPicker)
+        }
+        .navigationBarBackButtonHidden(true)
+    }
+}
+
+// MARK: - View Components
+private extension IdentifyScreen {
+    var backgroundView: some View {
+        Group {
+            if camera.isConfigured && currentMode == .camera {
+                CameraLiveView(controller: camera)
+            } else {
+                Color(hex: "#5B765C")
+            }
+        }
+        .ignoresSafeArea()
+    }
+    
+    var mainContent: some View {
+        VStack {
+            ZStack {
+                headerSection
+                bottomSection
+            }
+        }
+        .padding(. top)
+        .ignoresSafeArea()
+    }
+    
+    var headerSection: some View {
+        VStack {
+            HStack {
+                IdentifyBackButton(selectedTab: $selectedTab)
+                Spacer()
                 
-                
-                // MARK: Bottom Bar
-                VStack {
-                    BottomBarView(
-                        currentMode: $currentMode,
-                        gallerySelection: gallery,
-                        audio: audio,
-                        animation: animation,
-                        onCapturePhoto: {
-                            if (currentMode == .camera){
-                                camera.capturePhoto()
-                            }else {
-                                currentMode = .camera
-                            }
-                        },
-                        onMicRecord: {
-                            if audio.recording {
-                                audio.stopRecording()
-                            } else {
-                                audio.startRecording()
-                            }
-                        },
-                        onGallery: {
-                            // gallery selection logic
-                        }
-                    )
-                    .frame(height: UIScreen.screenHeight / 5.325)
-                    .background(Color.clear)
+                if currentMode == .camera {
+                    InfoCircleButton()
                 }
             }
-            .ignoresSafeArea()
-        }
-        .onDisappear {
-            camera.stop()
+            .padding(.top, 48)
+            .padding(.horizontal, 24)
+            Spacer()
         }
     }
     
-}
-
-extension IdentifyScreen {
+    var bottomSection: some View {
+        VStack {
+            VStack {
+                Spacer()
+                currentScreenContent
+                    .padding(.horizontal, 24)
+            }
+            
+            BottomBarView(
+                currentMode: $currentMode,
+                gallerySelection: gallery,
+                audioPicker: audioPicker,
+                audio: audio,
+                animation: animation,
+                onCapturePhoto: handleCapturePhoto,
+                onMicRecord: handleMicRecord,
+                onGallery: handleGallery,
+                onAudioPicker: handleAudioPicker
+            )
+            .frame(height: UIScreen.screenHeight / 5.325)
+            .background(Color.clear)
+        }
+    }
+    
     @ViewBuilder
-    private func currentScreenContent() -> some View {
-        Group{
+    var currentScreenContent: some View {
+        Group {
             switch currentMode {
             case .camera:
-                cameraScreen()
+                CameraScreenContent()
             case .mic:
-                micScreen()
-            default: cameraScreen()
+                MicScreenContent(audio: audio)
+            case .gallery:
+                CameraScreenContent()
             }
         }
         .transition(.opacity)
         .animation(.easeInOut(duration: 0.3), value: currentMode)
     }
-    
-    private func cameraScreen() -> some View {
+}
 
-            VStack {
-                HStack {
-                    BackButtonView()
-                    Spacer()
-                    InfoCircleButton()
-                }
-                .padding(.top, 48)
-                
-                Spacer()
-                Image(.cameraIdentify)
-                    .frame(height: UIScreen.screenHeight / 2.13)
-                    .padding(.horizontal)
-                
-                Spacer()
-                Text("Identify a bird via photo")
-                    .font(.app(.Sub2))
-                    .foregroundStyle(.text)
-                Spacer()
-            }
+// MARK: - Action Handlers
+private extension IdentifyScreen {
+    func handleCapturePhoto() {
+        guard currentMode == .camera else {
+            currentMode = .camera
+            return
+        }
+        
+        camera.capturePhoto()
+        
+        guard let image = camera.capturedImage,
+              let data = image.jpegData(compressionQuality: 0.8) else {
+            return
+        }
+        
+        viewModel.uploadImage(data)
     }
-    private func micScreen() -> some View {
-        VStack {
-            HStack {
-                BackButtonView()
-                Spacer()
-                InfoCircleButton()
+    
+    func handleMicRecord() {
+        if audio.recording {
+            audio.stopRecording()
+            
+            guard let fileURL = audio.recordedFileURL,
+                  let data = try?  Data(contentsOf: fileURL) else {
+                return
             }
-            .padding(.top, 48)
-            Spacer()
-            
-            
-            Text("00.00.0")
-                .font(.app(.Sub2))
-                .foregroundStyle(.text)
-                .padding(.vertical,4)
-                .padding(.horizontal,16)
-                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
-            
-            Text("Tap the button below to start\n Recording")
-                .font(.app(.Sub2))
-                .foregroundStyle(.text)
-                .multilineTextAlignment(.center)
-                .padding(.vertical,24)
-            
-            if let fileURL = audio.recordedFileURL {
-                VStack(spacing: 12) {
-                    Text("🎙 Last Recording:")
-                        .font(.app(.Sub2))
-                        .foregroundStyle(.text)
-                    
-                    Text(fileURL.lastPathComponent)
-                        .font(.app(.Sub2))
-                        .foregroundStyle(.gray)
-                    
-                    HStack(spacing: 24) {
-                        Button {
-                            if audio.playing {
-                                audio.stopPlayback()
-                            } else {
-                                audio.playRecording()
-                            }
-                        } label: {
-                            Image(systemName: audio.playing ? "stop.circle.fill" : "play.circle.fill")
-                                .resizable()
-                                .frame(width: 48, height: 48)
-                                .foregroundStyle(audio.playing ? .red : .green)
-                        }
-                    }
-                    .padding(.top, 8)
-                }
-                .padding()
-                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
-            }
+        
+            viewModel.uploadAudio(data)
+        } else {
+            audio.startRecording()
+        }
+    }
+    
+    func handleGallery() {
 
+    }
+    
+    func handleAudioPicker() {
+        audioPicker.presentAudioPicker()
+    }
+}
+
+// MARK: - Screen Content Views
+struct CameraScreenContent: View {
+    var body: some View {
+        VStack {
+            Spacer()
+            Image(. cameraIdentify)
+                .frame(height: UIScreen.screenHeight / 2.13)
+            Spacer()
+            Text("Identify a bird via photo")
+                .font(.app(.Sub2))
+                .foregroundStyle(.text)
         }
     }
 }
 
+struct MicScreenContent: View {
+    @ObservedObject var audio: AudioRecorderController
+    
+    var body: some View {
+        VStack {
+            Spacer()
+            
+            LottieView(
+                animationName: "VoiceVisualization",
+                animationSpeed: audio.recording ? 1.0 : 0,
+                color: UIColor.white
+            )
+            .id(audio.recording)
+            . foregroundStyle(.text)
+            .frame(height: UIScreen.screenHeight / 2.13)
+            . animation(.easeIn(duration: 0.3), value: audio.recording)
+            
+            recordingDuration
+            recordingInstructions
+        }
+    }
+    
+    private var recordingDuration: some View {
+        Text(formatTime(audio.recordingDuration))
+            .font(.app(.Sub2))
+            .foregroundStyle(.text)
+            .padding(.vertical, 4)
+            .padding(.horizontal, 16)
+            .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
+    }
+    
+    private var recordingInstructions:  some View {
+        Text(instructionText)
+            .font(.app(.Sub2))
+            .foregroundStyle(.text)
+            .multilineTextAlignment(.center)
+            .animation(.easeIn(duration: 0.3), value: audio.recording)
+    }
+    
+    private var instructionText: String {
+        if audio.recording {
+            return audio.recordingDuration < 5
+                ? "Pls record at least 5 seconds"
+                : "Tap the button below to upload the recording"
+        } else {
+            return "Tap the button below to start Recording"
+        }
+    }
+}
 
-struct BottomBarView: View {
+// MARK: - Bottom Bar View
+struct BottomBarView:  View {
     @Binding var currentMode: IdentificationMode
     @ObservedObject var gallerySelection: PhotoPickerController
+    @ObservedObject var audioPicker: AudioPickerController
     @ObservedObject var audio: AudioRecorderController
+    
     let animation: Namespace.ID
     let onCapturePhoto: () -> Void
     let onMicRecord: () -> Void
     let onGallery: () -> Void
+    let onAudioPicker: () -> Void
     
     var body: some View {
         VStack {
             Spacer()
             HStack(alignment: .center) {
-                PhotosPicker(selection: $gallerySelection.imageSelection) {
-                        Image(.galleryAdd)
-                            .frame(width: 24, height: 24)
-                            .padding(.all, 12)
-                            .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
-                }
-                
+                leftButton
                 Spacer()
-                
-                // CENTER BUTTONS (camera or mic)
-                if currentMode == .camera ||  currentMode == .gallery{
-                    // Camera in center
-                    Button(action: onCapturePhoto) {
-                        Circle()
-                            .fill(Color.white.opacity(0.1))
-                            .frame(width: 72, height: 72)
-                            .overlay {
-                                Image(.camera)
-                                    .frame(width: 32, height: 32)
-                            }
-                            .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
-                    }
-                    .matchedGeometryEffect(id: "camera", in: animation)
-                } else if currentMode == .mic ||  currentMode == .gallery{
-                    // Microphone in center
-                    Button(action: onMicRecord) {
-                        Circle()
-                            .fill(Color.white.opacity(0.1))
-                            .frame(width: 72, height: 72)
-                            .overlay {
-                                Image(audio.recording ? .record : .microphone)
-                                    .frame(width: 32, height: 32)
-                            }
-                            .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
-                    }
-                    .matchedGeometryEffect(id: "mic", in: animation)
-                }
-                
+                centerButton
                 Spacer()
-                
-                if currentMode == .camera ||  currentMode == .gallery{
-                    Button(action: {
-                        withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
-                            currentMode = .mic
-                        }
-                    }) {
-                        Image(.microphone)
-                            .frame(width: 24, height: 24)
-                            .padding(.all, 12)
-                            .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
-                    }
-                    .matchedGeometryEffect(id: "mic", in: animation)
-                } else if currentMode == .mic ||  currentMode == .gallery{
-                    Button(action: {
-                        withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
-                            currentMode = .camera
-                        }
-                    }) {
-                        Image(.camera)
-                            .frame(width: 24, height: 24)
-                            .padding(.all, 12)
-                            .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
-                    }
-                    .matchedGeometryEffect(id: "camera", in: animation)
-                }
+                toggleButton
             }
             .padding(.horizontal, 48)
             Spacer()
         }
     }
+    
+    @ViewBuilder
+    private var leftButton: some View {
+        if currentMode == .mic {
+            audioPickerButton
+        } else {
+            galleryButton
+        }
+    }
+    
+    private var galleryButton: some View {
+        PhotosPicker(selection: $gallerySelection.imageSelection) {
+            Image(. galleryAdd)
+                .frame(width: 24, height: 24)
+                .padding(.all, 12)
+                .adaptiveGlassEffect(style:  .clear, cornerRadius: 16)
+        }
+    }
+    
+    private var audioPickerButton: some View {
+        Button(action: onAudioPicker) {
+            Image(systemName: "folder.fill.badge.plus")
+                .frame(width: 24, height:  24)
+                .padding(. all, 12)
+                .foregroundColor(.white)
+                .adaptiveGlassEffect(style:  .clear, cornerRadius: 16)
+        }
+    }
+    
+    @ViewBuilder
+    private var centerButton: some View {
+        if currentMode == .camera || currentMode == .gallery {
+            cameraButton
+        } else if currentMode == .mic {
+            micButton
+        }
+    }
+    
+    private var cameraButton: some View {
+        Button(action: onCapturePhoto) {
+            Circle()
+                .fill(Color.white.opacity(0.1))
+                .frame(width: 72, height: 72)
+                .overlay {
+                    Image(. camera)
+                        .frame(width: 32, height: 32)
+                }
+                .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
+        }
+        .matchedGeometryEffect(id:  "camera", in: animation)
+    }
+    
+    private var micButton: some View {
+        Button(action: onMicRecord) {
+            Circle()
+                .fill(Color.white.opacity(0.1))
+                .frame(width: 72, height: 72)
+                .overlay {
+                    Image(audio.recording ? . record : .microphone)
+                        .resizable()
+                        .frame(width: 32, height: 32)
+                }
+                . adaptiveGlassEffect(style: .clear, cornerRadius: 99)
+        }
+        . id(audio.recording)
+        .matchedGeometryEffect(id: "micButton", in: animation)
+    }
+    
+    @ViewBuilder
+    private var toggleButton: some View {
+        if currentMode == . camera || currentMode == .gallery {
+            switchToMicButton
+        } else if currentMode == .mic {
+            switchToCameraButton
+        }
+    }
+    
+    private var switchToMicButton: some View {
+        Button(action: { switchMode(to: .mic) }) {
+            Image(. microphone)
+                .frame(width: 24, height: 24)
+                .padding(.all, 12)
+                .adaptiveGlassEffect(style:  .clear, cornerRadius: 16)
+        }
+        .matchedGeometryEffect(id: "mic", in: animation)
+    }
+    
+    private var switchToCameraButton: some View {
+        Button(action: {
+            print("🛑 stopRecording() called")
+            audio.stopRecording()
+            switchMode(to: .camera)
+        }) {
+            Image(.camera)
+                .frame(width: 24, height: 24)
+                .padding(.all, 12)
+                .adaptiveGlassEffect(style: .clear, cornerRadius: 16)
+        }
+        .matchedGeometryEffect(id: "camera", in: animation)
+    }
+    
+    private func switchMode(to mode: IdentificationMode) {
+        withAnimation(. spring(response: 0.45, dampingFraction: 0.75)) {
+            currentMode = mode
+        }
+    }
 }
 
+// MARK: - View Modifiers
+private extension View {
+    func setupLifecycle(
+        viewModel: IdentifyViewModel,
+        coordinator: Coordinator,
+        camera: CameraController,
+        audio: AudioRecorderController
+    ) -> some View {
+        self
+            .onAppear {
+                viewModel.setCoordinator(coordinator)
+            }
+            .onDisappear {
+                if camera.isConfigured { camera.stop() }
+                if audio.recording { audio.stopRecording() }
+                viewModel.cleanup()
+            }
+    }
+    
+    func handleGallerySelection(
+        gallery: PhotoPickerController,
+        viewModel: IdentifyViewModel
+    ) -> some View {
+        self.onChange(of: gallery.selectedImage) { newImage in
+            guard let image = newImage,
+                  let data = image.jpegData(compressionQuality: 0.8) else {
+                return
+            }
+            viewModel.uploadImage(data)
+        }
+    }
+    
+    // ✅ هندلر جدید برای فایل‌های صوتی انتخاب شده
+    func handleAudioPickerSelection(
+        audioPicker: AudioPickerController,
+        viewModel:  IdentifyViewModel
+    ) -> some View {
+        self.onChange(of: audioPicker.selectedAudioData) { newData in
+            guard let data = newData else { return }
+            viewModel.uploadAudio(data)
+            audioPicker.resetSelection()
+        }
+    }
+    
+    func presentSearchResult(isPresented: Binding<Bool>) -> some View {
+        self.fullScreenCover(isPresented:  isPresented) {
+            SearchResultScreen()
+        }
+    }
+    
+    func presentCheckedView(
+        isPresented: Binding<Bool>,
+        checkedState: CheckedState?
+    ) -> some View {
+        self.fullScreenCover(isPresented: isPresented) {
+            if let state = checkedState {
+                CheckedView(checkedState: state)
+            }
+        }
+    }
+}
+
+// MARK: - Preview
 #Preview {
-    IdentifyScreen()
+    IdentifyScreen(
+        selectedTab: .constant(.home),
+        currentMode: .constant(.camera)
+    )
+    .environmentObject(Coordinator())
 }

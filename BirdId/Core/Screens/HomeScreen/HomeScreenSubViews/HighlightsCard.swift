@@ -8,10 +8,14 @@
 import SwiftUI
 
 struct HighlightsCard: View {
+    
+    @EnvironmentObject var coordinator: Coordinator
+    
     var body: some View {
         //TODO: Add Button
         Button {
-            
+            //TODO: add article TITLE!!
+            coordinator.push(.ArticleScreen(title: ""))
         } label: {
             VStack(alignment: .leading) {
                 Image(.birdHighlightsImg)
@@ -35,4 +39,5 @@ struct HighlightsCard: View {
 
 #Preview {
     HighlightsCard()
+        .environmentObject(Coordinator())
 }

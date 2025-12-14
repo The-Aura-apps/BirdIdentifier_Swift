@@ -8,10 +8,16 @@
 import SwiftUI
 
 struct BackButtonView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var coordinator: Coordinator
+    var customAction: (() -> Void)? = nil
+    
     var body: some View {
         Button {
-            presentationMode.wrappedValue.dismiss()
+            if let customAction = customAction {
+                customAction()
+            } else {
+                coordinator.pop()
+            }
         } label: {
             Circle()
                 .fill(Color.white.opacity(0.1))
@@ -21,11 +27,12 @@ struct BackButtonView: View {
                         .padding(.leading, 11)
                         .padding(.trailing, 13)
                 }
-                .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
+                .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
         }
     }
 }
 
 #Preview {
     BackButtonView()
+        .environmentObject(Coordinator())
 }

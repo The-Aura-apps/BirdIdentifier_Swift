@@ -8,37 +8,63 @@
 import SwiftUI
 
 struct MainScreen: View {
-    @State private var selectedTab: TabBarItem = .home
+//    @State private var selectedTab: TabBarItem = .home
+    @EnvironmentObject var tabManager: TabManager
+    @State private var currentMode: IdentificationMode = .camera
+    @EnvironmentObject var coordinator : Coordinator
+    
+    @StateObject private var homeViewModel = HomeScreenViewModel()
     var body: some View {
-        ZStack {
-            Image(.bgImg)
-                .resizable()
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                Group {
-                    switch selectedTab {
-                    case .home:
-                        HomeScreen()
-                            .tag(TabBarItem.home)
-                            .frame(maxHeight: UIScreen.screenHeight)
-                    case .identify:
-                        Text("Identify Screen")
-                            .tag(TabBarItem.identify)
-                            .frame(maxHeight: UIScreen.screenHeight)
-                    case .history:
-                        Text("History Screen")
-                            .tag(TabBarItem.history)
-                            .frame(maxHeight: UIScreen.screenHeight)
+        NavigationStack(path: $coordinator.path){
+            ZStack {
+                Image(.bgImg)
+                    .resizable()
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    ZStack {
+                        switch tabManager.selectedTab {
+                        case .home:
+                            HomeScreen(viewModel: homeViewModel)
+                                .environmentObject(coordinator)
+                                .tag(TabBarItem.home)
+                        case .identify:
+                            IdentifyScreen(selectedTab: $tabManager.selectedTab,currentMode: $currentMode)
+                                .environmentObject(coordinator)
+                                .tag(TabBarItem.identify)
+                        case .history:
+                            HistoryScreen()
+                                .environmentObject(coordinator)
+                                .tag(TabBarItem.history)
+                        case .setting:
+                            SettingView()
+                                .environmentObject(coordinator)
+                                .tag(TabBarItem.setting)
+                        }
                     }
                 }
-                CustomTabBar(selectedTab: $selectedTab, showIdentifyButton: .constant(true))
+                .id(tabManager.selectedTab)
+                .navigationDestination(for: Route.self) { route in
+                    coordinator.buildView(for: route)
+                }
+                .overlay (alignment: .bottom) {
+                    if tabManager.selectedTab != .identify && !homeViewModel.showLoadingScreen{
+                        VStack {
+                            Spacer()
+                            CustomTabBar(selectedTab: $tabManager.selectedTab)
+                                .padding(.bottom, 24)
+                        }
+                    }
+                }
+
             }
+            .ignoresSafeArea(edges: .bottom)
         }
-        .ignoresSafeArea(edges: .bottom)
     }
 }
 
 #Preview {
     MainScreen()
+        .environmentObject(Coordinator())
+        .environmentObject(TabManager())
 }
