@@ -40,6 +40,12 @@ struct IdentifyScreen: View {
                     .zIndex(2)
             }
         }
+        .onChange(of: camera.capturedImage) { image in
+            guard let image,
+                  let data = image.jpegData(compressionQuality: 0.8) else { return }
+
+            viewModel.uploadImage(data)
+        }
         .setupLifecycle(
             viewModel: viewModel,
             coordinator: coordinator,
@@ -69,31 +75,42 @@ private extension IdentifyScreen {
     }
     
     var mainContent: some View {
-        VStack {
-            ZStack {
-                headerSection
-                bottomSection
-            }
+        VStack(spacing: 0) {
+            headerSection
+            
+            currentScreenContent
+                .padding(.horizontal, 24)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            
+            BottomBarView(
+                currentMode: $currentMode,
+                gallerySelection: gallery,
+                audioPicker: audioPicker,
+                audio: audio,
+                animation: animation,
+                onCapturePhoto: handleCapturePhoto,
+                onMicRecord: handleMicRecord,
+                onGallery: handleGallery,
+                onAudioPicker: handleAudioPicker
+            )
+            .frame(height: UIScreen.screenHeight / 5.325)
         }
-        .padding(. top)
-        .ignoresSafeArea()
+        .ignoresSafeArea(edges: .bottom)
     }
+
     
     var headerSection: some View {
-        VStack {
-            HStack {
-                IdentifyBackButton(selectedTab: $selectedTab)
-                Spacer()
-                
-                if currentMode == .camera {
-                    InfoCircleButton()
-                }
-            }
-            .padding(.top, 48)
-            .padding(.horizontal, 24)
+        HStack {
+            IdentifyBackButton(selectedTab: $selectedTab)
             Spacer()
+            if currentMode == .camera {
+                InfoCircleButton()
+            }
         }
+        .padding(.top, 24)
+        .padding(.horizontal, 24)
     }
+
     
     var bottomSection: some View {
         VStack {
@@ -139,20 +156,12 @@ private extension IdentifyScreen {
 // MARK: - Action Handlers
 private extension IdentifyScreen {
     func handleCapturePhoto() {
-        guard currentMode == .camera else {
+        if currentMode != .camera {
             currentMode = .camera
-            return
         }
-        
         camera.capturePhoto()
-        
-        guard let image = camera.capturedImage,
-              let data = image.jpegData(compressionQuality: 0.8) else {
-            return
-        }
-        
-        viewModel.uploadImage(data)
     }
+
     
     func handleMicRecord() {
         if audio.recording {
@@ -183,7 +192,7 @@ struct CameraScreenContent: View {
     var body: some View {
         VStack {
             Spacer()
-            Image(. cameraIdentify)
+            Image(.cameraIdentify)
                 .frame(height: UIScreen.screenHeight / 2.13)
             Spacer()
             Text("Identify a bird via photo")
@@ -206,7 +215,7 @@ struct MicScreenContent: View {
                 color: UIColor.white
             )
             .id(audio.recording)
-            . foregroundStyle(.text)
+            .foregroundStyle(.text)
             .frame(height: UIScreen.screenHeight / 2.13)
             . animation(.easeIn(duration: 0.3), value: audio.recording)
             
@@ -312,12 +321,12 @@ struct BottomBarView:  View {
         Button(action: onCapturePhoto) {
             Circle()
                 .fill(Color.white.opacity(0.1))
-                .frame(width: 72, height: 72)
                 .overlay {
-                    Image(. camera)
+                    Image(.camera)
                         .frame(width: 32, height: 32)
                 }
                 .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
+                .frame(width: UIScreen.screenWidth / 5.46, height: UIScreen.screenHeight / 11.83)
         }
         .matchedGeometryEffect(id:  "camera", in: animation)
     }
@@ -326,15 +335,15 @@ struct BottomBarView:  View {
         Button(action: onMicRecord) {
             Circle()
                 .fill(Color.white.opacity(0.1))
-                .frame(width: 72, height: 72)
                 .overlay {
-                    Image(audio.recording ? . record : .microphone)
+                    Image(audio.recording ? .record : .microphone)
                         .resizable()
                         .frame(width: 32, height: 32)
                 }
                 . adaptiveGlassEffect(style: .clear, cornerRadius: 99)
+                .frame(width: UIScreen.screenWidth / 5.46, height: UIScreen.screenHeight / 11.83)
         }
-        . id(audio.recording)
+        .id(audio.recording)
         .matchedGeometryEffect(id: "micButton", in: animation)
     }
     
@@ -410,7 +419,6 @@ private extension View {
         }
     }
     
-    // ✅ هندلر جدید برای فایل‌های صوتی انتخاب شده
     func handleAudioPickerSelection(
         audioPicker: AudioPickerController,
         viewModel:  IdentifyViewModel

@@ -40,6 +40,9 @@ struct HomeScreen: View {
                                 Text("Photo\nIdentification")
                                     .font(.app(.Sub2))
                                     .foregroundStyle(.text)
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.75)
+                                    .dynamicTypeSize(.small ... .xxLarge)
                                     .multilineTextAlignment(.leading)
                             }
                             . padding(.vertical, 14)
@@ -56,6 +59,9 @@ struct HomeScreen: View {
                                 Text("Sound\nIdentification")
                                     .font(.app(.Sub2))
                                     .foregroundStyle(.text)
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.75)
+                                    .dynamicTypeSize(.small ... .xxLarge)
                                     .multilineTextAlignment(.leading)
                             }
                             .padding(.vertical, 14)
@@ -71,6 +77,9 @@ struct HomeScreen: View {
                             Text("Based on bird's habitat")
                                 .font(.app(. Headline4))
                                 .foregroundStyle(.text)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
                                 .padding(.leading, 24)
                             Spacer()
                         }
@@ -84,6 +93,9 @@ struct HomeScreen: View {
                             Text("Highlights")
                                 .font(.app(.Headline4))
                                 .foregroundStyle(.text)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
                                 . padding(.leading, 24)
                             
                             Spacer()
@@ -215,11 +227,15 @@ struct BirdSearchResultRow: View {
             Text(bird.scientificName)
                 .font(. app(.Sub1))
                 .foregroundStyle(.text)
+                .minimumScaleFactor(0.75)
+                .dynamicTypeSize(.small ... .xxLarge)
                 .italic()
             
             Text(bird.englishName)
                 .font(.app(.Sub2))
                 .foregroundStyle(.text.opacity(0.8))
+                .minimumScaleFactor(0.75)
+                .dynamicTypeSize(.small ... .xxLarge)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 20)

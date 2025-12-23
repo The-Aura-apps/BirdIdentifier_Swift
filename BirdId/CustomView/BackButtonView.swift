@@ -21,13 +21,13 @@ struct BackButtonView: View {
         } label: {
             Circle()
                 .fill(Color.white.opacity(0.1))
-                .frame(width: 48, height: 48)
                 .overlay {
                     Image(.backButton)
                         .padding(.leading, 11)
                         .padding(.trailing, 13)
                 }
                 .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
+                .frame(width: UIScreen.screenWidth / 8.18, height: UIScreen.screenHeight / 17.75)
         }
     }
 }

@@ -17,12 +17,12 @@ struct InfoCircleButton: View {
         } label: {
             Circle()
                 .fill(Color.white.opacity(0.1))
-                .frame(width: 48, height: 48)
                 .overlay {
                     Image(.questionFilled)
                         .padding(.all, 12)
                 }
                 .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
+                .frame(width: UIScreen.screenWidth / 8.18, height: UIScreen.screenHeight / 17.75)
         }
         .sheet(isPresented: $isActive) {
             VStack{

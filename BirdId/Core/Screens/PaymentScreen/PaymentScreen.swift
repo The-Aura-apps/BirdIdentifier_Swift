@@ -24,7 +24,7 @@ struct PaymentScreen: View {
                 .resizable()
                 .ignoresSafeArea()
             
-            VStack{
+            VStack(spacing: 0){
                 // MARK: Header
                 HStack(){
                     Button {
@@ -32,13 +32,13 @@ struct PaymentScreen: View {
                     } label: {
                         Circle()
                             .fill(Color.white.opacity(0.1))
-                            .frame(width: 48, height: 48)
                             .overlay {
                                 Image(systemName: "xmark")
                                     .padding(.all, 12)
                                     .foregroundStyle(.text)
                             }
                             .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
+                            .frame(width: UIScreen.screenWidth / 8.18, height: UIScreen.screenHeight / 17.75)
                     }
                     Spacer()
                 }
@@ -50,6 +50,9 @@ struct PaymentScreen: View {
                     .font(.app(.Title1))
                     .foregroundStyle(.text)
                     .padding(.bottom,16)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .dynamicTypeSize(.small ... .xxLarge)
                 
                 // MARK: Features
                 VStack(alignment: .leading, spacing: 16) {
@@ -85,8 +88,11 @@ struct PaymentScreen: View {
                     Text("Continue")
                         .font(.app(.Sub1))
                         .foregroundStyle(.text)
+                        .minimumScaleFactor(0.75)
+                        .dynamicTypeSize(.small ... .xxLarge)
+                    
                 })
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity,maxHeight: UIScreen.screenHeight / 16.38)
                 .padding(.vertical,14)
                 .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
                 .padding(.bottom,8)
@@ -117,6 +123,8 @@ extension PaymentScreen {
             Text(text)
                 .font(.app(.Sub1))
                 .foregroundStyle(.text)
+                .minimumScaleFactor(0.75)
+                .dynamicTypeSize(.small ... .xxLarge)
         }
     }
 }

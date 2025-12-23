@@ -26,6 +26,8 @@ struct SettingView: View {
                     Text("Setting")
                         .font(.app(.Headline1))
                         .foregroundStyle(.text)
+                        .minimumScaleFactor(0.75)
+                        .dynamicTypeSize(.small ... .xxLarge)
                     Spacer()
                 }
                 .padding(.vertical,24)
@@ -65,6 +67,8 @@ extension SettingView {
                             Text("Try Premium Features")
                                 .font(.app(.Headline5))
                                 .foregroundStyle(Color(hex: "#194632"))
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
                             Spacer()
                         }
                         .padding(.bottom,12)
@@ -73,6 +77,9 @@ extension SettingView {
                                 .font(.app(.Micro2))
                                 .foregroundStyle(.text)
                                 .multilineTextAlignment(.leading)
+                                .lineLimit(3)
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
                             Spacer()
                         }
                         .padding(.bottom,20)
@@ -83,11 +90,14 @@ extension SettingView {
                                 Text("Upgrade Now")
                                     .font(.app(.Sub3))
                                     .foregroundStyle(.text)
+                                    .minimumScaleFactor(0.75)
+                                    .dynamicTypeSize(.small ... .xxLarge)
 
                             })
                             .padding(.vertical,10)
                             .padding(.horizontal,24)
                             .adaptiveGlassEffect(style: .clear)
+                            .frame(height: UIScreen.screenHeight / 20.78)
                             Spacer()
                         }
                         Spacer()
@@ -117,13 +127,14 @@ extension SettingView {
                         Text(option.title)
                             .font(.app(.Headline4))
                             .foregroundStyle(.text)
+                        
                         Spacer()
                         Image(.squareTopDown)
                             .resizable()
                             .frame(width: 24, height: 24)
                     }
                     .padding(.all, 24)
-                    .frame(width: UIScreen.screenWidth - 48)
+                    .frame(width: UIScreen.screenWidth - 48,height: UIScreen.screenHeight / 11.83)
                     .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
                 })
             }
