@@ -28,25 +28,35 @@ struct PlanOptionView: View {
                     Text(title)
                         .font(.app(.Headline4))
                         .foregroundStyle(.text)
+                        .minimumScaleFactor(0.75)
+                        .dynamicTypeSize(.small ... .xxLarge)
                     
                     if type == .discount, let price, let discountedPrice {
                         HStack(spacing: 2) {
                             Text(price)
                                 .font(.app(.Sub2))
                                 .foregroundStyle(.strikeText)
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
                                 .strikethrough()
                             Text(discountedPrice)
                                 .font(.app(.Sub2))
                                 .foregroundStyle(.text)
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
                         }
                     } else if type == .free {
                         Text("Free forever")
                             .font(.app(.Sub2))
                             .foregroundStyle(.text)
+                            .minimumScaleFactor(0.75)
+                            .dynamicTypeSize(.small ... .xxLarge)
                     } else if let price {
                         Text(price)
                             .font(.app(.Sub2))
                             .foregroundStyle(.text)
+                            .minimumScaleFactor(0.75)
+                            .dynamicTypeSize(.small ... .xxLarge)
                     }
                 }
                 
@@ -59,9 +69,12 @@ struct PlanOptionView: View {
                                 Text(badgeText)
                                     .font(.app(.Micro2))
                                     .foregroundStyle(.text)
+                                    .minimumScaleFactor(0.75)
+                                    .dynamicTypeSize(.small ... .xxLarge)
                             }
                             .padding(8)
                             .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
+                            .frame(height: UIScreen.screenWidth / 28.4)
                         }
                     }else if type == .free {
                         if let badgeText {
@@ -69,14 +82,16 @@ struct PlanOptionView: View {
                                 Text(badgeText)
                                     .font(.app(.Micro2))
                                     .foregroundStyle(.text)
+                                    .minimumScaleFactor(0.75)
+                                    .dynamicTypeSize(.small ... .xxLarge)
                             }
                             .padding(8)
-                        }
+                            .frame(height: UIScreen.screenWidth / 28.4)                        }
                     }
                     
                     Circle()
                         .stroke(.text,lineWidth: isSelected ? 8 : 1)
-                        .frame(width: isSelected ? 20 : 24, height:isSelected ? 20 : 24)
+                        .frame(width: isSelected ? 20 : 24, height:isSelected ? UIScreen.screenHeight / 42.6 : UIScreen.screenHeight / 35.5)
                     
                     
                     
@@ -90,6 +105,7 @@ struct PlanOptionView: View {
                     .stroke(isSelected ? Color.white.opacity(0.5) : .clear, lineWidth: 2)
             )
         }
+        .frame(height: UIScreen.screenHeight / 13.96)
     }
 }
 

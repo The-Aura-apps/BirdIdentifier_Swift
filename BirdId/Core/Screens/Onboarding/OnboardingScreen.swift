@@ -56,23 +56,29 @@ extension OnboardingScreen {
         VStack{
             Spacer()
             Image(.onboardingLogo)
-                .frame(height: 324)
+                .frame(height: UIScreen.screenHeight / 2.63)
                 .padding(.bottom,40)
             
             Text(step.mainText)
                 .font(.app(.Headline1))
                 .foregroundStyle(.text)
+                .minimumScaleFactor(0.75)
+                .dynamicTypeSize(.small ... .xxLarge)
                 .padding(.bottom,24)
             
             Text(step.secondaryText)
                 .font(.app(.Headline3))
                 .foregroundStyle(.text)
+                .minimumScaleFactor(0.75)
+                .dynamicTypeSize(.small ... .xxLarge)
                 .padding(.bottom,24)
             
             Text(step.bodyText)
                 .font(.app(.Sub1))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.text)
+                .minimumScaleFactor(0.75)
+                .dynamicTypeSize(.small ... .xxLarge)
                 .padding(.bottom,24)
             
             Spacer()
@@ -86,6 +92,8 @@ extension OnboardingScreen {
                 HStack {
                     Text("Get Started")
                         .font(.app(.Sub1))
+                        .minimumScaleFactor(0.75)
+                        .dynamicTypeSize(.small ... .xxLarge)
                         .foregroundStyle(.text)
                 }
                 .frame(width: UIScreen.screenWidth - 48, height: 52)
@@ -101,6 +109,8 @@ extension OnboardingScreen {
                 Text(step.questions)
                     .font(.app(.Headline2))
                     .foregroundStyle(.text)
+                    .minimumScaleFactor(0.75)
+                    .dynamicTypeSize(.small ... .xxLarge)
                 Spacer()
             }
             .padding(.bottom,40)
@@ -123,6 +133,8 @@ extension OnboardingScreen {
                             Text(step.answer[index].1)
                                 .font(.app(.Sub1))
                                 .foregroundStyle(.text)
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
                             Spacer()
                         }
                         .frame(height: 52)
@@ -142,6 +154,8 @@ extension OnboardingScreen {
                 Text(step.questions)
                     .font(.app(.Headline2))
                     .foregroundStyle(.text)
+                    .minimumScaleFactor(0.75)
+                    .dynamicTypeSize(.small ... .xxLarge)
                 Spacer()
             }
             .padding(.bottom,40)
@@ -164,6 +178,8 @@ extension OnboardingScreen {
                             Text(step.answer[index].1)
                                 .font(.app(.Sub1))
                                 .foregroundStyle(.text)
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
                             Spacer()
                         }
                         .frame(height: 52)
@@ -181,7 +197,7 @@ extension OnboardingScreen {
     private func forthStep() -> some View {
         VStack{
             Image(.onboardingLogo)
-                .frame(height: 324)
+                .frame(height: UIScreen.screenHeight / 2.63)
                 .padding(.bottom,40)
             
             Text(step.mainText)
@@ -189,11 +205,15 @@ extension OnboardingScreen {
                 .foregroundStyle(.text)
                 .multilineTextAlignment(.center)
                 .padding(.bottom,24)
+                .minimumScaleFactor(0.75)
+                .dynamicTypeSize(.small ... .xxLarge)
             
             Text(step.bodyText)
                 .font(.app(.Sub1))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.text)
+                .minimumScaleFactor(0.75)
+                .dynamicTypeSize(.small ... .xxLarge)
             Spacer()
             
             LottieView(animationName: "OnboadingLoading")
