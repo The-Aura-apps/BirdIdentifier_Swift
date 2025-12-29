@@ -9,7 +9,8 @@ import SwiftUI
 
 struct PaymentScreen: View {
     
-    @State private var selectedPlan: PlanType? = .discount
+    @State private var selectedPlan: PlanType? = .normal
+    @State private var isFreeToggleOn: Bool = true
     @Environment(\.presentationMode) var presentationMode
     
     let plans: [PlanItem] = [
@@ -72,9 +73,26 @@ struct PaymentScreen: View {
                             discountedPrice: plan.discounted,
                             badgeText: plan.badge,
                             isSelected: selectedPlan == plan.type,
+                            isFreeToggleOn: plan.type == .free ? isFreeToggleOn : nil,
                             onTap: {
                                 withAnimation(.easeInOut(duration: 0.25)) {
                                     selectedPlan = plan.type
+                                    // اگه yearly رو انتخاب کرد، تاگل free رو غیرفعال کن
+                                    if plan.type == .discount {
+                                        isFreeToggleOn = false
+                                    }
+                                    // اگه weekly رو انتخاب کرد، تاگل free رو فعال کن
+                                    else if plan.type == .normal {
+                                        isFreeToggleOn = true
+                                    }
+                                }
+                            },
+                            onToggleChange: { isOn in
+                                withAnimation(.easeInOut(duration: 0.25)) {
+                                    isFreeToggleOn = isOn
+                                    // وقتی تاگل فعاله، weekly انتخاب میشه
+                                    // وقتی غیرفعاله، yearly انتخاب میشه
+                                    selectedPlan = isOn ? .normal : .discount
                                 }
                             }
                         )
@@ -108,14 +126,11 @@ struct PaymentScreen: View {
             }
             .padding(24)
         }
-        
         .navigationBarBackButtonHidden(true)
-
     }
 }
 
 extension PaymentScreen {
-    
     private func featureItem(image: ImageResource, text: String) -> some View {
         HStack(spacing: 8) {
             Image(image)

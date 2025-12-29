@@ -75,7 +75,7 @@ extension SettingView {
                         HStack {
                             Text("Get faster, more accurate\nbird recognition and\nremove ads.")
                                 .font(.app(.Micro2))
-                                .foregroundStyle(.text)
+                                .foregroundStyle(Color(hex: "#194632"))
                                 .multilineTextAlignment(.leading)
                                 .lineLimit(3)
                                 .minimumScaleFactor(0.75)
@@ -103,9 +103,9 @@ extension SettingView {
                         Spacer()
                     }
                     .padding(.horizontal,24)
-                    .ifAvailable{ view in
-                        view.adaptiveGlassEffect(style: .clear)
-                    }
+//                    .ifAvailable{ view in
+//                        view.adaptiveGlassEffect(style: .clear)
+//                    }
                 }
                 .padding(.bottom,24)
         })

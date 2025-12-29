@@ -109,7 +109,7 @@ class Coordinator: ObservableObject {
             HabitatScreen(habitatId: habitatId,title: habitatName,description: description)
                 .environmentObject(self)
         case .ArticleScreen(let title):
-            ArticleScreen()
+            ArticleScreen(articleId: title)
                 .environmentObject(self)
         }
     }

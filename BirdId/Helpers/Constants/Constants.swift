@@ -32,6 +32,10 @@ struct Constants{
         static let birdSearchFetch = "\(baseUrl)/birds/catalog/fetch/"
         static let birdFilterByHabitat = "\(baseUrl)/birds/filter-by-habitat"
         
+        //device settings
         static let deviceSettings = "\(baseUrl)/device-settings"
+        
+        //articles
+        static let articles = "\(baseUrl)/articles"
     }
 }

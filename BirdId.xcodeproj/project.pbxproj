@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		832EC6ED2EBA07EB0090EAAB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 832EC6EC2EBA07EB0090EAAB /* Alamofire */; };
+		835599A22F02DB1800E3AEBA /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 835599A12F02DB1800E3AEBA /* Kingfisher */; };
 		8384BD2E2E98037E0081FB14 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8384BD2D2E98037E0081FB14 /* Lottie */; };
 		83FE369C2ED374C300E31ABC /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 83FE369B2ED374C300E31ABC /* KeychainAccess */; };
 /* End PBXBuildFile section */
@@ -84,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				835599A22F02DB1800E3AEBA /* Kingfisher in Frameworks */,
 				8384BD2E2E98037E0081FB14 /* Lottie in Frameworks */,
 				832EC6ED2EBA07EB0090EAAB /* Alamofire in Frameworks */,
 				83FE369C2ED374C300E31ABC /* KeychainAccess in Frameworks */,
@@ -151,6 +153,7 @@
 				8384BD2D2E98037E0081FB14 /* Lottie */,
 				832EC6EC2EBA07EB0090EAAB /* Alamofire */,
 				83FE369B2ED374C300E31ABC /* KeychainAccess */,
+				835599A12F02DB1800E3AEBA /* Kingfisher */,
 			);
 			productName = BirdId;
 			productReference = 83A8922A2E8DA1AB00337242 /* BirdId.app */;
@@ -238,6 +241,7 @@
 				83C63B662E979C9C00A4DF5F /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				83FE369A2ED3743F00E31ABC /* XCRemoteSwiftPackageReference "KeychainAccess" */,
+				835599A02F02DB1800E3AEBA /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83A8922B2E8DA1AB00337242 /* Products */;
@@ -634,6 +638,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		835599A02F02DB1800E3AEBA /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.6.2;
+			};
+		};
 		83C63B662E979C9C00A4DF5F /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios";
@@ -665,6 +677,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		835599A12F02DB1800E3AEBA /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 835599A02F02DB1800E3AEBA /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		8384BD2D2E98037E0081FB14 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
