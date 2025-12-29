@@ -31,5 +31,7 @@ struct Constants{
         static let birdSearch = "\(baseUrl)/birds/catalog/search"
         static let birdSearchFetch = "\(baseUrl)/birds/catalog/fetch/"
         static let birdFilterByHabitat = "\(baseUrl)/birds/filter-by-habitat"
+        
+        static let deviceSettings = "\(baseUrl)/device-settings"
     }
 }
