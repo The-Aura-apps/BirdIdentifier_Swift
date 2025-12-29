@@ -5,21 +5,30 @@
 //  Created by ali bakhsha on 7/9/1404 AP.
 //
 
+
 import SwiftUI
 import Lottie
+import Combine
 
 struct OnboardingScreen: View {
     @State private var step: OnboardingData = .firstPage
     @State private var selectedAnswers: [OnboardingData: Int] = [:]
+    @State private var cancellables = Set<AnyCancellable>()
+    
+    private let repository: DeviceSettingsRepositoryProtocol
+    
+    init(repository: DeviceSettingsRepositoryProtocol = DeviceSettingsRepository()) {
+        self.repository = repository
+    }
+    
     var body: some View {
         ZStack {
             step.backgroundImage.resizable().ignoresSafeArea()
             
-            
             currentStepContent()
         }
-        }
     }
+}
 
 
 #Preview {
@@ -221,10 +230,7 @@ extension OnboardingScreen {
             Spacer()
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
-
-            }
+            sendDeviceSettings()
         }
     }
     
@@ -276,5 +282,41 @@ extension OnboardingScreen {
                         .frame(width: 48, height: 48)
         }
         .padding(.top,0)
+    }
+    
+    // MARK: - API Call
+    private func sendDeviceSettings() {
+        guard let methodIndex = selectedAnswers[.secondPage],
+              let purposeIndex = selectedAnswers[.thirdPage] else {
+            print("❌ Missing onboarding selections")
+            completeOnboarding()
+            return
+        }
+        
+        let identificationMethod = IdentificationMethod(fromIndex: methodIndex)
+        let userPurpose = UserPurpose(fromIndex: purposeIndex)
+        
+        repository.sendDeviceSettings(
+            identificationMethod: identificationMethod,
+            userPurpose: userPurpose
+        )
+        .sink { completion in
+            switch completion {
+            case .finished:
+                print("✅ Device settings sent successfully")
+            case .failure(let error):
+                print("❌ Failed to send device settings: \(error.localizedDescription)")
+            }
+            completeOnboarding()
+        } receiveValue: { response in
+            print("📦 Response: \(response)")
+        }
+        .store(in: &cancellables)
+    }
+    
+    private func completeOnboarding() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
+        }
     }
 }

@@ -5,11 +5,13 @@
 //  Created by ali bakhsha on 7/20/1404 AP.
 //
 
+
 import SwiftUI
 
 struct HomeScreen: View {
     @EnvironmentObject var coordinator:  Coordinator
     @ObservedObject var viewModel: HomeScreenViewModel
+    @StateObject private var articleViewModel = ArticleViewModel()
     
     init(viewModel: HomeScreenViewModel) {
         self.viewModel = viewModel
@@ -27,7 +29,7 @@ struct HomeScreen: View {
                     SearchTextField(searchText:  $viewModel.searchText)
                         .padding(.bottom, 16)
                         .padding(.horizontal, 24)
-                        . padding(.top, 24)
+                        .padding(.top, 24)
                     
                     HStack(spacing: 24) {
                         Button {
@@ -35,8 +37,8 @@ struct HomeScreen: View {
                             coordinator.push(.IdentifyScreen(currentMode: .camera))
                         } label: {
                             HStack {
-                                Image(. camera)
-                                    .padding(. trailing, 8)
+                                Image(.camera)
+                                    .padding(.trailing, 8)
                                 Text("Photo\nIdentification")
                                     .font(.app(.Sub2))
                                     .foregroundStyle(.text)
@@ -45,13 +47,13 @@ struct HomeScreen: View {
                                     .dynamicTypeSize(.small ... .xxLarge)
                                     .multilineTextAlignment(.leading)
                             }
-                            . padding(.vertical, 14)
+                            .padding(.vertical, 14)
                             .padding(.horizontal, 16)
                             .adaptiveGlassEffect(style: .clear)
                         }
                         Button {
                             coordinator.identifyMode = .mic
-                            coordinator.push(. IdentifyScreen(currentMode: . mic))
+                            coordinator.push(.IdentifyScreen(currentMode: .mic))
                         } label:  {
                             HStack {
                                 Image(.microphone)
@@ -70,12 +72,12 @@ struct HomeScreen: View {
                         }
                     }
                     .frame(width: UIScreen.screenWidth - 48)
-                    . padding(.bottom, 24)
+                    .padding(.bottom, 24)
                     
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
                             Text("Based on bird's habitat")
-                                .font(.app(. Headline4))
+                                .font(.app(.Headline4))
                                 .foregroundStyle(.text)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
@@ -88,7 +90,7 @@ struct HomeScreen: View {
                     }
                     .padding(.bottom, 24)
                     
-                    VStack(alignment: . center, spacing: 16) {
+                    VStack(alignment: .center, spacing: 16) {
                         HStack {
                             Text("Highlights")
                                 .font(.app(.Headline4))
@@ -96,19 +98,30 @@ struct HomeScreen: View {
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
                                 .dynamicTypeSize(.small ... .xxLarge)
-                                . padding(.leading, 24)
+                                .padding(.leading, 24)
                             
                             Spacer()
                         }
                         
                         //MARK:  Highlights Section
-                        ForEach(0..<3) { _ in
-                            HighlightsCard()
-                                .padding(.bottom, 16)
+                        if articleViewModel.isLoading {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .frame(height: 100)
+                        } else if articleViewModel.articles.isEmpty {
+                            Text("No articles available")
+                                .font(.app(.Sub1))
+                                .foregroundStyle(.text.opacity(0.6))
+                                .frame(height: 100)
+                        } else {
+                            ForEach(articleViewModel.articles.prefix(3)) { article in
+                                HighlightsCard(article: article)
+                                    .padding(.bottom, 16)
+                            }
                         }
                     }
                     .padding(.bottom, UIScreen.screenHeight / 13.3)
-                    . padding(.bottom, 24)
+                    .padding(.bottom, 24)
                 }
             }
             .blur(radius: viewModel.showSearchResults ? 8 : 0)
@@ -132,6 +145,9 @@ struct HomeScreen: View {
         .navigationBarBackButtonHidden(true)
         .onAppear {
             viewModel.setCoordinator(coordinator)
+            if articleViewModel.articles.isEmpty {
+                articleViewModel.fetchArticles()
+            }
         }
     }
 }
@@ -171,7 +187,7 @@ struct SearchResultsOverlay: View {
                         HStack {
                             Spacer()
                             Text("No results found")
-                                .font(. app(.Sub1))
+                                .font(.app(.Sub1))
                                 .foregroundStyle(.text.opacity(0.6))
                                 .padding()
                             Spacer()
@@ -188,8 +204,8 @@ struct SearchResultsOverlay: View {
                                     
                                     if bird.id != viewModel.searchResults.last?.id {
                                         Divider()
-                                            . background(Color.white.opacity(0.3))
-                                            .padding(. horizontal, 16)
+                                            .background(Color.white.opacity(0.3))
+                                            .padding(.horizontal, 16)
                                     }
                                 }
                             }
@@ -225,7 +241,7 @@ struct BirdSearchResultRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(bird.scientificName)
-                .font(. app(.Sub1))
+                .font(.app(.Sub1))
                 .foregroundStyle(.text)
                 .minimumScaleFactor(0.75)
                 .dynamicTypeSize(.small ... .xxLarge)

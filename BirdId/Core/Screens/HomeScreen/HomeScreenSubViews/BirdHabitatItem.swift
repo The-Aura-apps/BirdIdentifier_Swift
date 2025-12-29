@@ -12,16 +12,12 @@ struct BirdHabitatItem: View {
     @EnvironmentObject var coordinator: Coordinator
     @ObservedObject var viewModel: HomeScreenViewModel
     
-    let rows = [
-        GridItem(.fixed(100)),
-    ]
-    
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            LazyHGrid(rows: rows, spacing: 16) {
-                if viewModel.isLoadingHabitats {
-                    // Loading state
-                    ForEach(0..<viewModel.habitats.count, id: \.self) { _ in
+            if viewModel.isLoadingHabitats {
+                // Loading state
+                HStack(spacing: 16) {
+                    ForEach(0..<4, id: \.self) { index in
                         VStack {
                             Circle()
                                 .fill(Color.gray.opacity(0.3))
@@ -32,17 +28,23 @@ struct BirdHabitatItem: View {
                                 .foregroundStyle(.gray)
                         }
                     }
-                } else if let error = viewModel.errorMessage {
-                    // Error state
-                    Text("Error: \(error)")
-                        .font(.app(.Micro1))
-                        .foregroundStyle(.red)
-                        .padding()
-                } else {
-                    // Success state with actual data
+                }
+                .padding(.horizontal, 24)
+            } else if let error = viewModel.errorMessage {
+                // Error state
+                Text("Error: \(error)")
+                    .font(.app(.Micro1))
+                    .foregroundStyle(.red)
+                    .padding()
+            } else {
+                HStack(spacing: 16) {
                     ForEach(viewModel.habitats) { habitat in
                         Button {
-                            coordinator.push(.HabitatScreen(habitatId: habitat.id,title: habitat.name,description: habitat.description))
+                            coordinator.push(.HabitatScreen(
+                                habitatId: habitat.id,
+                                title: habitat.name,
+                                description: habitat.description
+                            ))
                         } label: {
                             VStack {
                                 Image(viewModel.getHabitatImage(for: habitat.name))
@@ -54,13 +56,15 @@ struct BirdHabitatItem: View {
                                 Text(habitat.name)
                                     .font(.app(.Micro1))
                                     .foregroundStyle(.text)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .multilineTextAlignment(.center)
+                                    .frame(width: 70)
                             }
                         }
                     }
                 }
+                .padding(.horizontal, 24)
             }
-            .padding(.leading, 24)
-            .padding(.trailing, 24)
         }
     }
 }

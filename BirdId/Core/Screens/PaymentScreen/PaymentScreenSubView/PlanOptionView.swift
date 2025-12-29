@@ -19,10 +19,18 @@ struct PlanOptionView: View {
     let discountedPrice: String?
     let badgeText: String?
     let isSelected: Bool
+    let isFreeToggleOn: Bool?
     let onTap: () -> Void
+    let onToggleChange: ((Bool) -> Void)?
     
     var body: some View {
-        Button(action: onTap) {
+        Button(action: {
+            if type == .free {
+                onToggleChange?(!(isFreeToggleOn ?? false))
+            } else {
+                onTap()
+            }
+        }) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
@@ -76,7 +84,7 @@ struct PlanOptionView: View {
                             .adaptiveGlassEffect(style: .clear, cornerRadius: 99)
                             .frame(height: UIScreen.screenWidth / 28.4)
                         }
-                    }else if type == .free {
+                    } else if type == .free {
                         if let badgeText {
                             HStack {
                                 Text(badgeText)
@@ -86,15 +94,23 @@ struct PlanOptionView: View {
                                     .dynamicTypeSize(.small ... .xxLarge)
                             }
                             .padding(8)
-                            .frame(height: UIScreen.screenWidth / 28.4)                        }
+                            .frame(height: UIScreen.screenWidth / 28.4)
+                        }
                     }
                     
-                    Circle()
-                        .stroke(.text,lineWidth: isSelected ? 8 : 1)
-                        .frame(width: isSelected ? 20 : 24, height:isSelected ? UIScreen.screenHeight / 42.6 : UIScreen.screenHeight / 35.5)
-                    
-                    
-                    
+                    if type == .free {
+                        Toggle("", isOn: Binding(
+                            get: { isFreeToggleOn ?? false },
+                            set: { newValue in
+                                onToggleChange?(newValue)
+                            }
+                        ))
+                        .labelsHidden()
+                    } else {
+                        Circle()
+                            .stroke(.text, lineWidth: isSelected ? 8 : 1)
+                            .frame(width: isSelected ? 20 : 24, height: isSelected ? UIScreen.screenHeight / 42.6 : UIScreen.screenHeight / 35.5)
+                    }
                 }
             }
             .padding(.vertical, 8)
@@ -109,7 +125,6 @@ struct PlanOptionView: View {
     }
 }
 
-
 #Preview {
     VStack(spacing: 20) {
         PlanOptionView(
@@ -119,7 +134,9 @@ struct PlanOptionView: View {
             discountedPrice: nil,
             badgeText: nil,
             isSelected: false,
-            onTap: {}
+            isFreeToggleOn: true,
+            onTap: {},
+            onToggleChange: {_ in }
         )
         
         PlanOptionView(
@@ -129,7 +146,9 @@ struct PlanOptionView: View {
             discountedPrice: "$39.99/year",
             badgeText: "-80% OFF",
             isSelected: true,
-            onTap: {}
+            isFreeToggleOn: true,
+            onTap: {},
+            onToggleChange: {_ in }
         )
         
         PlanOptionView(
@@ -139,7 +158,9 @@ struct PlanOptionView: View {
             discountedPrice: nil,
             badgeText: "Free Trial",
             isSelected: false,
-            onTap: {}
+            isFreeToggleOn: true,
+            onTap: {},
+            onToggleChange: {_ in }
         )
     }
     .padding()
