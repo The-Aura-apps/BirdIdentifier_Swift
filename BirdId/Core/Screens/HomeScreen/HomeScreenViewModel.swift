@@ -52,10 +52,8 @@ class HomeScreenViewModel: ObservableObject {
         habitatsRepository.getHabitats()
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
-                DispatchQueue.main.async {
-                    self?.isLoadingHabitats = false
-                }
-                
+                self?.isLoadingHabitats = false
+
                 switch completion {
                 case .finished:
                     print("✅ Habitats fetch completed")
@@ -64,10 +62,8 @@ class HomeScreenViewModel: ObservableObject {
                     print("❌ Error fetching habitats: \(error.localizedDescription)")
                 }
             } receiveValue: { [weak self] response in
-                DispatchQueue.main.async {
-                    self?.habitats = response.data
-                    print("✅ Received \(response.data.count) habitats")
-                }
+                self?.habitats = response.data
+                print("✅ Received \(response.data.count) habitats")
             }
             .store(in: &cancellables)
     }

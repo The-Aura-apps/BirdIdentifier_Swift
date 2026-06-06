@@ -143,8 +143,9 @@ final class IdentifyViewModel: ObservableObject {
         print("نمایش خطا به کاربر: \(errorMessage ?? "نامشخص")")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + Config.failureDisplayDuration) { [weak self] in
+            // IdentifyScreen یک تب روت است؛ pop اینجا یا بی‌اثر است یا کاربر را از جای اشتباه خارج می‌کند.
+            // فقط overlay خطا را می‌بندیم و کاربر روی همان صفحه برای تلاش مجدد می‌ماند.
             self?.showCheckedView = false
-            self?.coordinator?.pop()
         }
     }
 }

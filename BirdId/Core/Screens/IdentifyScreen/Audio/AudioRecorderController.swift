@@ -16,27 +16,15 @@ class AudioRecorderController: NSObject, ObservableObject, AVAudioPlayerDelegate
     var audioPlayer: AVAudioPlayer?
     var recordingTimer: Timer?
     
-    @Published var recording = false {
-        didSet {
-            objectWillChange.send()
-        }
+    @Published var recording = false
+    @Published var playing = false
+    @Published var recordedFileURL: URL?
+    @Published var recordingDuration: TimeInterval = 0
+
+    deinit {
+        recordingTimer?.invalidate()
     }
-    @Published var playing = false {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    @Published var recordedFileURL: URL? {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    @Published var recordingDuration: TimeInterval = 0 {
-        didSet {
-            objectWillChange.send()
-        }
-    }
-    
+
     func startRecording() {
         let recordingSession = AVAudioSession.sharedInstance()
         do {
@@ -64,9 +52,9 @@ class AudioRecorderController: NSObject, ObservableObject, AVAudioPlayerDelegate
             audioRecorder?.record()
             
             recordingDuration = 0
-            recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
                 DispatchQueue.main.async {
-                    self.recordingDuration += 0.1
+                    self?.recordingDuration += 0.1
                 }
             }
             

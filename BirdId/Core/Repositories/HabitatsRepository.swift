@@ -55,11 +55,18 @@ class HabitatsRepository: HabitatsRepositoryProtocol {
     }
     
     func filterBirdsByHabitat(habitatId: Int, search: String) -> AnyPublisher<BirdFilterResponse, Error> {
-        let encodedSearch = search.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? search
-        let url = "\(Constants.Urls.birdFilterByHabitat)?habitatId=\(habitatId)&search=\(encodedSearch)"
-        
+        var components = URLComponents(string: Constants.Urls.birdFilterByHabitat)
+        components?.queryItems = [
+            URLQueryItem(name: "habitatId", value: String(habitatId)),
+            URLQueryItem(name: "search", value: search)
+        ]
+
+        guard let url = components?.url?.absoluteString else {
+            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+        }
+
         print("🌐 Filter API URL:  \(url)")
-        
+
         return apiService.request(
             url,
             method: .get,
