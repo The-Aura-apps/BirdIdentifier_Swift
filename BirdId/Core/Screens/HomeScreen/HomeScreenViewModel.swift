@@ -21,7 +21,7 @@ class HomeScreenViewModel: ObservableObject {
     @Published var isSearching = false
     @Published var showSearchResults = false
     
-    // Bird detail fetch - برای نمایش SearchResultScreen
+    // Bird detail fetch - for SearchResultScreen
     @Published var isLoadingBirdDetail = false
     @Published var showLoadingScreen = false
     

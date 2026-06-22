@@ -4,7 +4,7 @@
 //
 //  Created by ali bakhsha on 8/7/1404 AP.
 //
-enum PlanType {
+enum PlanType: Hashable {
     case normal
     case discount
     case free

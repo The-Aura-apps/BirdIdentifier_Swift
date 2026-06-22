@@ -15,6 +15,12 @@ struct BirdIdApp: App {
 
     @State private var showSplash = true
 
+    init() {
+        // Touch the singleton so RevenueCat is configured at launch
+        // (Purchases.configure runs inside this class's init).
+        _ = SubscriptionManager.shared
+    }
+
     var body: some Scene {
         WindowGroup {
             ZStack {

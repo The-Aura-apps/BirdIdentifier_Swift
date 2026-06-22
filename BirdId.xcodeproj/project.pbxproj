@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		830A81602FDAAFD100B50D3B /* ReceiptParser in Frameworks */ = {isa = PBXBuildFile; productRef = 830A815F2FDAAFD100B50D3B /* ReceiptParser */; };
+		830A81622FDAAFD100B50D3B /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 830A81612FDAAFD100B50D3B /* RevenueCat */; };
+		830A81642FDAAFD100B50D3B /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 830A81632FDAAFD100B50D3B /* RevenueCatUI */; };
 		832EC6ED2EBA07EB0090EAAB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 832EC6EC2EBA07EB0090EAAB /* Alamofire */; };
 		835599A22F02DB1800E3AEBA /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 835599A12F02DB1800E3AEBA /* Kingfisher */; };
 		8384BD2E2E98037E0081FB14 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 8384BD2D2E98037E0081FB14 /* Lottie */; };
@@ -87,8 +90,11 @@
 			files = (
 				835599A22F02DB1800E3AEBA /* Kingfisher in Frameworks */,
 				8384BD2E2E98037E0081FB14 /* Lottie in Frameworks */,
+				830A81642FDAAFD100B50D3B /* RevenueCatUI in Frameworks */,
+				830A81622FDAAFD100B50D3B /* RevenueCat in Frameworks */,
 				832EC6ED2EBA07EB0090EAAB /* Alamofire in Frameworks */,
 				83FE369C2ED374C300E31ABC /* KeychainAccess in Frameworks */,
+				830A81602FDAAFD100B50D3B /* ReceiptParser in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -154,6 +160,9 @@
 				832EC6EC2EBA07EB0090EAAB /* Alamofire */,
 				83FE369B2ED374C300E31ABC /* KeychainAccess */,
 				835599A12F02DB1800E3AEBA /* Kingfisher */,
+				830A815F2FDAAFD100B50D3B /* ReceiptParser */,
+				830A81612FDAAFD100B50D3B /* RevenueCat */,
+				830A81632FDAAFD100B50D3B /* RevenueCatUI */,
 			);
 			productName = BirdId;
 			productReference = 83A8922A2E8DA1AB00337242 /* BirdId.app */;
@@ -213,7 +222,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2610;
 				TargetAttributes = {
 					83A892292E8DA1AB00337242 = {
 						CreatedOnToolsVersion = 26.0.1;
@@ -242,6 +251,7 @@
 				83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				83FE369A2ED3743F00E31ABC /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				835599A02F02DB1800E3AEBA /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				830A81592FDAAEAD00B50D3B /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 83A8922B2E8DA1AB00337242 /* Products */;
@@ -375,6 +385,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -431,6 +442,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -463,7 +475,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.BirdId4314;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aura.birdidentification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -504,7 +516,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.mycompany.BirdId4314;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aura.birdidentification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -640,6 +652,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		830A81592FDAAEAD00B50D3B /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.78.0;
+			};
+		};
 		835599A02F02DB1800E3AEBA /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher";
@@ -675,6 +695,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		830A815F2FDAAFD100B50D3B /* ReceiptParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 830A81592FDAAEAD00B50D3B /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = ReceiptParser;
+		};
+		830A81612FDAAFD100B50D3B /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 830A81592FDAAEAD00B50D3B /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
+		};
+		830A81632FDAAFD100B50D3B /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 830A81592FDAAEAD00B50D3B /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCatUI;
+		};
 		832EC6EC2EBA07EB0090EAAB /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 83ECF3132EB23515000196E7 /* XCRemoteSwiftPackageReference "Alamofire" */;

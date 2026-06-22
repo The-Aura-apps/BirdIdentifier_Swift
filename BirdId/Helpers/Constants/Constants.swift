@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-let baseUrl: String = "http://185.125.103.136"
+let baseUrl: String = "https://auraapps.org"
 
 struct Constants{
     

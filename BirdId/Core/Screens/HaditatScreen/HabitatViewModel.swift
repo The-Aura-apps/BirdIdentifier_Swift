@@ -26,7 +26,7 @@ class HabitatViewModel: ObservableObject {
         setupSearchDebounce()
     }
     
-    // 👇 Setup debounce برای سرچ
+    // Setup debounce for search
     private func setupSearchDebounce() {
         $searchText
             .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
@@ -37,7 +37,7 @@ class HabitatViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // Filtered birds - اگر جستجو فعال باشد از API، وگرنه لیست اصلی
+    // Filtered birds - from API when searching, otherwise the base list
     var filteredBirds: [BirdHabitatSimple] {
         if searchText.isEmpty {
             return birds
