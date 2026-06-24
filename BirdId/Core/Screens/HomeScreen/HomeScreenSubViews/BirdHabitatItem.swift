@@ -43,7 +43,7 @@ struct BirdHabitatItem: View {
                             coordinator.push(.HabitatScreen(
                                 habitatId: habitat.id,
                                 title: habitat.name,
-                                description: habitat.description
+                                description: habitat.description ?? ""
                             ))
                         } label: {
                             VStack {

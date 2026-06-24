@@ -54,8 +54,11 @@ struct IdentifyScreen: View {
         )
         .handleGallerySelection(gallery: gallery, viewModel: viewModel)
         .handleAudioPickerSelection(audioPicker: audioPicker, viewModel: viewModel) 
-        .sheet(isPresented: $audioPicker.isPresented) { 
+        .sheet(isPresented: $audioPicker.isPresented) {
             AudioPicker(controller: audioPicker)
+        }
+        .fullScreenCover(isPresented: $viewModel.showPaywall) {
+            PaymentScreen()
         }
         .navigationBarBackButtonHidden(true)
     }

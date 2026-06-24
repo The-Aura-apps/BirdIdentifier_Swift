@@ -97,8 +97,12 @@ class ApiService: ApiServiceProtocol {
                 } else {
                     return Just(data)
                         .decode(type: T.self, decoder: JSONDecoder())
-                        .mapError { APIError.decodingError(underlyingError: $0 as! DecodingError, data: data) }
-                    
+                        .mapError { error -> Error in
+                            if let decodingError = error as? DecodingError {
+                                return APIError.decodingError(underlyingError: decodingError, data: data)
+                            }
+                            return error
+                        }
                         .eraseToAnyPublisher()
                 }
             }

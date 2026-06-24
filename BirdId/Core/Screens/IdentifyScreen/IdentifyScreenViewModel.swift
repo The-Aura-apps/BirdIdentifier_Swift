@@ -16,7 +16,8 @@ final class IdentifyViewModel: ObservableObject {
     @Published var showResult = false
     @Published var checkedState: CheckedState?
     @Published var showCheckedView = false
-    
+    @Published var showPaywall = false
+
     // MARK: - Private Properties
     private var cancelBag = Set<AnyCancellable>()
     private let uploadRepo: UploadRepositoryProtocol
@@ -56,6 +57,12 @@ final class IdentifyViewModel: ObservableObject {
     
     // MARK: - Private Methods
     private func uploadMedia(_ data: Data, type: MediaType) {
+        // Paywall gate: identification requires an active subscription / free trial.
+        if !SubscriptionManager.shared.isPremium {
+            showPaywall = true
+            return
+        }
+
         isLoading = true
         errorMessage = nil
         showSearchResult = true
@@ -143,8 +150,9 @@ final class IdentifyViewModel: ObservableObject {
         print("نمایش خطا به کاربر: \(errorMessage ?? "نامشخص")")
         
         DispatchQueue.main.asyncAfter(deadline: .now() + Config.failureDisplayDuration) { [weak self] in
+            // IdentifyScreen is a tab root; pop here is a no-op or pops the wrong screen.
+            // Just dismiss the error overlay and stay on this screen for retry.
             self?.showCheckedView = false
-            self?.coordinator?.pop()
         }
     }
 }

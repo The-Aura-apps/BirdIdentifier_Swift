@@ -46,14 +46,14 @@ class UploadRepository: UploadRepositoryProtocol {
                 print("🎯 Confidence: \(uploadResponse.confidence)")
                 print("📊 Observation ID: \(uploadResponse.observation.id)")
                 
-                // اطلاعات bird
+                // bird info
                 let bird = uploadResponse.bird
                 print("🐦 Bird ID: \(bird.id)")
                 print("🐦 Scientific Name: \(bird.scientificName)")
                 print("🐦 Common Names: \(bird.commonNames.count)")
                 print("🐦 Media Count: \(bird.media.count)")
                 
-                // بررسی optional values
+                // check optional values
                 if let description = bird.description {
                     print("📝 Description length: \(description.count) characters")
                 } else {
@@ -64,7 +64,7 @@ class UploadRepository: UploadRepositoryProtocol {
                     print("📈 Confidence Value: \(confidenceValue * 100)%")
                 }
                 
-                // بررسی وضعیت
+                // check status
                 if uploadResponse.status.lowercased() != "completed" {
                     print("⚠️ Status is not completed: \(uploadResponse.status)")
                     throw NSError(

@@ -12,17 +12,41 @@ struct BirdIdApp: App {
     @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding: Bool = false
     @StateObject var coordinator = Coordinator()
     @StateObject private var tabManager = TabManager()
-    
-    
+
+    @State private var showSplash = true
+
+    init() {
+        // Touch the singleton so RevenueCat is configured at launch
+        // (Purchases.configure runs inside this class's init).
+        _ = SubscriptionManager.shared
+    }
+
     var body: some Scene {
         WindowGroup {
-            if hasSeenOnboarding {
-                MainScreen()
-                    .environmentObject(coordinator)
-                    .environmentObject(tabManager)
-            } else {
-                OnboardingScreen()
+            ZStack {
+                if showSplash {
+                    SplashScreen {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            showSplash = false
+                        }
+                    }
+                    .transition(.opacity)
+                } else {
+                    rootContent
+                        .transition(.opacity)
+                }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var rootContent: some View {
+        if hasSeenOnboarding {
+            MainScreen()
+                .environmentObject(coordinator)
+                .environmentObject(tabManager)
+        } else {
+            OnboardingScreen()
         }
     }
 }

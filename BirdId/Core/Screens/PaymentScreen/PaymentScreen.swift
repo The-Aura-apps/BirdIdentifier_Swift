@@ -6,19 +6,16 @@
 //
 
 import SwiftUI
+import RevenueCat
 
 struct PaymentScreen: View {
-    
+
+    @StateObject private var viewModel = SubscriptionViewModel()
     @State private var selectedPlan: PlanType? = .normal
     @State private var isFreeToggleOn: Bool = true
+    @State private var isPurchasing = false
     @Environment(\.presentationMode) var presentationMode
-    
-    let plans: [PlanItem] = [
-        PlanItem(type: .discount, title: "Yearly", price: "$199.99", discounted: "$39.99/year", badge: "-80% OFF"),
-        PlanItem(type: .normal, title: "Weekly", price: "$7.99/week, auto renewable", discounted: nil, badge: nil),
-        PlanItem(type: .free, title: "Free Plan", price: nil, discounted: nil, badge: "Free Trial")
-    ]
-    
+
     var body: some View {
         ZStack{
             Image(.bgImg)
@@ -65,7 +62,13 @@ struct PaymentScreen: View {
                 
                 // MARK: Plans
                 VStack(spacing: 16) {
-                    ForEach(plans) { plan in
+                    if dynamicPlans.isEmpty {
+                        ProgressView()
+                            .tint(.text)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: UIScreen.screenHeight / 5)
+                    }
+                    ForEach(dynamicPlans) { plan in
                         PlanOptionView(
                             type: plan.type,
                             title: plan.title,
@@ -77,11 +80,11 @@ struct PaymentScreen: View {
                             onTap: {
                                 withAnimation(.easeInOut(duration: 0.25)) {
                                     selectedPlan = plan.type
-                                    // اگه yearly رو انتخاب کرد، تاگل free رو غیرفعال کن
+                                    // Yearly selected: turn the free toggle off
                                     if plan.type == .discount {
                                         isFreeToggleOn = false
                                     }
-                                    // اگه weekly رو انتخاب کرد، تاگل free رو فعال کن
+                                    // Weekly selected: turn the free toggle on
                                     else if plan.type == .normal {
                                         isFreeToggleOn = true
                                     }
@@ -90,8 +93,7 @@ struct PaymentScreen: View {
                             onToggleChange: { isOn in
                                 withAnimation(.easeInOut(duration: 0.25)) {
                                     isFreeToggleOn = isOn
-                                    // وقتی تاگل فعاله، weekly انتخاب میشه
-                                    // وقتی غیرفعاله، yearly انتخاب میشه
+                                    // Toggle on -> weekly, toggle off -> yearly
                                     selectedPlan = isOn ? .normal : .discount
                                 }
                             }
@@ -101,22 +103,40 @@ struct PaymentScreen: View {
                 .padding(.bottom,24)
                 // MARK: Continue Button
                 Button(action: {
-                    
+                    handleContinue()
                 }, label: {
-                    Text("Continue")
-                        .font(.app(.Sub1))
-                        .foregroundStyle(.text)
-                        .minimumScaleFactor(0.75)
-                        .dynamicTypeSize(.small ... .xxLarge)
-                    
+                    Group {
+                        if isPurchasing {
+                            ProgressView()
+                                .tint(.text)
+                        } else {
+                            Text("Continue")
+                                .font(.app(.Sub1))
+                                .foregroundStyle(.text)
+                                .minimumScaleFactor(0.75)
+                                .dynamicTypeSize(.small ... .xxLarge)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: UIScreen.screenHeight / 16.38)
+                    .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
+                    .contentShape(Rectangle())
                 })
-                .frame(maxWidth: .infinity,maxHeight: UIScreen.screenHeight / 16.38)
-                .padding(.vertical,14)
-                .adaptiveGlassEffect(style: .clear,cornerRadius: 99)
                 .padding(.bottom,8)
-                
+                .disabled(isPurchasing)
+
+
                 HStack(spacing: 8) {
-                    ForEach(["Restore", "Term of Use", "Privacy Policy"], id: \.self) { text in
+                    Button {
+                        viewModel.restorePurchases()
+                    } label: {
+                        Text("Restore")
+                            .font(.app(.Micro1))
+                            .foregroundStyle(.text)
+                            .underline()
+                    }
+
+                    ForEach(["Term of Use", "Privacy Policy"], id: \.self) { text in
                         Text(text)
                             .font(.app(.Micro1))
                             .foregroundStyle(.text)
@@ -131,6 +151,97 @@ struct PaymentScreen: View {
 }
 
 extension PaymentScreen {
+
+    /// Builds plans from RevenueCat offerings (real prices, not mock).
+    /// Returns an empty array until offerings load, so the UI can show a loader.
+    private var dynamicPlans: [PlanItem] {
+        guard let packages = viewModel.offerings?.current?.availablePackages else {
+            return []
+        }
+
+        let weekly = packages.first { $0.packageType == .weekly }
+        let yearly = packages.first { $0.packageType == .annual }
+
+        var items: [PlanItem] = []
+
+        // Yearly (discounted): striked price = 52 weeks equivalent, final = real yearly price.
+        if let yearly {
+            let yearlyProduct = yearly.storeProduct
+            var strikedPrice: String? = nil
+            var badge: String? = nil
+
+            if let weeklyProduct = weekly?.storeProduct {
+                let fullYearValue = weeklyProduct.price * 52
+                strikedPrice = weeklyProduct.priceFormatter?
+                    .string(from: fullYearValue as NSDecimalNumber)
+
+                if fullYearValue > 0 {
+                    let ratio = (1 - (yearlyProduct.price / fullYearValue)) * 100
+                    let percent = NSDecimalNumber(decimal: ratio).intValue
+                    if percent > 0 { badge = "-\(percent)% OFF" }
+                }
+            }
+
+            items.append(PlanItem(
+                type: .discount,
+                title: "Yearly",
+                price: strikedPrice,
+                discounted: "\(yearlyProduct.localizedPriceString)/year",
+                badge: badge
+            ))
+        }
+
+        // Weekly: real price.
+        if let weekly {
+            items.append(PlanItem(
+                type: .normal,
+                title: "Weekly",
+                price: "\(weekly.storeProduct.localizedPriceString)/week, auto renewable",
+                discounted: nil,
+                badge: nil
+            ))
+        }
+
+        // Free: a UI option (trial toggle), not a real package.
+        items.append(PlanItem(
+            type: .free,
+            title: "Free Plan",
+            price: nil,
+            discounted: nil,
+            badge: "Free Trial"
+        ))
+
+        return items
+    }
+
+    /// Returns the RevenueCat package matching the selected plan.
+    private func packageFor(_ plan: PlanType?) -> Package? {
+        guard let packages = viewModel.offerings?.current?.availablePackages else { return nil }
+        switch plan {
+        case .discount:
+            return packages.first { $0.packageType == .annual } ?? packages.first
+        case .normal, .free, .none:
+            return packages.first { $0.packageType == .weekly } ?? packages.first
+        }
+    }
+
+    /// Purchases the selected plan. Dismisses the screen on success.
+    private func handleContinue() {
+        guard let package = packageFor(selectedPlan) else {
+            print("⚠️ No package found for the selected plan")
+            return
+        }
+        viewModel.selectedPackage = package
+        isPurchasing = true
+
+        viewModel.purchaseSelectedPackage { customerInfo in
+            isPurchasing = false
+            if customerInfo != nil {
+                presentationMode.wrappedValue.dismiss()
+            }
+        }
+    }
+
     private func featureItem(image: ImageResource, text: String) -> some View {
         HStack(spacing: 8) {
             Image(image)
@@ -150,7 +261,9 @@ extension PaymentScreen {
 
 
 struct PlanItem: Identifiable {
-    let id = UUID()
+    // Stable identity by plan type (each card is unique) so SwiftUI reuses
+    // the views across renders and selection animates smoothly.
+    var id: PlanType { type }
     let type: PlanType
     let title: String
     let price: String?

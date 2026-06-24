@@ -43,12 +43,15 @@ enum Route: Hashable {
     
     static func == (lhs: Route, rhs: Route) -> Bool {
         switch (lhs, rhs) {
+        case (.birdDetail(let lId), .birdDetail(let rId)):
+            return lId == rId
         case (.ResultScreen(let lDetail), .ResultScreen(let rDetail)):
             return lDetail.bird.id == rDetail.bird.id
         case (.IdentifyScreen(let lMode), .IdentifyScreen(let rMode)):
             return lMode == rMode
-        case (.HabitatScreen(let lTitle), .HabitatScreen(let rTitle)):
-            return lTitle == rTitle
+        case (.HabitatScreen(let lId, let lTitle, let lDescription),
+              .HabitatScreen(let rId, let rTitle, let rDescription)):
+            return lId == rId && lTitle == rTitle && lDescription == rDescription
         case (.ArticleScreen(let lTitle), .ArticleScreen(let rTitle)):
             return lTitle == rTitle
         default:

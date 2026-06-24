@@ -11,7 +11,7 @@ import Foundation
 struct HabitatsModel: Codable, Identifiable, Hashable {
     let id: Int
     let name: String
-    let description: String
+    let description: String?
 }
 
 // MARK: - Habitats Response
