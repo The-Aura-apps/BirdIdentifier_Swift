@@ -6,16 +6,17 @@
 //
 
 import SwiftUI
+import StoreKit
 
 struct SettingView: View {
-    
+
     @State private var showPayment = false
-    
+
     let options: [OptionItem] = [
-        OptionItem(icon: .privacyPolicy, title: "Privacy & Policy",url: URL(string: "https://www.google.com")!),
-        OptionItem(icon: .termsOfUse, title: "Terms of Use",url: URL(string: "https://www.google.com")!),
-        OptionItem(icon: .contactUs, title: "Contact US",url: URL(string: "https://www.google.com")!),
-        OptionItem(icon: .rate, title: "Rate Us",url: URL(string: "https://www.google.com")!)
+        OptionItem(icon: .privacyPolicy, title: "Privacy & Policy",action: .link(URL(string: "https://bird.auraapps.org/legal/privacy.html")!)),
+        OptionItem(icon: .termsOfUse, title: "Terms of Use",action: .link(URL(string: "https://bird.auraapps.org/legal/terms.html")!)),
+        OptionItem(icon: .contactUs, title: "Contact US",action: .mail("Aura.apps.co@gmail.com")),
+        OptionItem(icon: .rate, title: "Rate Us",action: .rate)
     ]
     var body: some View {
         ZStack{
@@ -116,8 +117,7 @@ extension SettingView {
         VStack(spacing: 16) {
             ForEach(options) { option in
                 Button(action: {
-                    //MARK: open links
-                    UIApplication.shared.open(option.url)
+                    handle(option.action)
                 }, label: {
                     HStack {
                         Image(uiImage: option.icon)
@@ -140,7 +140,24 @@ extension SettingView {
             }
         }
     }
-    
+
+    private func handle(_ action: OptionAction) {
+        switch action {
+        case .link(let url):
+            UIApplication.shared.open(url)
+        case .mail(let address):
+            if let url = URL(string: "mailto:\(address)"), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            } else if let webURL = URL(string: "https://mail.google.com/mail/?view=cm&fs=1&to=\(address)") {
+                UIApplication.shared.open(webURL)
+            }
+        case .rate:
+            if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+                SKStoreReviewController.requestReview(in: scene)
+            }
+        }
+    }
+
 }
 
 
@@ -149,9 +166,15 @@ extension SettingView {
 }
 
 
+enum OptionAction {
+    case link(URL)
+    case mail(String)
+    case rate
+}
+
 struct OptionItem: Identifiable {
     let id = UUID()
     let icon: UIImage
     let title: String
-    let url: URL
+    let action: OptionAction
 }
