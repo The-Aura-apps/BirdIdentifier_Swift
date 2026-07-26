@@ -51,3 +51,12 @@ There is no Podfile or Package.swift — dependencies are Swift Package Manager 
 - New API-backed feature: add URL constants to `Constants.Urls`, a `Repository` (protocol + real class + `Mock` class) in `Core/Repositories/`, a `ViewModel` that injects the repository protocol, and a `Screen` view — mirroring the existing `BirdDetail*` / `Habitats*` triplets.
 - New pushable screen: add a case to `Route` in `Coordinator.swift` (with its `hash(into:)` and `==` arms) and a corresponding case in `Coordinator.buildView(for:)`.
 - Networking always goes through `ApiService`/`ApiServiceProtocol`, returning Combine `AnyPublisher<T, Error>`; multipart/file uploads use `multipartRequest`.
+- Logging is `print()` only, emoji-prefixed by severity — do not introduce `os.log`/`Logger` or any analytics SDK (Firebase/Mixpanel/etc.) unprompted.
+- `private` is used even for single-file scoping; `fileprivate` and explicit `internal` are never used — don't add them.
+- No localization system — UI strings are hardcoded English literals; don't introduce `NSLocalizedString`/String Catalog unprompted.
+- No SwiftLint/SwiftFormat config exists — don't add one, and don't do drive-by formatting passes (import ordering, spacing fixes) as part of an unrelated change.
+- Commit messages in this repo's own style are `UPDATE: <free text>` (see recent `git log`) — if asked to draft one in-style, flag the conflict with Claude Code's own trailer convention rather than silently dropping it.
+
+### Full author style guide
+
+`CODING_STANDARD.md` at the repo root is a much more detailed, forensic "coding DNA" reference for this author (naming, error handling, state ownership, view decomposition, known quirks/inconsistencies like the duplicated image-loading systems, and an explicit "ask first before..." list). Consult it for anything not covered above, especially before: adding a new SPM dependency, unifying the two image-loading paths (`CachedAsyncImage` vs Kingfisher's `KFImage`), touching the paywall's navigation pattern, or making any change spanning more than ~5 files.
