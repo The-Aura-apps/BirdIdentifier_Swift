@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-BirdId is a SwiftUI iOS app for identifying birds from photos/audio and browsing bird info (habitats, articles, history). No backend code lives in this repo — it talks to a remote REST API at `https://auraapps.org` (see `BirdId/Helpers/Constants/Constants.swift`) and to RevenueCat for subscriptions.
+BirdId is a SwiftUI iOS app for identifying birds from photos/audio and browsing bird info (habitats, articles, history). No backend code lives in this repo — it talks to a remote REST API at `https://bird.auraapps.org` (see `BirdId/Helpers/Constants/Constants.swift`) and to RevenueCat for subscriptions.
 
 ## Build & test commands
 
@@ -57,6 +57,18 @@ There is no Podfile or Package.swift — dependencies are Swift Package Manager 
 - No SwiftLint/SwiftFormat config exists — don't add one, and don't do drive-by formatting passes (import ordering, spacing fixes) as part of an unrelated change.
 - Commit messages in this repo's own style are `UPDATE: <free text>` (see recent `git log`) — if asked to draft one in-style, flag the conflict with Claude Code's own trailer convention rather than silently dropping it.
 
+- ViewModels are always `class X: ObservableObject`, never the `@Observable` macro. Previews use the `#Preview` macro, never `PreviewProvider`.
+
+### Always ask before
+
+- Adding a new third-party SPM dependency, or introducing a `.swiftlint.yml`/`.swiftformat`.
+- Unifying the two image-loading systems (`CachedAsyncImage` vs Kingfisher's `KFImage`) or the two loading/error-state flavors — known, real inconsistencies; don't silently pick a winner mid-task.
+- Modeling the paywall (`PaymentScreen`) as a `Route` instead of its existing local-boolean `fullScreenCover` pattern (used from `MainScreen`, `IdentifyScreen`, and `SettingView`) — that's an architecture change, not a bug fix.
+- Renaming the `HaditatScreen` folder typo, "fixing" `AppFont`'s PascalCase enum cases, or correcting the `SubscriptionViewModel.swift` (in `Core/Screens/PaymentScreen/PaymentScreenViewModel.swift`) header comment — known-quirky but harmless; the author's call, not a drive-by.
+- Changing `PRODUCT_BUNDLE_IDENTIFIER`, deployment target, code-signing settings, or the `NSAppTransportSecurity` exception in `Info.plist`.
+- Adding analytics/crash reporting — none exists today; may be a deliberate privacy stance rather than an oversight.
+- Any change spanning more than ~5 files or more than one feature folder, unless the user explicitly asked for a broad refactor (the author's own commits are large and bundle unrelated concerns, but that's not license to do the same unprompted).
+
 ### Full author style guide
 
-`CODING_STANDARD.md` at the repo root is a much more detailed, forensic "coding DNA" reference for this author (naming, error handling, state ownership, view decomposition, known quirks/inconsistencies like the duplicated image-loading systems, and an explicit "ask first before..." list). Consult it for anything not covered above, especially before: adding a new SPM dependency, unifying the two image-loading paths (`CachedAsyncImage` vs Kingfisher's `KFImage`), touching the paywall's navigation pattern, or making any change spanning more than ~5 files.
+`CODING_STANDARD.md` at the repo root is a much more detailed, forensic "coding DNA" reference for this author (naming, error handling, state ownership, view decomposition, known quirks/inconsistencies, and the full "ask first before..." list this section summarizes). Consult it for anything not covered above.
