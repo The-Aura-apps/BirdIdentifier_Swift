@@ -24,6 +24,7 @@ class HomeScreenViewModel: ObservableObject {
     // Bird detail fetch - for SearchResultScreen
     @Published var isLoadingBirdDetail = false
     @Published var showLoadingScreen = false
+    @Published var showPaywall = false
     
     private let habitatsRepository:  HabitatsRepositoryProtocol
     private let searchRepository:  BirdSearchRepositoryProtocol
@@ -107,6 +108,12 @@ class HomeScreenViewModel: ObservableObject {
     }
     
     func fetchBirdDetail(scientificName: String) {
+        // Paywall gate: identification requires an active subscription / free trial.
+        if !SubscriptionManager.shared.isPremium {
+            showPaywall = true
+            return
+        }
+
         showLoadingScreen = true
         isLoadingBirdDetail = true
         

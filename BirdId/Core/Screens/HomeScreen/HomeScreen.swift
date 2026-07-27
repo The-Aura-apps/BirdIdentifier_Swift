@@ -149,6 +149,9 @@ struct HomeScreen: View {
                 articleViewModel.fetchArticles()
             }
         }
+        .fullScreenCover(isPresented: $viewModel.showPaywall) {
+            PaymentScreen()
+        }
     }
 }
 
