@@ -67,6 +67,11 @@ class SubscriptionViewModel: ObservableObject {
     
     func restorePurchases() {
         Purchases.shared.restorePurchases { customerInfo, error in
+            if let customerInfo {
+                Task { @MainActor in
+                    SubscriptionManager.shared.updateFromCustomerInfo(customerInfo)
+                }
+            }
             if customerInfo?.entitlements.active.keys.contains("pro") == true {
                 DispatchQueue.main.async {
                     self.purchaseStatus = "Purchase restored!"
