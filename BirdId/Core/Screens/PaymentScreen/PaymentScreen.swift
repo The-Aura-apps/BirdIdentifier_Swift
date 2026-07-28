@@ -236,7 +236,10 @@ extension PaymentScreen {
 
         viewModel.purchaseSelectedPackage { customerInfo in
             isPurchasing = false
-            if customerInfo != nil {
+            if let customerInfo {
+                Task { @MainActor in
+                    SubscriptionManager.shared.updateFromCustomerInfo(customerInfo)
+                }
                 presentationMode.wrappedValue.dismiss()
             }
         }

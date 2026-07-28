@@ -10,6 +10,7 @@ import StoreKit
 
 struct SettingView: View {
 
+    @ObservedObject private var subscriptionManager = SubscriptionManager.shared
     @State private var showPayment = false
 
     let options: [OptionItem] = [
@@ -65,7 +66,7 @@ extension SettingView {
                     VStack{
                         Spacer()
                         HStack {
-                            Text("Try Premium Features")
+                            Text(subscriptionManager.isPremium ? "Premium Active" : "Try Premium Features")
                                 .font(.app(.Headline5))
                                 .foregroundStyle(Color(hex: "#194632"))
                                 .minimumScaleFactor(0.75)
@@ -74,7 +75,9 @@ extension SettingView {
                         }
                         .padding(.bottom,12)
                         HStack {
-                            Text("Get faster, more accurate\nbird recognition and\nremove ads.")
+                            Text(subscriptionManager.isPremium
+                                 ? "You have full access to faster,\nmore accurate bird recognition\nand an ad-free experience."
+                                 : "Get faster, more accurate\nbird recognition and\nremove ads.")
                                 .font(.app(.Micro2))
                                 .foregroundStyle(Color(hex: "#194632"))
                                 .multilineTextAlignment(.leading)
@@ -84,33 +87,32 @@ extension SettingView {
                             Spacer()
                         }
                         .padding(.bottom,20)
-                        HStack {
-                            Button(action: {
-                                showPayment.toggle()
-                            }, label: {
-                                Text("Upgrade Now")
-                                    .font(.app(.Sub3))
-                                    .foregroundStyle(.text)
-                                    .minimumScaleFactor(0.75)
-                                    .dynamicTypeSize(.small ... .xxLarge)
+                        if !subscriptionManager.isPremium {
+                            HStack {
+                                Button(action: {
+                                    showPayment.toggle()
+                                }, label: {
+                                    Text("Upgrade Now")
+                                        .font(.app(.Sub3))
+                                        .foregroundStyle(.text)
+                                        .minimumScaleFactor(0.75)
+                                        .dynamicTypeSize(.small ... .xxLarge)
 
-                            })
-                            .padding(.vertical,10)
-                            .padding(.horizontal,24)
-                            .adaptiveGlassEffect(style: .clear)
-                            .frame(height: UIScreen.screenHeight / 20.78)
-                            Spacer()
+                                })
+                                .padding(.vertical,10)
+                                .padding(.horizontal,24)
+                                .adaptiveGlassEffect(style: .clear)
+                                .frame(height: UIScreen.screenHeight / 20.78)
+                                Spacer()
+                            }
                         }
                         Spacer()
                     }
                     .padding(.horizontal,24)
-//                    .ifAvailable{ view in
-//                        view.adaptiveGlassEffect(style: .clear)
-//                    }
                 }
                 .padding(.bottom,24)
         })
-
+        .disabled(subscriptionManager.isPremium)
     }
     
     func linksSection() -> some View {

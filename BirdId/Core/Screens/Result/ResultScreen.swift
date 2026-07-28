@@ -150,7 +150,7 @@ extension ResultScreen {
                     BackButtonView()
                     Spacer()
                 }
-                . padding(.top, 48)
+                . padding(.top, 56)
                 
                 Spacer()
                 
