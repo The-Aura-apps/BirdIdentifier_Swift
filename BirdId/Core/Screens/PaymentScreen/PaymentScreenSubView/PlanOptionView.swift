@@ -53,13 +53,7 @@ struct PlanOptionView: View {
                                 .minimumScaleFactor(0.75)
                                 .dynamicTypeSize(.small ... .xxLarge)
                         }
-                    } else if type == .free {
-                        Text("Free forever")
-                            .font(.app(.Sub2))
-                            .foregroundStyle(.text)
-                            .minimumScaleFactor(0.75)
-                            .dynamicTypeSize(.small ... .xxLarge)
-                    } else if let price {
+                    }  else if let price {
                         Text(price)
                             .font(.app(.Sub2))
                             .foregroundStyle(.text)
