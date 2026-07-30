@@ -205,7 +205,7 @@ extension PaymentScreen {
         // Free: a UI option (trial toggle), not a real package.
         items.append(PlanItem(
             type: .free,
-            title: "Free Plan",
+            title: "3-day free trial",
             price: nil,
             discounted: nil,
             badge: "Free Trial"
